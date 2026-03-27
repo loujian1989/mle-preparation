@@ -103,14 +103,15 @@
 - Base: ~48% | Stock: ~45% | Bonus: ~7%
 
 #### RSU Vesting Schedule
-- **Default schedule type: Equal 4-year, 1-year cliff, then monthly**
+- **Schedule type: Front-loaded 4-year, 1-year cliff, then monthly**
+- Per-year breakdown: **0% / 35% / 30% / 20% / 15%** (across 5 calendar years)
 - Year 1: 0% (cliff — nothing vests)
-- Year 1 anniversary: 25% vests in one lump sum
-- Years 2–4: remaining 75% vests 1/48 per month (~2.08%/month)
-- Net per-year breakdown: **0% / 25% / 25% / 25% / 25%** (across 5 calendar years)
-- **Front-loaded alternative** (offer-specific, ask for it): **35% / 30% / 20% / 15%** — same 1-year cliff, then monthly
+- Year 1 anniversary: 35% vests in one lump sum
+- Years 2–4: remaining 65% vests monthly at decreasing rates (30% → 20% → 15%)
+- ~65% of your total grant is delivered in the first two years post-cliff
 - Initial grant vests on the 1st of each month; refresher grants vest on the 15th
-- Double-trigger acceleration available for some senior grants
+- Equal 25/25/25/25 schedule exists but is non-standard for senior engineering roles in 2025
+- Source: levels.fyi front-loaded vesting article (September 2025), TeamBlind 2025 discussions
 
 #### RSU Refresh Policy ★★★☆☆
 - Annual equity refreshers awarded discretionally by manager + company performance
@@ -608,7 +609,7 @@ Roblox offers multiple vesting schedules depending on level and negotiation; ver
 | **Meta** | Equal 4yr | 25% | 25% | 25% | 25% | None | Quarterly | ★★★★☆ annual |
 | **OpenAI** | Equal 4yr | 25% | 25% | 25% | 25% | None | Quarterly | ★★★★★ aggressive |
 | **Roblox** | Front-loaded 3yr (default) | 45% | 35% | 20% | — | None | Quarterly | ★★★★☆ quarterly |
-| **Uber** | Equal 4yr, cliff (default); front-loaded 35/30/20/15 available | 0%→25%* | 25% | 25% | 25% | 1 yr | Monthly post-cliff | ★★★☆☆ annual |
+| **Uber** | Front-loaded 4yr, 1yr cliff | 0%→35%* | 30% | 20% | 15% | 1 yr | Monthly post-cliff | ★★★☆☆ annual |
 | **Reddit** | Equal 4yr, cliff (implied) | 0%→25%* | 25% | 25% | 25% | ~1 yr | Quarterly post-cliff | ★★★☆☆ annual |
 | **Pinterest** | Equal 4yr, cliff (likely) | 0%→25%* | 25% | 25% | 25% | ~1 yr | Quarterly post-cliff | ★★★☆☆ annual |
 
