@@ -2,7 +2,7 @@
 
 **Target Roles:** Staff / Senior MLE
 **Background:** PhD CS (game theory/mechanism design), DoorDash Ads (auction/pricing/autobidding), Amazon Sponsored Products
-**Coverage:** 9 established companies (Sections 0–3) + 8 startups incl. Brex (acquired) (Sections 4–7)
+**Coverage:** 9 established companies (Sections 0–3) + 5 startups + Brex (acquired) (Sections 4–7)
 **Data Sources:** levels.fyi, Glassdoor, Blind/TeamBlind, Bloomberg, TechCrunch, Crunchbase, Sacra, Forge Global — verified March 2026
 
 ---
@@ -697,7 +697,7 @@ Roblox offers multiple vesting schedules depending on level and negotiation; ver
 
 ## 4. Startup Quick-Reference Summary
 
-> Covers 8 startups researched March 2026. Brex included for reference only — acquired by Capital One Jan 22, 2026 (no longer a career target).
+> Covers 5 active startups researched March 2026. Brex included for reference only — acquired by Capital One Jan 22, 2026 (no longer a career target). Kevel and Imbue removed — no near-term IPO path.
 
 | Company | Valuation | Stage | TC Est. (Staff MLE) | Equity Type | IPO Signal | Profitable? | WLB (Glassdoor) | Bg ROI |
 |---|---|---|---|---|---|---|---|---|
@@ -706,8 +706,6 @@ Roblox offers multiple vesting schedules depending on level and negotiation; ver
 | **Whatnot** | $11.5B | Series F | ~$300K–$440K | ISO options | 🟡 2026–27 | Not disclosed | 3.6 | ★★★★☆ 4/5 |
 | **Ramp** | $32B | Series E | ~$300K–$603K | RSUs/options | 🟡 No signal | **Yes** (FCF+) | 3.4 | ★★★☆☆ 3/5 |
 | **Faire** | $5.2B | Series G | ~$250K–$400K (est.) | ISO/RSU mix | 🟡 2026–27 | Near profitable | 4.1 | ★★★☆☆ 3/5 |
-| **Kevel** | ~$150M–$300M | Series C | ~$105K–$132K | ISO options | 🔴 None | Not disclosed | **4.6** | ★★★☆☆ 3/5 |
-| **Imbue** | $1B | Series B | ~$140K–$350K | ISO options | 🔴 None | No (R&D) | ~4.0 | ★★★☆☆ 3/5 |
 | **Brex** | ~~$12.3B→$5.15B~~ **ACQUIRED** | — | N/A | N/A | ❌ N/A | Yes (profitable) | 3.9 | N/A |
 
 ---
@@ -1079,7 +1077,7 @@ Roblox offers multiple vesting schedules depending on level and negotiation; ver
 - **Glassdoor rating:** 4.2/5.0 overall; **4.1/5.0** for work-life balance
 - **Remote:** Yes — distributed team culture
 - **Culture:** "Amount of work can be challenging" but generally positive
-- Best WLB among the startup cohort (after Kevel)
+- Best WLB among the startup cohort
 
 #### Job Security 🟡
 - May 2023: 20% layoff (~250 employees); engineering, data, product hit hardest
@@ -1118,165 +1116,6 @@ Roblox offers multiple vesting schedules depending on level and negotiation; ver
 
 ---
 
-### Kevel
-
-> **Ad server infrastructure API** — powers first-party ad servers for publishers (Ticketmaster, Yelp, etc.). Series C, $17M ARR. Smallest company in cohort; exceptional WLB.
-
-#### TC
-| Level | Base | Stock (annualized est.) | Bonus | Total TC |
-|---|---|---|---|---|
-| Senior MLE | ~$120K–$145K | ~$20K–$40K | ~$10K–$15K | ~$150K–$200K |
-| Staff MLE | ~$145K–$170K | ~$30K–$60K | ~$15K–$20K | ~$190K–$250K |
-
-*Salary.com Senior SWE ~$105K–$132K; MLE premium estimated +15–20%; March 2026*
-
-#### Comp Component Breakdown
-- Base: ~65–70% | Stock: ~25–30% | Bonus: ~5%
-- Note: TC is significantly below the other startups in this cohort; trade-off is exceptional WLB
-
-#### Equity Vesting Schedule (ISO Options)
-- **Type:** ISO options (early stage)
-- **Cliff:** Likely 1-year (standard Series C company)
-- **Cadence:** Monthly after cliff
-- **Duration:** 4 years
-- **409A / Strike (est.):** ~$5–15/share (estimated; not disclosed)
-
-#### Refresh Policy
-- Not disclosed; unlikely at Series C stage without formal equity management framework
-
-#### Signing Bonus
-- Not disclosed; estimated $10K–$30K
-
-#### Key Benefits
-| Benefit | Detail |
-|---|---|
-| PTO | Unlimited PTO |
-| Parental Leave | Generous — "generous mat/paternity leave" per Glassdoor |
-| Remote | Fully remote |
-| Management | Zero micromanagement; treated as adult professional |
-| Health | Not disclosed |
-
-#### WLB ⭐⭐⭐⭐⭐
-- **Glassdoor rating:** **4.6/5.0** overall; **4.6/5.0** for work-life balance — highest in entire cohort (9 big co + 7 startups)
-- **Remote:** Fully remote; no in-person requirement
-- **Culture:** "Treated like an adult"; zero micromanagement; deep work culture
-- 88% would recommend; 97% positive business outlook
-
-#### Job Security 🟢
-- No layoffs reported 2025–2026
-- COO appointed Nov 2025; Mark Mannino joined board June 2025
-- Expansion phase; 156 employees
-
-#### Background ROI ★★★☆☆ 3/5
-- **Ad server fit:** Kevel builds publisher-side ad infrastructure — inventory management, targeting, delivery optimization
-- **Scale gap:** $17M ARR is 15× smaller than Moloco; impact and scope limited compared to peers
-- **Mechanism design:** RTB infrastructure relevant but Kevel is infrastructure-layer, not ML-first bidding
-
-#### Company Fundamentals
-- **Valuation:** ~$150M–$300M (estimated; not disclosed; Series C $45M total raised)
-- **Revenue:** $17.2M ARR (2025)
-- **Profitability:** Not disclosed
-- **Runway:** Unknown; conservative estimate 2–3 years given burn + $23M Series C (Mar 2024)
-
-#### Liquidity Analysis
-| Metric | Value |
-|---|---|
-| 409A / Strike (est.) | ~$5–15/share |
-| Preferred price (est.) | Not disclosed |
-| Secondary market | EquityZen — limited activity |
-| IPO timeline | **Very Low** — needs $100M+ ARR for IPO viability; currently at $17M |
-| Employee liquidity pre-IPO | Unlikely; no tender offers documented |
-
-#### Exit Risk Assessment
-| Scenario | Probability | Outcome |
-|---|---|---|
-| Acquired by ad-tech player | Moderate | Most likely exit; strategic fit for larger ad server / DSP |
-| Grows to IPO scale (5–7 years) | Low | Would require 6× revenue growth |
-| Runs profitably as lifestyle company | Moderate | Common for bootstrapped-adjacent Series C companies |
-| **Key risk** | — | IPO highly unlikely in near term; liquidity event tied to acquisition or secondary |
-
----
-
-### Imbue
-
-> **Frontier AI research lab** — building AI systems that can reason and code to accomplish long-horizon tasks. 11–50 employees; $1B valuation (Series B, Sep 2023). Pre-revenue R&D.
-
-#### TC
-| Level | Base | Stock (annualized est.) | Bonus | Total TC |
-|---|---|---|---|---|
-| Senior MLE / Researcher | ~$180K–$250K | ~$50K–$150K | ~$20K | ~$250K–$420K |
-| Staff MLE / Senior Researcher | ~$250K–$320K | ~$100K–$250K | ~$30K | ~$380K–$600K |
-
-*Imbue careers page ($140K–$350K cash range); equity described as "significant"; March 2026*
-
-#### Comp Component Breakdown
-- Base: ~50–60% | Stock: ~35–45% (significant equity per job postings) | Bonus: ~5%
-
-#### Equity Vesting Schedule (ISO Options)
-- **Type:** ISO options (early-stage; elite research lab)
-- **Cliff:** 1-year cliff (standard)
-- **Cadence:** Monthly after cliff
-- **Duration:** 4 years
-- **409A / Strike (est.):** ~$3–8/share (based on $1B valuation ÷ estimated fully-diluted shares for 11–50 person company)
-- **Note:** At this stage, very high per-share upside potential but very high binary risk
-
-#### Refresh Policy
-- Not disclosed; small team with bespoke comp packages; likely negotiated individually
-
-#### Signing Bonus
-- Not disclosed; elite research labs typically compete aggressively with signing bonuses ($100K–$500K for top researchers)
-
-#### Key Benefits
-| Benefit | Detail |
-|---|---|
-| Research Time | Protected deep work time; innovation-first culture |
-| Remote | Flexible; SF office available |
-| Health | Not disclosed |
-| Compute | Research-grade GPU cluster; critical for ML work |
-
-#### WLB
-- **Glassdoor rating:** Very limited data (~1 review); insufficient to rate
-- **Culture:** "Protect deep work time so people have space to innovate" — research lab culture
-- **Hours:** Research-driven pace; not ops-heavy; self-directed timeline
-- **Remote:** Flexible location and hours
-
-#### Job Security 🟢
-- No layoffs; headcount 11–50 (elite, intentionally small)
-- Eric Schmidt + Alexa Fund backing ($12M extension Oct 2023)
-- Research mode; no revenue pressure forcing cuts
-
-#### Background ROI ★★★☆☆ 3/5
-- **Research overlap:** Game theory and mechanism design have tangential application to multi-agent AI systems and alignment research
-- **Domain gap:** Imbue focuses on AI reasoning/coding — not ads, marketplace, or pricing
-- **Fit caveat:** This is a domain pivot from product ML to frontier AI research; the connection exists but is not direct
-
-#### Company Fundamentals
-- **Valuation:** $1B (Series B, Sep 2023)
-- **Revenue:** $0 — pre-revenue research lab
-- **Profitability:** No; pure R&D burn
-- **Total raised:** $232M ($200M Series B + $20M Series A + $12M extension)
-- **Runway:** 3+ years estimated (at $50–80M/yr burn for 11–50 person compute-heavy lab)
-
-#### Liquidity Analysis
-| Metric | Value |
-|---|---|
-| 409A / Strike (est.) | ~$3–8/share |
-| Preferred price (est.) | ~$10–15/share (based on $1B valuation) |
-| Common stock discount | ~40–50% |
-| Secondary market | Forge Global — limited activity |
-| IPO timeline | **2028–2030 at earliest** (pre-revenue; no product; research timeline) |
-| Employee liquidity pre-IPO | Unlikely until revenue milestone or acquisition |
-
-#### Exit Risk Assessment
-| Scenario | Probability | Outcome |
-|---|---|---|
-| Acquired by Big Tech (Google, Meta, OpenAI) | Moderate-High | Most likely exit; research talent + models = strategic target |
-| Develops product → IPO (2029+) | Low | Long timeline; requires successful productization |
-| Research fails → wind down | Low-Moderate | Binary risk; $232M buys 3–4 years of runway |
-| **Key risk** | — | Pre-revenue + tiny team = high binary outcome; either acqui-hire at modest premium or big payoff |
-
----
-
 ### Brex — ACQUIRED (Not an Active Target)
 
 > Capital One acquired Brex at **$5.15B** (announced Jan 22, 2026). Deal structure: ~50% cash, ~50% Capital One stock.
@@ -1304,8 +1143,6 @@ Roblox offers multiple vesting schedules depending on level and negotiation; ver
 | **Whatnot** | Moderate | 2026–2027 | $11.5B Series F Oct 2025; $126M secondary; $1B revenue target | Livestream commerce commoditization (TikTok Shop, Amazon Live) |
 | **Faire** | Moderate | 2026–2027 | $100M employee tender (IPO warm-up); co-founder public signals | Tariff risk on wholesale imports; 58% write-down from $12.4B peak |
 | **Ramp** | Low–Moderate | 2027+ | $32B valuation; $1B ARR; FCF positive | May stay private indefinitely (Stripe parallel) |
-| **Kevel** | Very Low | 2029+ | Would need 6× revenue growth first | $17M ARR — too small for public markets |
-| **Imbue** | Very Low | 2028–2030 | Pre-revenue research lab | No product; pre-revenue; binary outcome |
 | **Brex** | ❌ N/A | Acquired | — | — |
 
 ### 6b. Startup Equity Value Model
@@ -1351,8 +1188,6 @@ Understanding startup option value requires modeling the full exit scenario — 
 | **Whatnot** | ~$1B target | 102% GMV | Not disclosed | **3+ years** (Series F Oct 2025) |
 | **Faire** | $500M+ | — | Near profitable | **2–3 years** (estimate) |
 | **Moloco** | $260M+ | High | Near breakeven | **2–3 years** ($500M+ total raised) |
-| **Kevel** | $17.2M | Moderate | Not disclosed | **Unknown** ($23M Series C, Mar 2024) |
-| **Imbue** | $0 (R&D) | N/A | No | **3+ years** ($232M raised; ~$60–80M/yr burn est.) |
 | **Brex** | $700M | 40% | Yes (profitable) | **Acquired** (Capital One) |
 
 ### 6d. Background ROI Ranking (Startups Only)
@@ -1364,8 +1199,6 @@ Understanding startup option value requires modeling the full exit scenario — 
 | 3 | **Whatnot** | 4/5 | Live auction mechanics + seller ranking + marketplace dynamics; less ads-specific but mechanism design directly applicable |
 | 4 | **Ramp** | 3/5 | Fintech spend optimization; pricing background peripheral; not auction/marketplace-focused |
 | 4 | **Faire** | 3/5 | B2B supply/demand matching; marketplace dynamics apply; weaker ads/auction fit |
-| 4 | **Kevel** | 3/5 | Ad server infrastructure directly relevant; scale too small to leverage background fully |
-| 4 | **Imbue** | 3/5 | Frontier AI research; mechanism design tangentially applicable to multi-agent alignment |
 | — | **Brex** | N/A | Acquired; not applicable |
 
 ---
@@ -1378,7 +1211,7 @@ Understanding startup option value requires modeling the full exit scenario — 
 |---|---|---|---|
 | Top of range | $1.43M (OpenAI) | $600K+ (Ramp/Rokt) | ~$830K/yr |
 | Median | ~$650K | ~$350K | ~$300K/yr |
-| Bottom of range | $255K (Shopify) | $190K (Kevel) | Comparable |
+| Bottom of range | $255K (Shopify) | $200K (Moloco) | Comparable |
 | **4-year cumulative gap (median)** | **~$2.6M** | **~$1.4M** | **~$1.2M** |
 
 The $1.2M 4-year TC gap is what startup equity needs to make up to break even — before considering risk.
@@ -1389,7 +1222,6 @@ The $1.2M 4-year TC gap is what startup equity needs to make up to break even �
 |---|---|---|
 | Big-co RSU (quarterly vest) | 3–12 months post-join | Meta/OpenAI: month 3 (no cliff) |
 | Startup options (pre-IPO) | 3–7 years | Moloco/Rokt: potentially 12–18 months (IPO signal strong) |
-| Startup options (early-stage) | 5–10 years | Kevel/Imbue: no near-term liquidity path |
 | Secondary market (Forge/EquityZen) | Available now (partial) | Rokt/Ramp/Whatnot: secondary active |
 
 ### Upside Ceiling
@@ -1411,7 +1243,7 @@ For startup equity to outperform big-co RSUs over 4 years, you need sufficient o
 | **AMT exposure** | ISO exercise triggers tax on spread even if no sale; "phantom income" | Model AMT exposure before exercising; consider NSOs for large grants |
 | **Liquidation preference stack** | Participating preferred: VCs get 1× back *plus* pro-rata share; common can get zero in moderate exits | Request cap table + preference terms before accepting offer |
 | **IPO window volatility** | Public market conditions can delay IPO 12–24 months; options may expire if not exercised | Verify option term (7–10 year expiry vs. 90-day post-termination) |
-| **QSBS eligibility** | Must verify company qualifies (<$50M assets at grant date) and hold 5+ years | Check with tax advisor; critical for Imbue/Kevel (early stage) |
+| **QSBS eligibility** | Must verify company qualifies (<$50M assets at grant date) and hold 5+ years | Check with tax advisor; critical for early-stage grants |
 | **83(b) election** | Must file within 30 days of grant/exercise; no extensions | Set a calendar reminder; non-negotiable deadline |
 
 ### Decision Matrix
@@ -1420,9 +1252,7 @@ For startup equity to outperform big-co RSUs over 4 years, you need sufficient o
 |---|---|
 | Maximize near-term cash + liquidity | **Big co** (Meta, Uber, OpenAI) |
 | Domain fit + IPO upside (2026) | **Moloco or Rokt** |
-| Highest WLB + startup culture | **Kevel** (but TC significantly lower) |
 | Fintech + exceptional growth | **Ramp** (but IPO timeline uncertain) |
-| Frontier AI research pivot | **Imbue** (high risk, high optionality) |
 | Marketplace dynamics + solid IPO path | **Whatnot or Faire** |
 
 ---
