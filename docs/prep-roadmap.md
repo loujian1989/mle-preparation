@@ -118,13 +118,32 @@ Your background is a genuine moat for ~5 of the 8 companies. Here's how to deplo
 - Implement a rate limiter (token bucket vs. sliding window — know the trade-off)
 - Build an ML inference API (request validation, batching, timeout handling, circuit breaker)
 
-### Cluster C: Product + Personalization ML — Netflix, Roblox
+### Cluster C: Personalization + Emerging Ads ML — Netflix, Roblox
 **Common thread:** Recommendation systems, user modeling, A/B experimentation
-**Your delta:** Moderate — retrieval/ranking is adjacent to ads ranking but different objective
+**Your delta:** Lower than originally estimated — both companies are actively building ads ML stacks (validated March 2026)
+
+#### Netflix
+**Ads context (verified):** Netflix is actively hiring MLEs specifically for ads — open roles include "MLE L5 - Ads" (ad ranking, pacing, personalization) and "MLE L5 Senior - Ads Inventory Management & Forecasting". They are building an in-house ad tech ecosystem from scratch, making this a greenfield problem structurally similar to early-stage ads infrastructure at DoorDash/Amazon.
+
+**Your angle:** "Netflix Ads is at the stage DoorDash Ads was 2–3 years ago — building the core auction, pacing, and forecasting systems. My experience designing those systems from first principles at Amazon and DoorDash maps directly." Frame your work as a template for what Netflix Ads needs to build.
+
 **Preparation:**
-- Netflix: Product-mindedness is the differentiator. Every design decision must be tied to a business metric (subscriber retention, viewing hours). Know their tech stack philosophy: Metaflow-style DAG orchestration, Hollow for data publishing.
+- Ad inventory forecasting: predicting available impression supply by targeting segment — this is a time-series + uncertainty quantification problem
+- Ad pacing under inventory constraints: same Lagrangian relaxation framing as budget pacing at DoorDash
+- Product-mindedness still required: tie every design to subscriber retention (ads must not degrade watch experience) — this tension is unique to Netflix vs. pure-play ad platforms
+- Know their general ML stack: Metaflow-style DAG orchestration, real-time inference SLA requirements
 - Netflix gotcha: Monitoring is not an afterthought. Proactively say "Here's how I'd know it's working in prod: shadow scoring for 48h, holdout group sized at X%, alert on P(drift) > threshold."
-- Roblox: User age distribution matters (large % under 18) — discuss safety filtering layers in recommendation. Real-time multiplayer means latency requirements affect model choice. Discuss content moderation ML as a distinct problem from engagement recommendation.
+
+#### Roblox
+**Ads/platform economics context (verified):** Roblox launched rewarded video ads (6–30s, opt-in for 13+ users) in 2025, integrated with Google Ad Manager, and is under investor pressure to prove ad revenue can scale without degrading engagement. Their Q3 2025 earnings explicitly discussed advertising/monetization strategy as a key growth lever. Users 13+ grew from 40M (Q3 2023) to 101M (Q3 2025) — the addressable ad audience is now majority adult.
+
+**Your angle:** "Roblox's ads challenge is a marketplace design problem — how do you price ad inventory in a platform where the supply (developer attention) and demand (advertiser budgets) are both price-sensitive? My mechanism design background applies directly to the opt-in rewarded format: you're designing an exchange where users, developers, and advertisers all have strategic incentives."
+
+**Preparation:**
+- Rewarded ad format ML: user-side value model (will this user opt in?), advertiser-side ROI model, developer-side revenue optimization — a three-sided marketplace
+- Safety/content moderation ML: Roblox processes 6.1B chat messages/day with ML classifiers (PII detection, 98% recall) — expect content safety system design questions
+- Platform economics framing: ads must not cannibalize the creator economy (developer earnings) — discuss the mechanism design tension explicitly
+- User age distribution still matters: targeting, consent, and content restrictions for under-13 users require a separate serving path
 
 ### Cluster D: Foundation Model / Research-Adjacent — OpenAI
 **Common thread:** Deep learning fundamentals, training infrastructure, alignment, safety
@@ -165,7 +184,7 @@ Your background is a genuine moat for ~5 of the 8 companies. Here's how to deplo
 |---|---|---|---|---|
 | 4 | Ads/Marketplace (TTD, Meta, Uber) | Rate limiters, task schedulers, online algorithms | Autobidding system + budget pacing | Impact story from DoorDash Ads |
 | 5 | Practical Engineering (Stripe, Shopify) | API design, debugging exercises, LRU/rate limiter implementations | ML inference pipeline with SLAs | Technical judgment / hard trade-off story |
-| 6 | Personalization (Netflix, Roblox) | Graph problems (social network, recommendation graph) | Recommendation system + A/B test platform | Cross-functional influence story |
+| 6 | Personalization + Ads (Netflix, Roblox) | Graph problems (social network, recommendation graph) | Recommendation system + Ad inventory forecasting + A/B test platform | Cross-functional influence story |
 | 7 | Foundation Models (OpenAI) | Python implementations (attention, tokenizer, BPE) | LLM serving infrastructure (KV cache, batching) | Intellectual honesty / research opinion |
 
 ---
@@ -215,7 +234,7 @@ Your background is a genuine moat for ~5 of the 8 companies. Here's how to deplo
 | TTD Engineering (thetradedesk.com/engineering) | Unified ID, Koa AI, RTB infrastructure |
 | Meta AI / Meta Engineering | Ads ranking, DLRM, recommendation systems |
 | Uber Engineering (eng.uber.com) | ETA improvements, Michelangelo, surge pricing |
-| Netflix Tech Blog (netflixtechblog.com) | Recommendation, Metaflow, A/B testing |
+| Netflix Tech Blog (netflixtechblog.com) | Recommendation, Metaflow, A/B testing, Ads |
 | Stripe Engineering (stripe.com/blog/engineering) | Fraud detection, ML at Stripe, reliability |
 | Shopify Engineering (shopify.engineering) | ML for e-commerce, infrastructure |
 | OpenAI Research (openai.com/research) | GPT-4 system card, alignment updates |
