@@ -284,18 +284,19 @@
 
 #### Comp Component Breakdown
 - Compensation model is **fundamentally different** from peers:
-  - Netflix pays extremely high base salary
-  - No traditional bonus
-  - Employees choose annually what % of comp to receive as stock options vs. cash
-  - Options are fully vested at grant, no cliff, 10-year exercise window
-  - No RSU-style multi-year vesting schedule
+  - **Everything is paid as cash salary** — this is the default and the entire offer
+  - No bonus, no automatic RSU grant
+  - Each year you may voluntarily elect to receive a portion of your salary as stock options instead of cash (e.g., swap $100K of salary for $100K worth of options)
+  - Most employees hold some mix; the "TC" figures on levels.fyi reflect total cash + option value for those who elect stock
+  - Options chosen this way are immediately vested; 10-year exercise window
 
 #### RSU Vesting Schedule
-- **Schedule type: 100% immediate at grant (options, not RSUs)**
-- No vesting schedule — stock options are fully vested the moment they are granted
-- No cliff, no multi-year wait; you own the options from day one
-- 10-year exercise window post-grant (vs. standard 90-day post-termination window elsewhere — major portability advantage)
-- Executives (2024+): separate time-based RSUs and performance RSUs added on top
+- **Schedule type: N/A — Netflix is effectively an all-cash offer by default**
+- Your entire comp is paid as salary (cash). There is no automatic equity grant.
+- Each year you may *elect* to convert a portion of your cash salary into stock options — it is voluntary, not the default
+- If you elect options: those options are **immediately vested at grant** (no cliff, no schedule, no wait)
+- 10-year exercise window on any options you hold (vs. standard 90-day post-termination window elsewhere — significant portability advantage if you leave)
+- Executives (2024+): separate mandatory time-based RSUs and performance RSUs exist, but do not apply to IC roles
 
 #### RSU Refresh Policy — N/A (Option model)
 - Employees reallocate their annual stock option percentage each year
@@ -599,7 +600,7 @@ Roblox offers multiple vesting schedules depending on level and negotiation; ver
 
 | Company | Schedule Type | Y1 | Y2 | Y3 | Y4 | Cliff | Cadence | Refresh |
 |---|---|---|---|---|---|---|---|---|
-| **Netflix** | 100% at grant (options) | 100% | — | — | — | None | Immediate | Annual reallocation |
+| **Netflix** | All cash; optional stock election | N/A | N/A | N/A | N/A | N/A | Options vest immediately if elected | Annual salary reallocation |
 | **Stripe** | 100% Y1 front-loaded | 100% | via refresh | via refresh | via refresh | None | Annual lump sum | ★★★★★ 3–5× |
 | **Shopify** | Equal 3yr | 33% | 33% | 33% | — | None | Y1 annual; Y2–3 quarterly | None (employee-driven) |
 | **Meta** | Equal 4yr | 25% | 25% | 25% | 25% | None | Quarterly | ★★★★☆ annual |
