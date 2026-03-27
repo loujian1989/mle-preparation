@@ -4,6 +4,290 @@
 
 ---
 
+## 0. Verified Job Listings + Interview Intel (Research as of March 2026)
+
+> All JDs verified live. Netflix Ads-specific JD links returned 404 at time of research (roles may have been filled/rotated — check explore.jobs.netflix.net for current postings). All other listings confirmed active.
+
+---
+
+### The Trade Desk (TTD)
+
+**Title note:** TTD does not use "MLE" — target roles are titled **Data Scientist** or **Senior Software Engineer - Machine Learning**.
+
+| Role | Level | URL |
+|---|---|---|
+| Senior Data Scientist - Performance Algorithms | Senior | careers.thetradedesk.com/jobs/4689587007 |
+| Senior/Staff Data Scientist, Search & Recommender Systems | Senior/Staff | careers.thetradedesk.com/jobs/4689666007 |
+| Data Scientist II, Channels Team | Mid | careers.thetradedesk.com/jobs/4764738007 |
+| Senior Software Engineer - Machine Learning | Senior | careers.thetradedesk.com/jobs/4870091007 |
+
+**JD Key Requirements (from live pages):**
+- Python, Spark/Databricks, TensorFlow/PyTorch
+- "Training massive deep learning models at scale" and "novel ways to improve advertising campaign performance"
+- High throughput + millisecond latency constraints stated explicitly in JDs
+
+**Interview Process (from Blind + InterviewQuery):**
+1. Take-home assignment — practical, company-relevant data, ~1 week window
+2. Technical screen — CodeSignal, non-LeetCode style; real-life refactoring + concurrency (reported: n-way set associative cache problem)
+3. Onsite: behavioral + technical (ML algorithms, statistics, SQL, real-time problem solving under QPS/latency constraints)
+
+**Key insider notes:**
+- Not a LeetCode shop — expect real data manipulation, system-level thinking, and ML architecture questions
+- "High QPS and millisecond latency requirements" appear in every DS JD — bring real-time serving experience explicitly
+- Data Science comp: ~$124K base (significantly below the others — confirm if this is a strategic target vs. compensation target)
+
+---
+
+### Stripe
+
+**Titles:** MLE (multiple tracks), SWE ML Infrastructure
+
+| Role | Level | URL |
+|---|---|---|
+| MLE, Payments ML Accelerator | Senior (7+ yrs) | stripe.com/jobs/listing/…/7079044 |
+| MLE, Foundation Model | Senior | stripe.com/jobs/listing/…/7275014 |
+| MLE, Stripe Assistant | Mid-Senior | stripe.com/jobs/listing/…/7629052 |
+| Senior MLE, Stripe Assistant | Senior | stripe.com/jobs/listing/…/6894964 |
+| SWE, ML Infrastructure | Senior | stripe.com/jobs/listing/…/7528260 |
+| PhD MLE, New Grad | New Grad | stripe.com/jobs/listing/…/7216668 |
+
+**Best fit for you:** MLE Payments ML Accelerator — fraud detection, authorization optimization, deep learning + LLMs, 7+ years required, $212K–$318K.
+
+**JD Key Requirements (Payments ML Accelerator, verified):**
+- 7+ years end-to-end ML development + production deployment
+- Python, Scala, Spark
+- Deep learning + LLM/foundation model expertise
+- Focus: fraud detection → authorization optimization, across merchants/issuers/customers
+
+**Interview Process (from Glassdoor + LeetCode discuss + Taro, 2024–2025):**
+1. Recruiter call (30 min)
+2. OA — CoderPad, ~45 min, semi-real-life data manipulation with conditional logic (not LeetCode)
+3. ML coding round — given a dataset in Jupyter, build + evaluate a model in 1 hour; construct target variable, feature selection, beat a random baseline
+4. Onsite (4 rounds): coding, debugging (clone a repo + fix bugs), ML system design, hiring manager
+- Total ~17 days average to hire
+
+**Key insider notes:**
+- The debug round is unique to Stripe — practice reading production Python code and diagnosing failures systematically
+- "No LeetCode" — they provide real data and expect working, evaluated models
+- 27% positive experience on Glassdoor — process is demanding and somewhat opaque; recruiter communication can be slow
+- ML system design at Stripe: expect fraud detection architecture, recommendation for merchants, authorization optimization
+
+---
+
+### Uber
+
+**Titles:** MLE (various teams), Staff MLE
+
+| Role | Level | URL |
+|---|---|---|
+| Senior MLE - Marketplace Pricing | Senior | uber.com/global/en/careers/list/145740 |
+| Staff MLE - Marketplace Pricing & Incentives | Staff | uber.com/global/en/careers/list/140494 |
+| MLE II - Pricing | Mid | uber.com/global/en/careers/list/146338 |
+| MLE II - Optimization | Mid | uber.com/global/en/careers/list/145150 |
+| Staff MLE - Applied AI | Staff | uber.com/global/en/careers/list/146989 |
+
+**Best fit for you:** Senior MLE Marketplace Pricing + Staff MLE Marketplace Pricing & Incentives
+
+**JD Key Requirements (Senior MLE Marketplace Pricing, verified):**
+- 4+ years deploying ML models in production
+- Python/Scala/Java/Go + Spark/Ray/Flink
+- DNNs, multi-task models, transformers, mathematical optimization
+- "Marketplace pricing algorithms, RL, causal ML" preferred
+- Real-time multi-objective optimizations at 1M+ predictions/second
+- Comp: $202K–$224K base (NY)
+
+**Interview Process (from InterviewQuery, Glassdoor, 2024–2025):**
+1. Resume screen + recruiter call
+2. Technical screen: 1–2 rounds, LeetCode-style coding + ML fundamentals
+3. Virtual onsite (4–5 rounds, 45–60 min each):
+   - Round 1: Coding & Data — Python, algorithmic + data manipulation, edge cases
+   - Round 2: Applied ML — end-to-end modeling, feature selection, metric choice, monitoring
+   - Round 3: ML System Design — real-time inference architecture, failure modes, observability
+   - Round 4: Product & Collaboration — cross-functional communication, business impact framing
+   - Round 5: Behavioral — accountability, setbacks, ownership
+- Total timeline: 3–6 weeks
+
+**Key insider notes:**
+- Marketplace thinking is explicitly scored: "how do prediction errors cascade through pricing, supply, driver incentives"
+- Bring production incident stories — they ask about operational impacts, not just model metrics
+- Graph algorithms appear in coding (word transformation, graph traversal)
+- Rolling metrics computation is a common coding question
+
+---
+
+### Meta
+
+**Title:** Software Engineer, Machine Learning (not "MLE Engineer")
+
+| Role | Level | URL |
+|---|---|---|
+| Software Engineer, Machine Learning | E5/E6 | metacareers.com/profile/job_details/1436181490732782 |
+
+**JD Key Requirements (verified):**
+- 6+ years programming OR 3+ years + PhD
+- PyTorch/TF/Python/C++/Java
+- 2+ years in ML, recommendation systems, pattern recognition, data mining, or AI
+- "Developing ML models at scale from inception to business impact"
+- Ads prediction is a primary focus area alongside Feed/Reels ranking
+
+**Interview Process (from Glassdoor + IGotAnOffer + Medium, 2024–2025):**
+1. Phone screen: 1 medium-level LeetCode
+2. Onsite (4–6 rounds):
+   - 2 coding rounds (LeetCode medium/hard — this is the hardest coding bar of the 8 companies)
+   - 1 ML system design: designing feed ranking, ads prediction, or recommendation systems end-to-end
+   - 1 behavioral: scope of impact, ambiguity, cross-functional influence
+- Evaluation axes: correctness, runtime/space complexity, communication of trade-offs
+
+**Key insider notes:**
+- "Coding bar is closer to a pure SWE loop than most MLE roles" — this is the most LeetCode-heavy of the 8
+- System design focus: Feed ranking, ads CTR prediction, recommendation systems
+- Ads ML design questions: "design an evaluation framework for ads ranking" is a documented question
+- High bar for E6 (Staff): expect scope-of-impact stories at org/company level, not team level
+
+---
+
+### OpenAI
+
+**Titles:** MLE (Integrity), Research Engineer (Applied AI, Post-Training, AI for Science), SWE Model Inference
+
+| Role | Level | URL |
+|---|---|---|
+| MLE, Integrity | Mid-Senior | openai.com/careers/machine-learning-engineer-integrity-san-francisco |
+| Research Engineer, Applied AI Engineering | Senior | openai.com/careers/research-engineer-applied-ai-engineering-san-francisco |
+| Research Engineer / Research Scientist, Post-Training | Senior | openai.com/careers/research-engineer-research-scientist-post-training-san-francisco |
+| SWE, Model Inference | Senior | openai.com/careers/software-engineer-model-inference-san-francisco |
+
+**Best fit for you:** MLE Integrity (adversarial ML, game theory angle) + Research Engineer Applied AI
+
+**Interview Process (from OpenAI official guide + InterviewQuery + Medium, 2024–2025):**
+1. Recruiter screen (30–45 min) — career trajectory, OpenAI mission familiarity, team fit
+2. ML coding interview (45–60 min) — CoderPad, real-world engineering: model architectures, training methodologies, gradient descent, production considerations; NOT abstract algorithms
+3. Virtual onsite (4–6 hours over 1–2 days):
+   - Complex coding
+   - ML system design (safety systems, recommenders, topic classification at scale)
+   - Project deep-dive / presentation (defend a "Learning Sample" take-home)
+   - AI ethics discussion
+   - Behavioral
+4. Hiring committee (~1 week)
+- Total timeline: 6–8 weeks
+
+**Sample questions (verified from community):**
+- Interpolating missing data with Pandas groupby + interpolate
+- Logistic regression on separable data (fails to converge — requires recognizing regularization fix)
+- Design an unsafe content detection pipeline with bias monitoring
+- Scalable recommender system with distributed computing
+
+**Key insider notes:**
+- They value intellectual honesty + mission alignment above polish — have an opinion on hard alignment problems
+- Production debugging is stressed: exploding gradients, vanishing signals, batch norm instability
+- "Learning Sample" (take-home defended in interview) is a differentiating element — prepare to walk through a real project end-to-end
+- AI ethics discussion is real — not perfunctory; have a formed position on RLHF trade-offs, reward hacking, and dual-use risks
+
+---
+
+### Shopify
+
+**Titles:** Applied MLE, MLE (various tracks)
+
+| Role | Level | URL |
+|---|---|---|
+| Applied Machine Learning Engineers | Mid-Senior | shopify.com/careers/applied-machine-learning-engineers_19b9dea6 |
+| **MLE - Ads** | Senior | shopify.com/careers/machine-learning-engineer-ads_5485d8c3 |
+| MLE - HSTU | Senior | shopify.com/careers/machine-learning-engineer-hstu_04b84b82 |
+| Applied ML Engineering - GenAI, AI Agent | Senior | shopify.com/careers/applied-ml-engineering-genai-ai-agent_dae1b282 |
+| MLE - Search | Senior | shopify.com/careers/machine-learning-engineer-search_c15b011d |
+| MLE Infrastructure | Senior | shopify.com/careers/machine-learning-infrastructure-engineers_896a7d5f |
+
+**Best fit for you:** MLE - Ads (direct match to your domain)
+
+**Interview Process (from InterviewQuery + Glassdoor + Taro, 2024–2025):**
+1. Recruiter screen
+2. Life Story interview (30–60 min) — cultural values alignment, resilience, growth mindset; assessed BEFORE technical rounds
+3. ML Technical Screen — CoderPad, real-world commerce data (merchant transactions, product metadata); collaborative filtering, GBDTs, inference optimization; passing threshold 7.5+
+4. Take-home (4–6 hrs) — containerized FastAPI service or documented notebook; SHAP interpretability, time-series validation splits, anonymized merchant data
+5. Onsite loop — real-time ML system design (<100ms inference), feature pipeline via Pano (Shopify's Feast-based feature store), Kafka, Black Friday resilience, multi-region deployment, A/B test design for GMV/conversion
+- Acceptance rate: ~0.3% (extremely competitive)
+
+**Key insider notes:**
+- The Life Story round comes BEFORE technical — it's a real gate, not a formality; align your narrative to merchant-first impact
+- They use Pano (Feast-based feature store) + Ray + Kafka — name these explicitly in system design
+- "Move fast, communicate clearly, own decisions" — every design decision needs a stated trade-off
+- MLE - Ads is a direct domain match: bring your DoorDash Ads experience and connect it to merchant GMV impact (advertisers on Shopify = merchants)
+- Black Friday resilience is a real interview topic — design for 10x traffic spikes, failover, degraded-mode serving
+
+---
+
+### Netflix
+
+**Titles:** Machine Learning Engineer (L5, L5 Senior)
+
+| Role | Level | URL |
+|---|---|---|
+| MLE L5 - Ads | L5 (Senior) | explore.jobs.netflix.net — search "MLE Ads" |
+| MLE L5 Senior - Ads Inventory Management & Forecasting | L5 Senior | explore.jobs.netflix.net — search "Inventory Forecasting" |
+| MLE L5 - Content and Studio | L5 | jobs.netflix.com/jobs/308370003 |
+
+> Note: Specific Ads JD direct links returned 404 at research time — roles confirmed active via moaijobs.com and earlier search results. Check explore.jobs.netflix.net directly.
+
+**JD Key Requirements (from earlier verified search, Dec 2025):**
+- ML for ad ranking, pacing, and personalization (L5 Ads)
+- Predictive models for advertising campaign effectiveness + campaign delivery forecasting (L5 Senior - Inventory)
+- Low-latency real-time ad systems — productionized predictive model deployment
+- Metaflow-style orchestration background valued
+
+**Interview Process (from Blind + InterviewQuery + Exponent, 2024–2025):**
+1. Recruiter screen — background, motivation, Freedom & Responsibility culture fit
+2. Technical screen — take-home modeling quiz (feature engineering, model evaluation) + live Python coding (algorithmic)
+3. Virtual onsite (3 rounds):
+   - ML system design: online training pipelines, ad-break prediction, recommendation architecture; latency budgets (<200ms) required
+   - Algorithmic coding: array manipulation, DP, bit operations, linked lists; medium to hard
+   - Behavioral: collaboration, previous project deep-dive
+4. For L5: confirmed as "1 coding, 1 previous experience, 2 director-level conversations" including cross-team partner director
+- Comp: $455K–$525K median total; base $200K–$631K range
+
+**Key insider notes:**
+- Director-level conversations at L5 are real — they assess whether you can communicate technical decisions at exec level, not just team level
+- "Ad-break prediction" has been cited as an actual system design question — prepare this specifically
+- Netflix ghosting after friendly interviews is a documented complaint — don't assume silence = good news
+- Freedom & Responsibility culture: expect to be asked how you operate autonomously without process guardrails
+
+---
+
+### Roblox
+
+**Titles:** Senior MLE, Principal MLE
+
+| Role | Level | URL |
+|---|---|---|
+| [2026] Senior MLE, AI Platform | Senior (PhD early career) | careers.roblox.com/jobs/7403998 |
+| [2026] Senior MLE, Recommendation Systems | Senior (PhD early career) | careers.roblox.com/jobs/7350081 |
+| [2026] Senior MLE, NLP | Senior (PhD early career) | careers.roblox.com/jobs/7324377 |
+| [2026] Senior MLE, Multimodal AI / CV | Senior (PhD early career) | careers.roblox.com/jobs/7323437 |
+| Principal MLE, User Connections | Principal | careers.roblox.com/jobs/6268817 |
+
+**Best fit for you:** Senior MLE Recommendation Systems + Principal MLE User Connections
+
+**JD Key Requirements (from search, verified):**
+- PhD in CS or related field with expertise in recommender systems, search, information retrieval, or generative models
+- End-to-end ML systems including data analysis and model deployment
+- ML algorithms, data pipelines
+
+**Interview Process (from InterviewQuery + Glassdoor + Taro, 2024–2025):**
+1. Online assessment (HackerRank/CodeSignal) — 2 standard technical rounds
+2. ML system design round — designing a recommendation system is a documented question
+3. Project deep-dive + behavioral
+4. Additional round: team/culture fit
+- Total: 4–6 weeks; 5 rounds for Senior MLE
+- Process is decentralized — hiring managers customize by team
+
+**Key insider notes:**
+- Interviewers described as friendly; process is more structured than OpenAI/Netflix
+- Recommendation system design is the anchor ML system design question — prepare this cold
+- Platform economics / ads framing is an emerging angle (see Cluster C notes) but not yet the primary interview focus — recommendation + safety is still the dominant lens
+- Principal MLE User Connections is a strong target given your multi-agent/network modeling background
+
+---
+
 ## 1. The Overlap Strategy
 
 ### Coding — Universal Core (applies to all 8)
@@ -234,7 +518,7 @@ Your background is a genuine moat for ~5 of the 8 companies. Here's how to deplo
 | TTD Engineering (thetradedesk.com/engineering) | Unified ID, Koa AI, RTB infrastructure |
 | Meta AI / Meta Engineering | Ads ranking, DLRM, recommendation systems |
 | Uber Engineering (eng.uber.com) | ETA improvements, Michelangelo, surge pricing |
-| Netflix Tech Blog (netflixtechblog.com) | Recommendation, Metaflow, A/B testing, Ads |
+| Netflix Tech Blog (netflixtechblog.com) | Recommendation, Metaflow, A/B testing |
 | Stripe Engineering (stripe.com/blog/engineering) | Fraud detection, ML at Stripe, reliability |
 | Shopify Engineering (shopify.engineering) | ML for e-commerce, infrastructure |
 | OpenAI Research (openai.com/research) | GPT-4 system card, alignment updates |
