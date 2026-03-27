@@ -42,9 +42,11 @@
 - Base: ~44% | Stock: ~47% | Bonus: ~9%
 
 #### RSU Vesting Schedule
-- **New model (2024–2025 change):** 100% of initial grant vests in Year 1 (front-loaded)
-- Prior model: 1-year cliff → monthly vesting over 4 years (double-trigger)
-- No traditional multi-year cliff under new model — unusually employee-friendly
+- **Schedule type: Maximally front-loaded — 100% in Year 1**
+- Entire initial grant vests at the end of Year 1 (single annual tranche)
+- No cliff in the traditional sense — you vest nothing until month 12, then 100% at once
+- After Year 1, compensation is sustained entirely through annual refresher grants
+- Prior model (pre-2024): 1-year cliff → 1/48 monthly over 4 years (double-trigger acceleration)
 
 #### RSU Refresh Policy ★★★★★
 - Annual refresher grants of **3–5× the yearly grant amount**
@@ -101,9 +103,12 @@
 - Base: ~48% | Stock: ~45% | Bonus: ~7%
 
 #### RSU Vesting Schedule
-- 4-year vesting with **1-year cliff** (25% at 1-year anniversary)
-- Post-cliff: 1/48th monthly (effectively monthly vesting for remaining 75%)
-- Double-trigger acceleration for some senior grants
+- **Schedule type: Equal 4-year, 1-year cliff, then monthly**
+- Year 1: 0% (cliff — nothing vests)
+- Year 1 anniversary: 25% vests in one lump sum
+- Years 2–4: remaining 75% vests 1/48 per month (~2.08%/month)
+- Net per-year breakdown: 0% / 25% / 25% / 25% / 25% (across 5 calendar years)
+- Double-trigger acceleration available for some senior grants
 
 #### RSU Refresh Policy ★★★☆☆
 - Annual equity refreshers awarded discretionally by manager + company performance
@@ -159,10 +164,11 @@
 - Base: ~35% | Stock: ~59% | Bonus: ~6%
 
 #### RSU Vesting Schedule
-- **No 1-year cliff** — quarterly vesting from day 1
-- Standard: 1/16 per quarter over 4 years (16 equal quarterly tranches)
-- Vesting dates: Feb 15, May 15, Aug 15, Nov 15
-- Alternative weighted schedules (B, C) available
+- **Schedule type: Equal 4-year, no cliff, quarterly**
+- 1/16 of grant vests each quarter (16 equal tranches) from hire date onward
+- Vesting dates: Feb 15, May 15, Aug 15, Nov 15 — you get the next upcoming date after hiring
+- Per-year breakdown: 25% / 25% / 25% / 25%
+- Alternative weighted schedules B and C available (front- or back-loaded variants) — ask at offer stage
 
 #### RSU Refresh Policy ★★★★☆
 - Annual refreshers based on 5–9 performance scale, determined each February
@@ -221,10 +227,11 @@
 - Company projecting $6B annual equity spend in 2025
 
 #### RSU Vesting Schedule (2026 model)
-- **No cliff** — 25% vesting quarterly from start, 4-year duration
-- 2025 change: shifted from PPUs (Profit Participation Units) with 6-month cliff
-- Rationale from CEO: "encourage risk-taking without fear of being let go before first vest"
-- Historic PPU model was quarterly vesting after 6-month cliff
+- **Schedule type: Equal 4-year, no cliff, quarterly**
+- 25% vests each year across 16 equal quarterly tranches — no waiting period
+- Per-year breakdown: 25% / 25% / 25% / 25%
+- 2025–2026 change: shifted from PPUs (Profit Participation Units) with 6-month cliff to standard RSUs with no cliff
+- Historic PPU model: quarterly vesting after 6-month cliff
 
 #### RSU Refresh Policy ★★★★★
 - Aggressive equity spend; refreshers tied to high-growth valuation trajectory
@@ -284,10 +291,11 @@
   - No RSU-style multi-year vesting schedule
 
 #### RSU Vesting Schedule
-- **No traditional RSUs for regular employees** — stock options only
-- Options vest fully at grant date (no cliff, no schedule)
-- 10-year exercise window after grant (portability advantage over standard 90-day post-termination)
-- Executives (2024+): performance RSUs and time-based RSUs added as separate component
+- **Schedule type: 100% immediate at grant (options, not RSUs)**
+- No vesting schedule — stock options are fully vested the moment they are granted
+- No cliff, no multi-year wait; you own the options from day one
+- 10-year exercise window post-grant (vs. standard 90-day post-termination window elsewhere — major portability advantage)
+- Executives (2024+): separate time-based RSUs and performance RSUs added on top
 
 #### RSU Refresh Policy — N/A (Option model)
 - Employees reallocate their annual stock option percentage each year
@@ -344,10 +352,12 @@
 - Base: ~55–65% | Stock: ~25–35% | Bonus: ~10%
 
 #### RSU Vesting Schedule — Unique Model
-- **No cliff; continuous quarterly vesting**
-- Year 1: 33% annual tranche (paid annually in April)
-- Years 2–3: 33%/yr split into 8.25%/quarter
-- Employees choose cash vs. equity **every quarter** — highly unusual among peers
+- **Schedule type: Equal 3-year, no cliff (Y1 annual, Y2–3 quarterly)**
+- Per-year breakdown: 33% / 33% / 33%
+- Year 1: entire 33% tranche pays out in one lump sum annually (in April)
+- Years 2–3: 8.25% per quarter (4 tranches/year)
+- No cliff — unlike peers, you get the Year 1 tranche at the end of Year 1 without any separate cliff gate
+- Employees choose cash vs. equity split **every quarter** — the stock % you choose determines how much of your total comp becomes equity
 
 #### RSU Refresh Policy ★★☆☆☆
 - No traditional refresh grants
@@ -405,10 +415,16 @@
 - Base: ~47% | Stock: ~43% | Bonus: ~10%
 
 #### RSU Vesting Schedule — Multiple Schedules in Use
-Roblox offers multiple vesting schedules; candidates should verify at offer:
-- **Front-loaded (aggressive):** 45% Y1 / 35% Y2 / 20% Y3 — quarterly
-- **Even 3-yr:** 33%/yr over 3 years — quarterly
-- **Standard 4-yr:** 25%/yr over 4 years — annual or monthly
+Roblox offers multiple vesting schedules depending on level and negotiation; verify at offer stage:
+
+| Option | Schedule type | Y1 | Y2 | Y3 | Y4 | Cadence |
+|---|---|---|---|---|---|---|
+| A (default) | Front-loaded 3-year | 45% | 35% | 20% | — | Quarterly |
+| B | Equal 3-year | 33% | 33% | 33% | — | Quarterly |
+| C | Equal 4-year | 25% | 25% | 25% | 25% | Annual or monthly |
+
+- Option A is the most common reported on Blind/Glassdoor; front-loads liquidity into the first two years
+- IC5+ may have more leverage to negotiate Option B or C
 
 #### RSU Refresh Policy ★★★★☆
 - Quarterly refresh grants (confirmed from multiple sources)
@@ -461,9 +477,10 @@ Roblox offers multiple vesting schedules; candidates should verify at offer:
 - Base: ~45% | Stock: ~50% | Bonus: ~5% (IC4 level)
 
 #### RSU Vesting Schedule
-- Standard 4-year vest (implied from market benchmarks and offer patterns)
-- Cadence: quarterly (standard for post-IPO public company)
-- 1-year cliff typical at most tech companies at this size
+- **Schedule type: Equal 4-year, ~1-year cliff, quarterly**
+- Per-year breakdown: 0% / 25% / 25% / 25% / 25%
+- Standard post-IPO structure: 1-year cliff, then quarterly vesting for remaining 3 years
+- Specific cliff and cadence terms not explicitly confirmed publicly — verify at offer
 
 #### RSU Refresh Policy ★★★☆☆
 - Annual refreshers expected post-IPO (IPO March 2024)
@@ -518,8 +535,11 @@ Roblox offers multiple vesting schedules; candidates should verify at offer:
 - Base: ~40–50% | Stock: ~40–50% | Bonus: ~5–10%
 
 #### RSU Vesting Schedule
-- 3–4 year vesting schedules; quarterly cadence
-- Specific cliff terms not widely disclosed; standard 1-year cliff likely
+- **Schedule type: Equal 3–4 year, ~1-year cliff, quarterly**
+- Most commonly reported: 4-year equal (25%/yr), quarterly cadence, ~1-year cliff
+- Some reports indicate 3-year equal option available at senior levels
+- Per-year breakdown (4yr): 0% / 25% / 25% / 25% / 25%
+- Specific cliff and cadence not officially disclosed — verify in offer letter
 
 #### RSU Refresh Policy ★★★☆☆
 - Annual refreshers typical (standard public-company practice)
@@ -577,17 +597,25 @@ Roblox offers multiple vesting schedules; candidates should verify at offer:
 
 ### 2b. RSU Mechanics Comparison
 
-| Company | Cliff | Cadence | Duration | Refresh | Unique Feature |
-|---|---|---|---|---|---|
-| **Stripe** | None (Y1 vest) | Annual (100% Y1) | Then annual refreshers | 3–5× per year | Highest refresh generosity |
-| **OpenAI** | None | Quarterly | 4 yr | Aggressive (equity-heavy) | No-cliff model new 2026 |
-| **Meta** | None | Quarterly | 4 yr | Annual (cut 10%+ in 2025) | Feb/May/Aug/Nov vesting |
-| **Netflix** | None | Vested at grant | — | Annual reallocation | Options, not RSUs; 10yr window |
-| **Uber** | 1 year | Monthly (1/48) | 4 yr | Annual discretionary | Monthly after cliff |
-| **Roblox** | Varies | Quarterly | 3–4 yr | Quarterly | Front-loaded option (45/35/20) |
-| **Pinterest** | ~1 year | Quarterly | 3–4 yr | Annual | Standard |
-| **Reddit** | ~1 year | Quarterly | 4 yr | Annual | Standard post-IPO |
-| **Shopify** | None | Quarterly | 3 yr | None (employee-driven allocation) | Quarterly cash/equity choice |
+| Company | Schedule Type | Y1 | Y2 | Y3 | Y4 | Cliff | Cadence | Refresh |
+|---|---|---|---|---|---|---|---|---|
+| **Netflix** | 100% at grant (options) | 100% | — | — | — | None | Immediate | Annual reallocation |
+| **Stripe** | 100% Y1 front-loaded | 100% | via refresh | via refresh | via refresh | None | Annual lump sum | ★★★★★ 3–5× |
+| **Shopify** | Equal 3yr | 33% | 33% | 33% | — | None | Y1 annual; Y2–3 quarterly | None (employee-driven) |
+| **Meta** | Equal 4yr | 25% | 25% | 25% | 25% | None | Quarterly | ★★★★☆ annual |
+| **OpenAI** | Equal 4yr | 25% | 25% | 25% | 25% | None | Quarterly | ★★★★★ aggressive |
+| **Roblox** | Front-loaded 3yr (default) | 45% | 35% | 20% | — | None | Quarterly | ★★★★☆ quarterly |
+| **Uber** | Equal 4yr, cliff | 0%→25%* | 25% | 25% | 25% | 1 yr | Monthly post-cliff | ★★★☆☆ annual |
+| **Reddit** | Equal 4yr, cliff (implied) | 0%→25%* | 25% | 25% | 25% | ~1 yr | Quarterly post-cliff | ★★★☆☆ annual |
+| **Pinterest** | Equal 4yr, cliff (likely) | 0%→25%* | 25% | 25% | 25% | ~1 yr | Quarterly post-cliff | ★★★☆☆ annual |
+
+*0%→25% means nothing during Year 1 cliff, then 25% vests at the cliff date as a lump sum.
+
+**Ranked best→worst for early liquidity (assuming you might leave in Year 1–2):**
+1. Netflix — 100% immediate
+2. Stripe — 100% at month 12
+3. Shopify / Meta / OpenAI / Roblox — no cliff, vesting starts immediately
+4. Uber / Reddit / Pinterest — dead zone Year 1; lose all unvested if you leave before anniversary
 
 ### 2c. Benefits Scorecard
 
