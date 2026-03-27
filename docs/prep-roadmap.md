@@ -1,5 +1,5 @@
 # MLE Interview Prep: 10-Week Strategy for Staff/Senior Roles
-**Target Companies:** TTD, Stripe, Uber, Meta, OpenAI, Shopify, Netflix, Roblox
+**Target Companies:** Stripe, Uber, Meta, OpenAI, Shopify, Netflix, Roblox
 **Background:** PhD CS (game theory/mechanism design), DoorDash Ads (auction/pricing/autobidding), Amazon (Sponsored Products)
 
 ---
@@ -7,34 +7,6 @@
 ## 0. Verified Job Listings + Interview Intel (Research as of March 2026)
 
 > All JDs verified live. Netflix Ads-specific JD links returned 404 at time of research (roles may have been filled/rotated — check explore.jobs.netflix.net for current postings). All other listings confirmed active.
-
----
-
-### The Trade Desk (TTD)
-
-**Title note:** TTD does not use "MLE" — target roles are titled **Data Scientist** or **Senior Software Engineer - Machine Learning**.
-
-| Role | Level | URL |
-|---|---|---|
-| Senior Data Scientist - Performance Algorithms | Senior | careers.thetradedesk.com/jobs/4689587007 |
-| Senior/Staff Data Scientist, Search & Recommender Systems | Senior/Staff | careers.thetradedesk.com/jobs/4689666007 |
-| Data Scientist II, Channels Team | Mid | careers.thetradedesk.com/jobs/4764738007 |
-| Senior Software Engineer - Machine Learning | Senior | careers.thetradedesk.com/jobs/4870091007 |
-
-**JD Key Requirements (from live pages):**
-- Python, Spark/Databricks, TensorFlow/PyTorch
-- "Training massive deep learning models at scale" and "novel ways to improve advertising campaign performance"
-- High throughput + millisecond latency constraints stated explicitly in JDs
-
-**Interview Process (from Blind + InterviewQuery):**
-1. Take-home assignment — practical, company-relevant data, ~1 week window
-2. Technical screen — CodeSignal, non-LeetCode style; real-life refactoring + concurrency (reported: n-way set associative cache problem)
-3. Onsite: behavioral + technical (ML algorithms, statistics, SQL, real-time problem solving under QPS/latency constraints)
-
-**Key insider notes:**
-- Not a LeetCode shop — expect real data manipulation, system-level thinking, and ML architecture questions
-- "High QPS and millisecond latency requirements" appear in every DS JD — bring real-time serving experience explicitly
-- Data Science comp: ~$124K base (significantly below the others — confirm if this is a strategic target vs. compensation target)
 
 ---
 
@@ -347,12 +319,6 @@ Your background is a genuine moat for ~5 of the 8 companies. Here's how to deplo
 
 ### Narrative Angles by Company
 
-**The Trade Desk (TTD) — Programmatic Auction Design**
-- TTD is a DSP. Their core problem is real-time bidding: win the right impression at the right price at <100ms.
-- Your angle: "At DoorDash, I designed autobidding systems where the advertiser states a goal (CPA/ROAS) and the system bids optimally on their behalf — this is the same optimization objective as TTD's Koa AI. The challenge is budget pacing under uncertainty with non-stationary supply."
-- Mechanism design hook: bring up bid shading (first-price auction strategies), pacing as a Lagrangian relaxation of a constrained optimization, and the trade-off between exploration and exploitation in budget allocation.
-- Key TTD-specific angle: campaign delivery guarantees (programmatic guaranteed vs. open auction), data marketplace privacy (UID2.0).
-
 **Meta — Ads Auction at 1B+ Scale**
 - Meta runs a generalized second-price variant with quality scores baked in (eCPM = bid × quality).
 - Your angle: "My work at Amazon and DoorDash maps directly — specifically the interaction between auction revenue, advertiser value maximization, and long-term platform health (a multi-objective problem)."
@@ -381,11 +347,10 @@ Your background is a genuine moat for ~5 of the 8 companies. Here's how to deplo
 
 ## 3. Company-Specific Deep Dives (The Deltas)
 
-### Cluster A: Ads/Marketplace ML — TTD, Meta, Uber
+### Cluster A: Ads/Marketplace ML — Meta, Uber
 **Common thread:** Real-time bidding, two-sided marketplace, high-throughput feature serving
 **Your delta:** Minimal — this is your core domain
 **What to add:**
-- TTD: Programmatic ecosystem literacy (DSP/SSP/DMP/ad exchange topology), UID2.0 privacy-preserving identity
 - Meta: DLRM architecture, FAISS/ScaNN for embedding retrieval, Flink feature pipelines
 - Uber: H3 geospatial indexing, Michelangelo feature store, prediction intervals for ETA (not just point estimates)
 
@@ -466,7 +431,7 @@ Your background is a genuine moat for ~5 of the 8 companies. Here's how to deplo
 
 | Week | Focus Cluster | Coding Theme | System Design | Behavioral Focus |
 |---|---|---|---|---|
-| 4 | Ads/Marketplace (TTD, Meta, Uber) | Rate limiters, task schedulers, online algorithms | Autobidding system + budget pacing | Impact story from DoorDash Ads |
+| 4 | Ads/Marketplace (Meta, Uber) | Rate limiters, task schedulers, online algorithms | Autobidding system + budget pacing | Impact story from DoorDash Ads |
 | 5 | Practical Engineering (Stripe, Shopify) | API design, debugging exercises, LRU/rate limiter implementations | ML inference pipeline with SLAs | Technical judgment / hard trade-off story |
 | 6 | Personalization + Ads (Netflix, Roblox) | Graph problems (social network, recommendation graph) | Recommendation system + Ad inventory forecasting + A/B test platform | Cross-functional influence story |
 | 7 | Foundation Models (OpenAI) | Python implementations (attention, tokenizer, BPE) | LLM serving infrastructure (KV cache, batching) | Intellectual honesty / research opinion |
@@ -499,7 +464,7 @@ Your background is a genuine moat for ~5 of the 8 companies. Here's how to deplo
 
 | Paper | Company Relevance | Why |
 |---|---|---|
-| "Ad Click Prediction: a View from the Trenches" (Google, 2013) | Meta, TTD | FTRL, feature engineering at scale |
+| "Ad Click Prediction: a View from the Trenches" (Google, 2013) | Meta | FTRL, feature engineering at scale |
 | "Deep Learning Recommendation Model (DLRM)" (Meta, 2019) | Meta | Architecture they use in production |
 | "Scaling Distributed Machine Learning with the Parameter Server" (CMU/Baidu) | Meta, Uber | Distributed training fundamentals |
 | "Attention Is All You Need" (Google, 2017) | OpenAI | Transformer baseline |
@@ -508,14 +473,13 @@ Your background is a genuine moat for ~5 of the 8 companies. Here's how to deplo
 | "Real-time Personalization using Embeddings for Search Ranking at Airbnb" (KDD 2018) | Netflix, Uber, Roblox | Embedding-based retrieval |
 | "Michelangelo: Uber's Machine Learning Platform" (Uber, 2017) | Uber | Feature store, training, serving |
 | "Chinchilla" / "Scaling Laws for Neural Language Models" (DeepMind/OpenAI) | OpenAI | Compute-optimal training intuition |
-| "Budget Pacing for Targeted Online Advertisements at LinkedIn" (KDD 2014) | TTD, Meta | Your domain — know this deeply |
-| "Autobidding with Constraints" (Google, 2021) | TTD, Meta, DoorDash | Direct relevance to your work |
+| "Budget Pacing for Targeted Online Advertisements at LinkedIn" (KDD 2014) | Meta | Your domain — know this deeply |
+| "Autobidding with Constraints" (Google, 2021) | Meta, DoorDash | Direct relevance to your work |
 
 ### Engineering Blogs (Bookmark and Read Last 12 Months)
 
 | Blog | Key Posts to Find |
 |---|---|
-| TTD Engineering (thetradedesk.com/engineering) | Unified ID, Koa AI, RTB infrastructure |
 | Meta AI / Meta Engineering | Ads ranking, DLRM, recommendation systems |
 | Uber Engineering (eng.uber.com) | ETA improvements, Michelangelo, surge pricing |
 | Netflix Tech Blog (netflixtechblog.com) | Recommendation, Metaflow, A/B testing |
