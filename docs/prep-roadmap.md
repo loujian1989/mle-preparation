@@ -521,3 +521,129 @@ Your background is a genuine moat for ~5 of the 8 companies. Here's how to deplo
 - [ ] Read 5+ engineering blog posts per target company
 - [ ] Complete 4+ mock interviews (2 coding, 1 system design, 1 behavioral)
 - [ ] Prepare 2–3 company-specific questions per company showing blog/paper familiarity
+
+---
+
+## Appendix: Broader Company Search (Research as of March 2026)
+
+> Companies beyond the 7 primary targets. Filtered for: Seattle office or fully remote US; ads/marketplace ML domain fit; Staff/Senior+ level. Ranked by fit quality.
+
+---
+
+### Tier 1 — Apply Immediately (Direct Domain Match)
+
+#### Reddit
+
+**Best role:** Staff MLE, Ads Auction (Ads Marketplace Quality) — Fully Remote US
+
+| Role | Level | URL |
+|---|---|---|
+| Staff MLE, Ads Auction (Ads Marketplace Quality) | Staff | job-boards.greenhouse.io/reddit/jobs/7181821 |
+| Staff MLE, Bidding and Pacing (Advertiser Optimization) | Staff | job-boards.greenhouse.io/reddit/jobs/7074763 |
+| Senior Staff MLE, Bidding and Pacing | Senior Staff | job-boards.greenhouse.io/reddit/jobs/6158103 |
+
+**Compensation:** $230K–$322K base + equity (RSUs)
+
+**JD Key Requirements (Ads Auction, verified):**
+- 8+ years industry experience; 5+ years focused on data-driven marketplace optimization at scale
+- Ads marketplace optimization, auction/pricing mechanisms
+- Spark, Kafka, Beam, Flink; TensorFlow/PyTorch; Java, Python, Golang, C++
+- "Lead strategy for ads marketplace, auction and pricing initiatives"
+- "Develop algorithms improving marketplace efficiency and auction optimization"
+
+**Why it's a top pick:**
+- Fully remote US — strongest location match for Seattle
+- Ads Auction + Bidding & Pacing roles are *exact* descriptions of your DoorDash work (TCPA, TROAS, Maximize Conversions, cost caps, campaign budget optimization, real-time bidding)
+- Reddit is a growth-stage ads platform (ads revenue scaling from near-zero to core business) — same inflection point as DoorDash Ads 2-3 years ago
+- Staff-level scope: quarterly planning ownership, cross-functional technical leadership
+
+**Interview Process (from Glassdoor/Blind, 2024–2025):**
+1. Recruiter screen
+2. Technical phone screen — ML fundamentals + coding
+3. Onsite (4–5 rounds): coding (LeetCode medium), ML system design, ads domain knowledge, behavioral
+
+**Your mechanism design angle:**
+> "Reddit's ads platform is at the same inflection point DoorDash Ads was — moving from simple CPC to full autobidding with CPA/ROAS objectives. The auction design choices made now (first-price vs. second-price, pacing mechanism, advertiser learning period) determine long-term marketplace health. I've been the person who made those calls at DoorDash."
+
+---
+
+#### Pinterest
+
+**Best role:** Sr. MLE / Economist, Ads Marketplace — Seattle-commutable (SF, Palo Alto, or Seattle; 1-2x/month in-office)
+
+| Role | Level | URL |
+|---|---|---|
+| Sr. MLE / Economist, Ads Marketplace | Senior/Staff | pinterestcareers.com/jobs/7195341 |
+| Staff MLE, Ads Marketplace | Staff | pinterestcareers.com/en/jobs/4981431 |
+| Principal MLE, Ads Delivery | Principal | pinterestcareers.com/jobs/6963868 |
+| Staff MLE, Monetization | Staff | pinterestcareers.com/jobs/6133257 |
+
+**Compensation:** ~$180K–$280K base (Senior/Staff range, inferred from levels.fyi)
+
+**JD Key Requirements (Sr. MLE / Economist, Ads Marketplace, verified):**
+- MS or PhD in CS, Economics, Statistics, or related field (required at Senior level)
+- "Knowledge in auction theory, market design, and econometrics"
+- "Industry experience applying economics or ML to ads auctions, pricing, marketplaces"
+- A/B testing, causal inference, online experimentation at large scale
+- "Implement auctions, tune marketplace parameters (utility function), model long-term effects"
+- Focus areas: ranking/pricing/mechanism design, bidding/budgeting innovation, advertiser churn/retention modeling
+
+**Why it's a top pick:**
+- The role title literally says "Economist" — your PhD in computational game theory + mechanism design is the explicit qualification, not a bonus
+- Seattle commutable (1-2x/month) — viable for Seattle-based candidate
+- Pinterest's ad auctions interact with organic content ranking (promoted pins, shopping ads) in ways that require formal mechanism design thinking — second-order effects, ad fatigue, long-term marketplace health
+- JD explicitly calls out "model long-term effects to reduce ad fatigue" and "anticipate second-order effects for new ad offerings" — PhD-level systems thinking required
+
+**Interview Process (from Glassdoor/Blind/Exponent, 2025):**
+1. Recruiter screen
+2. Coding screen (LeetCode medium — Python)
+3. Onsite (4–5 rounds, 2-4 weeks total):
+   - 2 ML rounds (1 domain-specific for Ads, 1 general systems)
+   - 2 coding rounds (LeetCode medium)
+   - 1 behavioral
+- Stack: Python, PyTorch, SQL, Spark, Hadoop, Docker/Kubernetes
+
+**Your mechanism design angle:**
+> "Pinterest's ads marketplace has a structural challenge that pure e-commerce platforms don't: you're running an auction over visual content where organic and paid signals interact. The mechanism design question isn't just 'maximize revenue' — it's 'design an auction where promoted content doesn't degrade the organic discovery experience.' That's a constrained multi-objective optimization problem I've modeled formally."
+
+---
+
+### Tier 2 — Consider if Open to Relocation
+
+#### Snap
+
+**Best role:** Principal MLE, Ads Marketplace — Palo Alto HQ (not Seattle/remote — listed for awareness)
+
+| Role | Level | URL |
+|---|---|---|
+| Principal MLE, Ads Marketplace | Principal | wd1.myworkdaysite.com/recruiting/snapchat/snap — search "Principal MLE Ads Marketplace" |
+
+**Compensation:** $480K median total (levels.fyi)
+
+**Why it's listed:** Strong domain match (high-throughput RTB auction, DL-based ad ranking at scale, Principal-level scope). Only consider if open to Palo Alto relocation or remote negotiation.
+
+**Interview note:** No dedicated behavioral round — company values ("Kind, Smart, Creative") evaluated across all rounds; team matching after offer takes weeks.
+
+---
+
+### Skip List
+
+| Company | Reason to Skip |
+|---|---|
+| Expedia | Comp too low ($184K–$258K base) relative to other targets |
+| Lyft | Comp too low ($176K–$220K), hybrid Seattle 3 days/week, smaller marketplace scope |
+| Amazon DSP | Prior employer — evaluate separately based on team/manager knowledge |
+| Google/YouTube Seattle | 3–6 month process, LeetCode-heaviest bar, low process ROI unless specifically targeting Google |
+| TikTok/ByteDance | Geopolitical risk (US ban proceedings ongoing), limited Seattle presence |
+
+---
+
+### Summary Recommendation
+
+| Priority | Company | Role | Location | Est. Base | Domain Fit |
+|---|---|---|---|---|---|
+| P0 | Reddit | Staff MLE Ads Auction | Fully Remote | $230K–$322K | ★★★★★ |
+| P0 | Pinterest | Sr. MLE/Economist Ads Marketplace | Seattle-commutable | ~$200K–$260K | ★★★★★ |
+| P2 | Snap | Principal MLE Ads Marketplace | Palo Alto only | ~$300K+ total | ★★★★☆ |
+
+**Recommended action:** Add Reddit and Pinterest to the active interview pipeline alongside the 7 primary targets. Both are mechanism design / ads auction exact fits with favorable location policies.
