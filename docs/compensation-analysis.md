@@ -13,7 +13,7 @@
 | **OpenAI** | $655K | $1.43M | 24% / 71% / ~5% | None | ★★★★★ | 3.1 | 🟢 | ★★★☆☆ 3/5 |
 | **Meta** | $474K | $790K | 35% / 59% / 6% | None | ★★★★☆ | 3.1 | 🔴 | ★★★★★ 5/5 |
 | **Uber** | $465K | $716K | 48% / 45% / 7% | 1 yr | ★★★☆☆ | 3.0–3.5 | 🟡 | ★★★★★ 5/5 |
-| **Netflix** | $523K | $705K | High base / options / 0% | None | N/A (options) | 3.7 | 🟡 | ★★★☆☆ 3/5 |
+| **Netflix** | $523K | $705K | High base / options / 0% | None | N/A (options) | 3.7 | 🟡 | ★★★★☆ 4/5 |
 | **Pinterest** | ~$229K–$400K | $692K | ~45% / ~50% / ~5% | ~1 yr | ★★★☆☆ | 3.5+ | 🔴 | ★★★★☆ 4/5 |
 | **Stripe** | ~$400K | $633K | 44% / 47% / 9% | None (Y1 vest) | ★★★★★ | 3.2 | 🟡 | ★★★★☆ 4/5 |
 | **Reddit** | $334K | $592K | ~45% / ~50% / ~5% | ~1 yr | ★★★☆☆ | 3.5+ | 🟡 | ★★★★☆ 4/5 |
@@ -332,12 +332,14 @@
 - Acquisition-driven uncertainty: role scope, reporting lines, and culture may shift post-merger
 - Prior to 2026: relatively stable headcount vs. FAANG peers
 
-#### Background ROI ★★★☆☆ 3/5
-- World-class ML engineering culture and systems (Metaflow, Meson feature store)
-- Domain departure: Netflix has no ads system; core ML is content recommendation, streaming QoS, subscriber pricing
-- Mechanism design background not directly applicable to core product
-- Strong cultural fit for "results over process" PhD engineers
-- WBD acquisition creates meaningful near-term uncertainty
+#### Background ROI ★★★★☆ 4/5
+- **Netflix is actively building its own in-house ad server (launched Canada 2024, US rollout 2025)** — this is a greenfield ads ML opportunity, not a mature system
+- MLE L5 Ads job postings explicitly ask for "optimization methods, ad server algorithms and bidder systems" — direct match to DoorDash/Amazon background
+- Ad tier at 40M+ users; ad revenue targeting $1.5B+ in 2025 and doubling again — ads ML is strategically critical, not a side project
+- Prior to 2024: Netflix relied on Microsoft as exclusive ad server; now building in-house from scratch — high ownership, early mover advantage for ML engineers joining now
+- World-class ML infrastructure (Metaflow, Keystone/Kafka/Flink — 500B+ events/day) applies to ads pipelines
+- WBD acquisition creates near-term uncertainty on role scope and reporting structure
+- PhD mechanism design + auction/bidding background is a direct match for the bidder systems they are building
 
 ---
 
@@ -654,7 +656,7 @@ Roblox offers multiple vesting schedules depending on level and negotiation; ver
 | 3 | **Reddit** | 4/5 | Ads ML post-IPO; high individual ownership |
 | 3 | **Pinterest** | 4/5 | Ads auction core; strong fit minus job security risk |
 | 3 | **Stripe** | 4/5 | Adjacent mechanism design; payments optimization |
-| 6 | **Netflix** | 3/5 | Best WLB, but domain departure from ads |
+| 3 | **Netflix** | 4/5 | Building in-house ad server from scratch; L5 Ads MLE roles open; bidder systems = direct match |
 | 6 | **OpenAI** | 3/5 | Max TC but mechanism design not core to AGI |
 | 6 | **Shopify** | 3/5 | Good engineering culture; TC well below market |
 | 9 | **Roblox** | 2/5 | Gaming ML; domain departure with no clear bridge |
