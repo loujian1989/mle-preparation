@@ -1,5 +1,5 @@
 # MLE Interview Prep: 10-Week Strategy for Staff/Senior Roles
-**Target Companies:** Stripe, Uber, Meta, OpenAI, Shopify, Netflix, Roblox, Reddit, Pinterest
+**Target Companies:** Stripe, Uber, Meta, OpenAI, Shopify, Netflix, Roblox, Reddit, Pinterest, Whatnot
 **Background:** PhD CS (game theory/mechanism design), DoorDash Ads (auction/pricing/autobidding), Amazon (Sponsored Products)
 
 ---
@@ -343,9 +343,49 @@
 
 ---
 
+### Whatnot
+
+**Titles:** Machine Learning Scientist, Software Engineer ML
+
+| Role | Level | URL |
+|---|---|---|
+| Machine Learning Scientist | Senior (4–5+ yrs) | jobs.whatnot.com (Ashby) — search "Machine Learning" |
+| Software Engineer, Machine Learning | Senior | jobs.whatnot.com — search "Machine Learning" |
+
+**Best fit for you:** Machine Learning Scientist — real-time ranking, auction discoverability, seller trust signals. Your auction/pricing background maps directly onto Whatnot's core ML problems.
+
+**JD Key Requirements (ML Scientist, from YC/Built In postings, 2025):**
+- 4–5+ years ML in production; end-to-end model ownership (data → training → serving → monitoring)
+- Python (primary), SQL; PyTorch, LightGBM/scikit-learn
+- Experience with real-time ML systems and low-latency serving
+- Marketplace, ranking, or recommendation systems experience preferred
+- Fraud/trust & safety ML background valued
+
+**Interview Process (from Glassdoor, TeamBlind, 1Point3Acres, 2024–2025):**
+1. OA — Karat-style coding assessment (LeetCode medium difficulty)
+2. Technical screen — coding round (data structures + algorithms)
+3. Virtual onsite (4–5 rounds):
+   - **Coding** (~60 min) — LeetCode medium–hard; trie, graphs, DP documented; working solution first
+   - **System design** (~60 min) — standard scalable system; real-time ranking, fraud pipeline, auction price predictor are relevant topics
+   - **Product sense** (~60 min) — **unique to Whatnot**: must have used the app; "what would you add/improve?"; tie ML suggestions to business metrics (GMV, seller retention, engagement)
+   - **Hiring manager** (~30 min) — past work, impact, leadership signal
+   - **Values/principles** (~30 min) — low ego, growth mindset, high-impact drive, community first
+- Timeline: ~26 days average
+
+**Key insider notes:**
+- **Use the app before interviews** — product sense round is a real gate; create a seller and buyer account, attend live auctions, note UX gaps and ML improvement opportunities (bidder fraud signals, show discoverability, price prediction confidence intervals)
+- Coding bar is LeetCode medium — not FAANG hard; working solution + clean code matters more than exotic optimization
+- System design: Whatnot's documented ML stack is GBDT → compiled C++ binaries (<200ms p99 via Rockset + Redis); name this framing if asked about inference optimization
+- Trust & safety is a first-class ML problem: LLM-enhanced multimodal moderation, fraudulent bidding detection, seller reputation scoring — all documented and interview-relevant
+- Values are evaluated across all rounds, not just the principles round — frame every design decision in terms of seller/buyer community impact
+- Stack: Kafka (Confluent Cloud), KSQL, Snowflake, Rockset, Redis, PyTorch, LightGBM, gRPC, FastAPI
+- Read before interviews: "Evolving Feed Ranking at Whatnot", "6x Faster ML Inference: Why Online > Batch", "Feeds with Real-time Signals", "How Whatnot Utilizes Generative AI for Trust & Safety" — all on medium.com/whatnot-engineering
+
+---
+
 ## 1. The Overlap Strategy
 
-### Coding — Universal Core (applies to all 9)
+### Coding — Universal Core (applies to all 10)
 
 | Topic | Depth Required | Priority |
 |---|---|---|
@@ -358,10 +398,10 @@
 | Trees (LCA, serialization, path problems) | Medium | P1 |
 | System design coding (rate limiters, LRU cache, task scheduler) | High | P0 |
 
-**Non-negotiables across all 9:**
+**Non-negotiables across all 10:**
 - Clean code, typed signatures, edge case narration before coding
 - Complexity analysis stated before optimization pass
-- Think aloud — all 9 companies score communication as a dimension
+- Think aloud — all 10 companies score communication as a dimension
 
 ### ML System Design — Universal Core
 
@@ -375,11 +415,11 @@
 | Monitoring | Drift detection, shadow scoring, data quality alerts, feedback loops |
 | Failure modes | Fallbacks, circuit breakers, degraded-mode behavior |
 
-**Core system designs to master (used by 6+ of 9 companies):**
+**Core system designs to master (used by 6+ of 10 companies):**
 - Two-tower retrieval + re-ranking pipeline (Meta, Netflix, Roblox, Uber, Pinterest)
 - Ads auction + bidding system end-to-end (Meta, Uber, Reddit, Pinterest)
-- Real-time feature serving with low-latency SLA (all 9)
-- A/B testing + experimentation platform design (all 9)
+- Real-time feature serving with low-latency SLA (all 10)
+- A/B testing + experimentation platform design (all 10)
 
 ### Behavioral — Universal Core (STAR, Staff-bar calibrated)
 
@@ -398,7 +438,7 @@
 
 ## 2. The Ads Economics & Mechanism Design Advantage
 
-Your background is a genuine moat for ~7 of the 9 companies. Here's how to deploy it surgically.
+Your background is a genuine moat for ~8 of the 10 companies. Here's how to deploy it surgically.
 
 ### Narrative Angles by Company
 
@@ -435,6 +475,12 @@ Your background is a genuine moat for ~7 of the 9 companies. Here's how to deplo
 - Mechanism design hook: constrained revenue maximization (Lagrangian dual of quality floor constraint), long-term advertiser retention vs. short-term revenue, second-order effects of ad load on organic engagement, ad fatigue modeling
 - Stack angle: Pinterest's MMOE-DCN architecture separates user tower from item tower — in a mechanism design context, the user tower is estimating the user's utility function, and the item tower is the advertiser's bid; the auction mechanism combines them. Understanding this framing will differentiate your system design answer.
 
+**Whatnot — Livestream Auction Mechanics & Seller Marketplace**
+- Whatnot's core ML challenge: real-time ranking and price discovery in livestream auctions where bidder intent, item rarity, and seller reputation are all noisy, fast-moving signals.
+- Your angle: "Whatnot's auction discoverability problem is a mechanism design problem under information asymmetry — collectors have private valuations, sellers have private quality information, and the platform needs to surface the right shows to the right bidders without creating adverse selection. My DoorDash Ads experience designing bid landscapes and quality score systems maps directly."
+- Mechanism design hook: adverse selection in collectibles auctions (fake grading, misrepresented condition), reputation cascades (high-trust sellers always win visibility), information revelation via bidding patterns.
+- Product sense preparation: frame ML improvements as seller GMV + buyer trust metrics — not abstract model accuracy.
+
 ### The 30-Second Pitch Template (use in intros)
 > "I'm a Senior MLE at DoorDash focused on ads economics — specifically auction mechanism design, autobidding, and budget pacing. My PhD is in computational game theory, so I approach marketplace ML problems by first modeling the strategic behavior of agents — advertisers, platforms, users — before choosing an ML approach. That lens is particularly useful for systems where the model's outputs affect future inputs, which is true in any closed-loop bidding or pricing system."
 
@@ -442,7 +488,7 @@ Your background is a genuine moat for ~7 of the 9 companies. Here's how to deplo
 
 ## 3. Company-Specific Deep Dives (The Deltas)
 
-### Cluster A: Ads/Marketplace ML — Meta, Uber, Reddit, Pinterest
+### Cluster A: Ads/Marketplace ML — Meta, Uber, Reddit, Pinterest, Whatnot
 **Common thread:** Real-time bidding, two-sided marketplace, high-throughput feature serving, auction mechanism design
 **Your delta:** Minimal — this is your core domain
 **What to add:**
@@ -450,6 +496,7 @@ Your background is a genuine moat for ~7 of the 9 companies. Here's how to deplo
 - Uber: H3 geospatial indexing, Michelangelo feature store, prediction intervals for ETA (not just point estimates)
 - Reddit: Control theory + RL framing for budget pacing (vs. Lagrangian); Kafka/Flink stack for 65B+ daily events; phone screen is practical ML not LeetCode — practice building a working model in 45 min
 - Pinterest: Galaxy (homegrown feature store) + Scorpion (inference platform) + MLEnv (ML framework) — name these in system design; MMOE-DCN two-tower ads ranking architecture; read "Beyond Two Towers" (Feb 2026) before interviews; fairness/inclusive AI is explicitly evaluated
+- Whatnot: GBDT-based feed ranking + online inference (<200ms p99 via Rockset + Redis); seller trust scoring (fulfillment %, cancellation %, review signals); **product sense round requires app usage** — prepare 3 ML-improvement pitches tied to GMV/engagement metrics; read Whatnot Engineering Medium blog before interviews
 
 ### Cluster B: Practical Engineering — Stripe, Shopify
 **Common thread:** Production code quality, system design from first principles, debugging, API design
@@ -528,7 +575,7 @@ Your background is a genuine moat for ~7 of the 9 companies. Here's how to deplo
 
 | Week | Focus Cluster | Coding Theme | System Design | Behavioral Focus |
 |---|---|---|---|---|
-| 4 | Ads/Marketplace (Meta, Uber, Reddit, Pinterest) | Rate limiters, task schedulers, online algorithms | Autobidding system + budget pacing + Pinterest ads ranking | Impact story from DoorDash Ads |
+| 4 | Ads/Marketplace (Meta, Uber, Reddit, Pinterest, Whatnot) | Rate limiters, task schedulers, online algorithms | Autobidding system + budget pacing + Pinterest ads ranking + Whatnot seller trust scoring | Impact story from DoorDash Ads |
 | 5 | Practical Engineering (Stripe, Shopify) | API design, debugging exercises, LRU/rate limiter implementations | ML inference pipeline with SLAs | Technical judgment / hard trade-off story |
 | 6 | Personalization + Ads (Netflix, Roblox) | Graph problems (social network, recommendation graph) | Recommendation system + Ad inventory forecasting + A/B test platform | Cross-functional influence story |
 | 7 | Foundation Models (OpenAI) | Python implementations (attention, tokenizer, BPE) | LLM serving infrastructure (KV cache, batching) | Intellectual honesty / research opinion |
@@ -586,6 +633,7 @@ Your background is a genuine moat for ~7 of the 9 companies. Here's how to deplo
 | Pinterest Engineering (medium.com/pinterest-engineering) | "Beyond Two Towers" (Feb 2026), "Evolution of Ads Conversion Models", "Handling Online-Offline Discrepancy in Ads Ranking", "MMOE-DCN Architecture", MLEnv platform |
 | Reddit Engineering (redditinc.com/blog / reddit.com/r/RedditEng) | Ads delivery, ranking systems, safety ML, Kafka/Flink data infra |
 | Google Research (on auctions) | First-price auction transition, bid shading |
+| Whatnot Engineering (medium.com/whatnot-engineering) | "Evolving Feed Ranking at Whatnot", "6x Faster ML Inference: Why Online > Batch", "Feeds with Real-time Signals", "How Whatnot Utilizes Generative AI for Trust & Safety", "Whatamix: Blendable Feed Construction" |
 
 ### Frameworks & Tools to Know by Name (not deep expertise required)
 
@@ -618,7 +666,7 @@ Your background is a genuine moat for ~7 of the 9 companies. Here's how to deplo
 - [ ] Polish 30-second intro pitch incorporating mechanism design angle
 - [ ] Write 3 anchor STAR stories (scope: org-level impact)
 - [ ] Solve 60+ LeetCode problems across priority categories
-- [ ] Write 6 system design docs (auction, two-tower, feature store, recommendation, A/B platform, LLM serving)
+- [ ] Write 7 system design docs (auction, two-tower, feature store, recommendation, A/B platform, LLM serving, seller trust scoring)
 - [ ] Read 5+ engineering blog posts per target company
 - [ ] Complete 4+ mock interviews (2 coding, 1 system design, 1 behavioral)
 - [ ] Prepare 2–3 company-specific questions per company showing blog/paper familiarity
