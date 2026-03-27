@@ -361,7 +361,7 @@
 **Non-negotiables across all 9:**
 - Clean code, typed signatures, edge case narration before coding
 - Complexity analysis stated before optimization pass
-- Think aloud — all 8 companies score communication as a dimension
+- Think aloud — all 9 companies score communication as a dimension
 
 ### ML System Design — Universal Core
 

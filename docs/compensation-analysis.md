@@ -17,7 +17,7 @@
 | **Pinterest** | ~$229K–$400K | $692K | ~45% / ~50% / ~5% | ~1 yr | ★★★☆☆ | 3.5+ | 🔴 | ★★★★☆ 4/5 |
 | **Stripe** | ~$400K | $633K | 44% / 47% / 9% | None (Y1 vest) | ★★★★★ | 3.2 | 🟡 | ★★★★☆ 4/5 |
 | **Reddit** | $334K | $592K | ~45% / ~50% / ~5% | ~1 yr | ★★★☆☆ | 3.5+ | 🟡 | ★★★★☆ 4/5 |
-| **Roblox** | $337K | $558K | ~47% / ~43% / ~10% | Front-loaded | ★★★★☆ | 3.8 | 🟢 | ★★☆☆☆ 2/5 |
+| **Roblox** | $337K | $558K | ~47% / ~43% / ~10% | None | ★★★★☆ | 3.8 | 🟢 | ★★☆☆☆ 2/5 |
 | **Shopify** | ~$108K–$179K | ~$255K | ~60% / ~30% / ~10% | None (quarterly) | ★★☆☆☆ | 3.5+ | 🔴 | ★★★☆☆ 3/5 |
 
 > TC figures are approximate medians from levels.fyi (March 2026). Shopify figures are notably below US peers and may reflect CAD-weighted pay bands.
@@ -94,10 +94,10 @@
 | Level | Base | Stock (annualized) | Bonus | Total TC |
 |---|---|---|---|---|
 | Senior (E5a) | ~$213K–$225K | ~$150K–$200K | ~$33K | ~$396K–$465K |
-| Senior+ (E5b) | ~$235K | ~$250K | ~$35K | **~$716K** |
+| Staff (E5b) | ~$235K | ~$250K | ~$35K | **~$716K** |
 | Staff (E6) | ~$260K+ | ~$350K+ | ~$40K+ | ~$650K+ |
 
-*59 submissions + MLE-title filter, levels.fyi, March 2026; Glassdoor Senior MLE median ~$212K base*
+*59 submissions + MLE-title filter, levels.fyi, March 2026; Glassdoor Senior MLE median ~$212K base. E5b and E6 are both Staff-equivalent at Uber; E5b has more submission data. The $716K (E5b) is used as the Staff TC benchmark throughout this doc; E6 figure reflects fewer data points.*
 
 #### Comp Component Breakdown
 - Base: ~48% | Stock: ~45% | Bonus: ~7%
@@ -449,7 +449,7 @@ Roblox offers multiple vesting schedules depending on level and negotiation; ver
 | Remote | Good WFH options; flex-time |
 
 #### WLB
-- **Glassdoor:** 3.8/5.0 (best structured WLB of the 9, tied with Netflix)
+- **Glassdoor:** 3.8/5.0 (highest WLB rating of the 9)
 - Generally praised; manageable hours vs. FAANG intensity
 - Workload spikes team-dependent during game launches or platform events
 - On-call varies; vet during interview
@@ -531,8 +531,8 @@ Roblox offers multiple vesting schedules depending on level and negotiation; ver
 #### TC
 | Level | Base | Stock (annualized) | Bonus | Total TC |
 |---|---|---|---|---|
-| IC13 (Senior) | ~$100K–$120K | ~$100K+ | Variable | **$229K** |
-| IC15 | ~$180K | ~$200K+ | Variable | **~$400K** |
+| IC13 (Junior Senior) | ~$100K–$120K | ~$100K+ | Variable | **$229K** |
+| IC15 (Senior) | ~$180K | ~$200K+ | Variable | **~$400K** |
 | IC16 (Staff) | ~$300K | ~$360K+ | Variable | **$692K** |
 
 *levels.fyi MLE title filter, March 2026; wide variance across levels*
