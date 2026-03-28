@@ -107,3 +107,40 @@ The MLS5 Ads role (Core Ads Algorithms team) has a distinct behavioral layer on 
 - `prioritization-and-tradeoffs.md` — Template 1 (saying no with data): holding the member churn guardrail
 - `cross-functional-influence.md` — Template 1 (aligning product and ML on objective): pushing back on the success metric
 - `failure-and-learning.md` — Template 1 (production incident): a bidding change that caused unintended ad load increase
+
+---
+
+## Ads Inventory Management & Forecasting Team-Specific Angle
+
+The MLE5 Inventory role (Ads Platform Engineering / Inventory Management & Forecasting) is **publisher-side**. It's about forecasting how much inventory Netflix has to sell, optimizing how it's allocated across buyers, and building simulations to test pricing decisions — not about bidding or campaign optimization (that's the Core Ads Algorithms team).
+
+Expect behavioral probes around **ambiguity of building new systems**, **cross-functional alignment with sales/operations teams** (who make commitments to advertisers based on your forecasts), and **data quality and measurement rigor** (your forecast error has direct revenue consequences).
+
+### Inventory Team-Specific Question Patterns
+
+| Question | What it's probing | Story angle |
+|---|---|---|
+| "Tell me about a time your model's output directly drove a business commitment." | Ownership + accuracy under stakes | A forecast, pricing model, or allocation system where external teams made decisions (sales commitments, financial planning) based on your output. Show you owned the accuracy. |
+| "Tell me about building a system from scratch with no prior art." | Boldness + ambiguity | The inventory team is new. Any story about greenfield system design with uncertain requirements maps directly. Use `ambiguity-and-scope.md` Template 1. |
+| "Tell me about aligning with a non-technical stakeholder on a technical constraint." | Communication + cross-functional | Story where you had to explain to sales/operations why 100% delivery guarantee isn't possible, or why the forecast has ±15% error at 90 days. Show you converted technical nuance into actionable guidance. |
+| "Tell me about a time you caught an error in your system before it caused downstream harm." | Rigor + proactiveness | Forecast calibration issue, overselling bug, or simulation validation failure caught before it led to an advertiser commitment. |
+| "Tell me about making a tradeoff between delivery guarantee and revenue maximization." | Judgment | Yield optimization tradeoff: hold impressions for programmatic (higher eCPM) vs. serve to guaranteed campaign (delivery commitment). Frame the decision criteria you used. |
+| "Tell me about delivering impact in a fast-moving, ambiguous environment." | Freedom & Responsibility | The job description says "new team, enormous ambitions." Any story about delivering meaningful results under uncertainty and without established playbooks. |
+
+### Inventory Team Strong Framing
+
+**On forecast accuracy and business impact:**
+> "My forecast wasn't just a model output — it was the basis for $10M in sales commitments. I treated forecast calibration as P0 infrastructure, not an afterthought. I ran weekly calibration checks, maintained rolling error distributions by segment, and established a formal process for flagging forecasts with high uncertainty before sales locked in a commitment."
+
+**On building simulation for inventory decisions:**
+> "The team had no way to test pricing changes without running live experiments. I built a Monte Carlo simulation on historical traffic that let us estimate revenue and fill rate impact of any pricing change in hours, not weeks. Before I built it, every pricing decision was a gut call; after, it was evidence-based."
+
+**On cross-functional alignment with sales:**
+> "Sales wanted 100% delivery guarantee on every campaign. I showed them that guaranteeing 100% required holding 40% extra inventory as buffer — inventory that would go unsold. Instead I proposed 95% delivery SLAs with make-good policies, which let us sell 30% more inventory. The conversation was hard, but the data made it clear."
+
+### Behavioral Prep Files Most Relevant to Inventory Team
+
+- `ambiguity-and-scope.md` — Template 1 (zero-to-one): greenfield inventory system with no prior art
+- `cross-functional-influence.md` — Template 1 or 3: aligning sales team on delivery SLAs vs. yield optimization
+- `technical-leadership.md` — Template 2 (architectural decision): forecasting system design choices
+- `prioritization-and-tradeoffs.md` — Template 1: yield vs. delivery guarantee tradeoff

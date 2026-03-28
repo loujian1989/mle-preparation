@@ -25,6 +25,8 @@ Use this to prioritize by your next interview.
 | **Ads & Auction Theory** | ✓ | | | ✓ | | | | ✓ | | |
 | **Autobidding & Pacing** | ✓ | | | ✓ | | | | ✓ | | |
 | **Dynamic Pricing & Mechanism Design** | | | | | | ✓✓ | | | | |
+| **Ad Inventory Forecasting & Yield** | | | | | ✓✓ | | | | | |
+| **Causal ML & Uplift** | ✓ | | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | | ✓ |
 | **Fraud & Trust Safety** | | ✓ | ✓ | | | | | | | |
 | **Real-Time ML** | | | | | | ✓ | ✓ | | ✓ | ✓ |
 
@@ -53,6 +55,8 @@ docs/ml-knowledge/
     ├── ads-and-auction-theory.md        ← P0: Reddit (Staff), Pinterest, Meta
     ├── autobidding-and-pacing.md        ← P0: Reddit (Staff), Pinterest, Meta
     ├── dynamic-pricing-and-mechanism-design.md ← P0: Uber Supply Pricing team
+    ├── ad-inventory-forecasting-and-yield.md ← P0: Netflix MLE5 Inventory team
+    ├── causal-ml-and-uplift.md          ← P0: cross-company (whole-page opt, incentives, incrementality)
     ├── fraud-and-trust-safety.md        ← P0: Stripe, OpenAI
     └── real-time-ml.md                  ← P1: Uber, Shopify, Roblox, Whatnot
 ```
