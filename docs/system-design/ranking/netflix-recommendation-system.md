@@ -364,3 +364,22 @@ When full ML pipeline is unavailable, serve in order:
 #### Recommended Follow-up Problems
 - Meta News Feed Ranking — same two-stage pattern but at 10× scale with DLRM and geographically distributed serving
 - Uber ETA Prediction — shifts from ranking to regression; introduces prediction intervals and geospatial features
+
+---
+
+## 7. References
+
+| Resource | Type | Relevance |
+|---|---|---|
+| Netflix Tech Blog: "System Architectures for Personalization and Recommendation" | Blog | Production recommendation architecture; two-stage retrieval + ranking; Metaflow pipeline |
+| Netflix Tech Blog: "Artwork Personalization at Netflix" | Blog | Personalized artwork using contextual bandits; A/B holdout design |
+| Netflix Tech Blog: "Recommendations Beyond Matrix Factorization" | Blog | Two-tower models replacing MF; content-based cold-start |
+| Netflix Tech Blog: "Calibrated Recommendations" | Blog | Calibration of recommendation diversity; guardrail metric design |
+| Covington et al., "Deep Neural Networks for YouTube Recommendations" (RecSys 2016) | Paper | Foundational two-tower recommendation architecture; candidate retrieval + ranking pattern |
+| Wang et al., "DCN V2: Improved Deep & Cross Network" (WWW 2021) | Paper | DCN-v2 for ranking stage; explicit feature crosses |
+| He et al., "Neural Collaborative Filtering" (WWW 2017) | Paper | NCF as baseline comparison for two-tower retrieval |
+| Johnson et al., "Billion-scale similarity search with GPUs" (FAISS, 2019) | Paper | FAISS IVF-PQ index; ANN search for item retrieval |
+| Zhao et al., "Recommending What Video to Watch Next: A Multitask Ranking System" (RecSys 2019) | Paper | Multi-task ranking (play + completion); YouTube/Netflix parallel |
+| Guo et al., "DeepFM: A Factorization-Machine based Neural Network for CTR Prediction" (IJCAI 2017) | Paper | Feature interaction modeling; comparison point for DCN-v2 |
+| Schnabel et al., "Recommendations as Treatments: Debiasing Learning and Evaluation" (ICML 2016) | Paper | Inverse propensity scoring (IPS) for position bias correction |
+| Metaflow Documentation (Netflix Open Source) | Docs | Pipeline orchestration; idempotent DAG design; feature store integration |
