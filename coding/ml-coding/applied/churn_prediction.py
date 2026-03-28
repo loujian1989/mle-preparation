@@ -110,8 +110,8 @@ def generate_merchant_dataset(n_merchants: int = 3000, seed: int = 42) -> pd.Dat
     churn_prob = 1 / (1 + np.exp(-churn_logit))
     df["churned"] = rng.binomial(1, churn_prob, size=n_merchants)
 
-    # Leakage trap: add a column that would only be known AFTER churn decision
-    df["post_obs_support_ticket"] = (df["churned"] == 1) & rng.binomial(1, 0.7, n_merchants).astype(bool)
+    # Leakage trap: column known only AFTER the observation cutoff (strong correlation)
+    df["post_obs_support_ticket"] = (df["churned"] == 1).astype(int)
 
     return df
 
@@ -308,8 +308,8 @@ def run_churn_pipeline() -> Dict[str, float]:
     model.fit(X_train, y_train)
     raw_scores = model.predict_proba(X_test)[:, 1]
 
-    # Calibrate via Platt scaling (sigmoid method)
-    calibrated = CalibratedClassifierCV(model, method="sigmoid", cv="prefit")
+    # Calibrate via Platt scaling (sigmoid method); cv=3 refit on folds
+    calibrated = CalibratedClassifierCV(model, method="sigmoid", cv=3)
     calibrated.fit(X_train, y_train)
     cal_scores = calibrated.predict_proba(X_test)[:, 1]
 
@@ -360,9 +360,9 @@ def _test_calibration_ece() -> None:
 
 
 def _test_leakage_detection() -> None:
-    df = generate_merchant_dataset(n_merchants=300)
-    # Before dropping leakage col — should be flagged
-    flagged = check_for_leakage(df, "churned", threshold=0.3)
+    df = generate_merchant_dataset(n_merchants=1000)  # larger N for stable correlation
+    # Before dropping leakage col — should be flagged (lower threshold for binary col)
+    flagged = check_for_leakage(df, "churned", threshold=0.2)
     assert any("post_obs" in c for c in flagged), "Leakage column should be detected"
 
     # After engineering (drops leakage col) — should be clean

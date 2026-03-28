@@ -4,6 +4,40 @@ Staff/L6 bar across two tracks: LeetCode-style algorithmic + practical ML coding
 
 ---
 
+## Quick Start
+
+```bash
+# From the coding/ directory:
+python3 -m venv .venv
+source .venv/bin/activate        # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+
+# Verify — no-dependency files (pure stdlib):
+python system-design-coding/lru-cache.py
+python system-design-coding/rate-limiter.py
+python system-design-coding/task-scheduler.py
+python leetcode/graphs/number_of_islands.py
+
+# Verify — ML files (require numpy/sklearn):
+python ml-coding/fundamentals/backprop_from_scratch.py
+python ml-coding/fundamentals/focal_loss.py
+python ml-coding/applied/fraud_detection.py
+```
+
+**Package requirements** (`requirements.txt`):
+| Package | Purpose |
+|---|---|
+| `numpy` | Numerical ops in all ML files |
+| `pandas` | DataFrames in applied ML |
+| `scikit-learn` | GBT, calibration, metrics |
+| `shap` | SHAP explainability (take-home template) |
+| `fastapi` + `uvicorn` | API server (take-home template) |
+| `pydantic` | Request/response schemas (take-home template) |
+
+LeetCode files (pure Python, stdlib only) run without any packages.
+
+---
+
 ## Directory Structure
 
 ```

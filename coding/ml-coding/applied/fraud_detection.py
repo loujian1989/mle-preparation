@@ -266,7 +266,8 @@ def run_fraud_pipeline() -> Dict[str, float]:
     print(classification_report(y_test, y_pred, target_names=["legit", "fraud"]))
 
     # Step 6: Calibration (important for scoring engines downstream)
-    calibrated = CalibratedClassifierCV(model, method="sigmoid", cv="prefit")
+    # cv=3: refit on train folds (safer than cv="prefit" which was removed in sklearn>=1.4)
+    calibrated = CalibratedClassifierCV(model, method="sigmoid", cv=3)
     calibrated.fit(X_train, y_train)
 
     return {
