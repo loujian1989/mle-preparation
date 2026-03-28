@@ -121,6 +121,79 @@ P0: Reddit (Staff ads), Pinterest, Meta. Core ML problem in any ads system with 
 
 ---
 
+## PID in Autobidding (CPA Control Loop)
+
+### Q: How is PID used in autobidding itself (not just pacing), and how does it differ from the pacing PID?
+
+**Answer (Staff level):**
+- A production autobidding system runs **two nested PID loops** at different timescales:
+
+  **Outer loop — CPA control (autobidding):**
+  - Controls: λ (the Lagrangian multiplier = effective CPA target)
+  - Error signal: `e(t) = actual_CPA(t) − target_CPA`
+  - If actual CPA > target → raise λ → `bid = pCVR × value / λ` decreases → win fewer auctions → CPA falls
+  - If actual CPA < target and budget not exhausted → lower λ → bid more aggressively → more conversions
+  - Update cadence: **1–6 hours** (conversions are delayed; faster updates react to noise, not signal)
+
+  **Inner loop — spend rate control (pacing):**
+  - Controls: bid multiplier ρ or throttle rate
+  - Error signal: `e(t) = actual_spend(t) − target_spend(t)`
+  - Update cadence: **every 5 minutes** (spend signal is immediate)
+
+- **Why separate loops?** Spend signal is available in seconds (auction wins). Conversion signal has hours of lag (post-click window). Mixing them in one loop creates instability — the controller reacts to noise before the real conversion signal arrives.
+
+- **Attribution lag correction**: actual_CPA at time t is systematically underestimated because many clicks haven't converted yet. Must apply a lag multiplier:
+  ```
+  corrected_CPA(t) = observed_CPA(t) / attribution_completion_rate(t)
+  ```
+  where `attribution_completion_rate` = fraction of conversions in a 7-day window that have been observed by hour t of day. Typically 20–30% at hour 2, 60–70% by end of day.
+
+- **Anti-windup**: if budget is exhausted mid-day (no more auctions to win), the integral term would keep accumulating negative error → λ falls to zero → next day starts with dangerously low bids. Fix: clamp I-term accumulation when budget is depleted.
+
+- **Steady-state behavior**: in equilibrium, the outer PID loop should hold `actual_CPA ≈ target_CPA` within ±10–15%, with the inner loop ensuring budget is spent smoothly. CPA overshoot on day 1 for a new campaign is expected (insufficient conversion history for good lag correction).
+
+**Company context:** Reddit Staff (distinguishing the two loops is an L6-level answer), Meta, Google Smart Bidding architecture discussions.
+
+**Common wrong answer:** "PID adjusts the bid to hit the CPA target." — Too vague. Staff answer names the two nested loops, their different timescales, and the attribution lag problem that makes the outer loop non-trivial.
+
+---
+
+## Autobidding & Pacing: Method Comparison
+
+### Q: Compare PID, model-based, gradient descent, LP, and RL approaches for autobidding and pacing — when do you use each?
+
+**Answer (Staff level):**
+
+| Method | What it controls | Update cadence | Pros | Cons | When to use |
+|---|---|---|---|---|---|
+| **PID** | λ (CPA) or pacing factor | 5 min (pacing), 1–6 hr (CPA) | Simple, interpretable, low-latency, no training data needed | Oscillation, hand-tuned gains, stale signal for CPA loop, doesn't model future value distribution | Production baseline for both pacing and CPA control; robust and debuggable |
+| **Model-based pacing** | Budget allocation over time | Per pacing interval (5 min) | Value-aware; can hold budget for high-value future windows | Requires spend forecast model; forecast errors compound; more complex failure modes | High-budget campaigns where value density varies significantly by hour of day |
+| **Gradient descent on λ** | λ (CPA) | Per batch (hourly) | Principled convergence; no manual gain tuning; adapts to non-stationarity | Delayed, noisy gradient signal (attribution lag); unstable if learning rate too high | When dense conversion signal is available and you want to eliminate manual Kp/Ki/Kd tuning |
+| **Constrained LP** | Budget allocation across portfolio | Batch (hourly/daily) | Globally optimal allocation across many campaigns simultaneously | Not real-time; LP must be re-solved each refresh; ignores intra-day dynamics | Portfolio pacing: allocating a shared budget pool across dozens of campaigns |
+| **RL (DQN, PPO, etc.)** | Bid per auction or λ per interval | Per auction or per episode | Handles long-horizon dependencies; adapts to non-stationary traffic and marketplace dynamics | Data hungry; credit assignment hard with delayed reward; difficult to constrain (hard CPA/budget guarantees); hard to debug | Research and long-horizon optimization; not yet standard in production pacing for most platforms |
+
+**Key interview framing — why PID dominates in production:**
+- Interpretable: an oncall engineer can understand why λ changed at 2am without reading a neural network.
+- Debuggable: when CPA spikes, you can inspect the error signal, integral term, and clamp logic directly.
+- Latency: PID update is O(1); RL inference or LP solve adds latency at update time.
+- Graceful degradation: PID with a reasonable Kp still functions if Kd is misconfigured. RL with a bad reward function can catastrophically over-bid.
+
+**When RL is worth considering:**
+- Long-horizon campaigns where today's bid affects tomorrow's auction win rate (marketplace feedback loops).
+- Platforms with dense reward signal (e.g., e-commerce where purchases happen within minutes of click).
+- Research teams with the infrastructure to simulate, train offline, and shadow-deploy safely before production.
+
+**Gradient descent on λ vs. PID:**
+- Mathematically, PID is a heuristic optimizer for λ; gradient descent is principled.
+- In practice, PID often outperforms gradient descent because the gradient signal is corrupted by attribution lag, auction noise, and dataset shift. PID's hand-tuned Kp effectively acts as a robust learning rate that doesn't blindly follow a noisy gradient.
+- **Hybrid approach**: use PID for fast pacing corrections + gradient descent for slow λ updates on a 24-hour cycle (once the attribution window closes and gradient is cleaner).
+
+**Company context:** Reddit Staff (method comparison expected at L6), Meta, Pinterest. This is a Staff-differentiating answer — most candidates know PID; few can explain why you'd choose it over RL.
+
+**Common wrong answer:** "RL is the best approach because it can optimize long-term value." — RL is theoretically appealing but practically brittle in budget-constrained, latency-sensitive systems. Staff answer acknowledges RL's theoretical advantage while explaining why PID dominates in production.
+
+---
+
 ## Model-Based Pacing
 
 ### Q: How does model-based pacing improve on PID, and what does the ML system look like?
