@@ -67,3 +67,38 @@ Uber is a two-sided marketplace with cascading effects. Be ready for follow-up q
 - No ownership of monitoring and post-launch behavior
 - "We" throughout with no clear individual contribution
 - Stories set entirely in offline evaluation — no production deployment experience
+
+---
+
+## Supply Pricing Team-Specific Angle
+
+Chris Mosch's team (Supply Pricing) has a distinct behavioral flavor. The standard Uber marketplace questions still apply, but expect probes around **strategic agent behavior**, **incentive design**, and **causal reasoning** — not just ML model shipping.
+
+### Supply Pricing-Specific Question Patterns
+
+| Question | What it's probing | Story angle |
+|---|---|---|
+| "Tell me about building a system where users responded strategically to your outputs." | Strategic response modeling | Any story where model outputs were gamed, adapted to, or anticipated by users. Frame the behavioral loop explicitly. |
+| "Tell me about a pricing or incentive design decision and its second-order effects." | Mechanism design intuition | Story about a bonus, threshold, or price that caused unexpected downstream behavior. Show you modeled it, not just fixed it. |
+| "Tell me about modeling human behavior in a system where humans adapt to your model." | Adversarial/dynamic modeling | Driver supply fishing, advertiser bid shading, user response to ranking — any domain where agents learn the system. |
+| "Tell me about a causal question you had to answer without running a clean A/B test." | Counterfactual reasoning | Any story involving observational causal inference, natural experiments, or diff-in-diff. |
+| "Tell me about a real-time system that had to be both fast and correct under adversarial conditions." | Real-time + strategic input | Story where latency requirements met adversarial or unpredictable inputs. |
+| "Tell me about a tradeoff between short-term and long-term outcomes in a marketplace." | Marketplace equilibrium thinking | Surge decisions that improve short-term match rate but erode driver trust / supply long term. |
+
+### Supply Pricing-Specific Strong Framing
+
+**On strategic agent behavior:**
+> "I didn't model supply as a passive function of price. I modeled it as a response function from strategic agents who observe the pricing policy and optimize their own behavior. That changes both how you estimate the response and how you design the pricing rule to be robust to gaming."
+
+**On mechanism design:**
+> "The right question isn't 'what price maximizes our objective?' — it's 'what pricing rule makes the behavior we want the dominant strategy for drivers?' Those are different questions, and conflating them leads to incentive programs that get gamed immediately."
+
+**On causal inference in pricing:**
+> "We can't just measure the outcome at the price we set. We need the counterfactual: what would have happened at a different price? I used [switchback experiments / IV regression / OPE] to estimate the response curve rather than observing it directly."
+
+### Behavioral Prep Files Most Relevant to Supply Pricing
+
+- `technical-leadership.md` — Template 2 (architectural decision): framing a system that models strategic agents
+- `cross-functional-influence.md` — Template 1: aligning economics/policy team with ML team on pricing objectives
+- `prioritization-and-tradeoffs.md` — Template 1: saying no with data (e.g., short-term revenue vs. driver trust)
+- `failure-and-learning.md` — Template 1: production incident from unintended incentive response

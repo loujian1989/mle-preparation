@@ -23,6 +23,7 @@ Use this to prioritize by your next interview.
 | **Ranking & Recommendation** | ✓ | | | ✓ | ✓ | ✓ | | ✓ | ✓ | ✓ |
 | **Ads & Auction Theory** | ✓ | | | ✓ | | | | ✓ | | |
 | **Autobidding & Pacing** | ✓ | | | ✓ | | | | ✓ | | |
+| **Dynamic Pricing & Mechanism Design** | | | | | | ✓✓ | | | | |
 | **Fraud & Trust Safety** | | ✓ | ✓ | | | | | | | |
 | **Real-Time ML** | | | | | | ✓ | ✓ | | ✓ | ✓ |
 
@@ -49,6 +50,7 @@ docs/ml-knowledge/
     ├── ranking-and-recommendation.md    ← P0: Reddit, Netflix, Meta, Pinterest, Roblox
     ├── ads-and-auction-theory.md        ← P0: Reddit (Staff), Pinterest, Meta
     ├── autobidding-and-pacing.md        ← P0: Reddit (Staff), Pinterest, Meta
+    ├── dynamic-pricing-and-mechanism-design.md ← P0: Uber Supply Pricing team
     ├── fraud-and-trust-safety.md        ← P0: Stripe, OpenAI
     └── real-time-ml.md                  ← P1: Uber, Shopify, Roblox, Whatnot
 ```
