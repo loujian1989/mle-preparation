@@ -22,6 +22,7 @@ Use this to prioritize by your next interview.
 | **Embeddings & Retrieval** | ✓ | | | | ✓ | | | ✓ | ✓ | |
 | **Ranking & Recommendation** | ✓ | | | ✓ | ✓ | ✓ | | ✓ | ✓ | ✓ |
 | **Ads & Auction Theory** | ✓ | | | ✓ | | | | ✓ | | |
+| **Autobidding & Pacing** | ✓ | | | ✓ | | | | ✓ | | |
 | **Fraud & Trust Safety** | | ✓ | ✓ | | | | | | | |
 | **Real-Time ML** | | | | | | ✓ | ✓ | | ✓ | ✓ |
 
@@ -47,6 +48,7 @@ docs/ml-knowledge/
 └── domain/
     ├── ranking-and-recommendation.md    ← P0: Reddit, Netflix, Meta, Pinterest, Roblox
     ├── ads-and-auction-theory.md        ← P0: Reddit (Staff), Pinterest, Meta
+    ├── autobidding-and-pacing.md        ← P0: Reddit (Staff), Pinterest, Meta
     ├── fraud-and-trust-safety.md        ← P0: Stripe, OpenAI
     └── real-time-ml.md                  ← P1: Uber, Shopify, Roblox, Whatnot
 ```
@@ -76,4 +78,4 @@ docs/ml-knowledge/
 2. **Inside each file**: read the Q, cover the answer, say it aloud, then compare
 3. **Focus on "Common wrong answer"**: this is where the bar differentiates
 4. **For OpenAI**: `rlhf-and-alignment.md` is non-negotiable; add `transformers-and-attention.md`
-5. **For Reddit Staff**: `ads-and-auction-theory.md` + `ranking-and-recommendation.md` are the core
+5. **For Reddit Staff**: `ads-and-auction-theory.md` + `autobidding-and-pacing.md` + `ranking-and-recommendation.md` are the core
