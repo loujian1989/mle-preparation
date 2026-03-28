@@ -12,6 +12,7 @@ Use this to prioritize by your next interview.
 | Topic | Meta | OpenAI | Stripe | Reddit | Netflix | Uber | Shopify | Pinterest | Roblox | Whatnot |
 |---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | **Evaluation Metrics** | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
+| **A/B Testing & Experimentation** | ✓✓ | ✓ | ✓ | ✓ | ✓✓ | ✓ | ✓ | ✓ | ✓ | ✓ |
 | **Optimization & Training** | ✓ | ✓ | | | ✓ | | | | ✓ | |
 | **Regularization** | ✓ | ✓ | ✓ | ✓ | | ✓ | ✓ | ✓ | | |
 | **Feature Engineering** | | | ✓ | ✓ | | ✓ | ✓ | | | |
@@ -38,7 +39,8 @@ docs/ml-knowledge/
 │   ├── evaluation-metrics.md            ← P0: universal
 │   ├── optimization-and-training.md     ← P0: OpenAI, Meta, Netflix
 │   ├── regularization.md                ← P0: universal
-│   └── feature-engineering.md          ← P1: Stripe, Shopify, Uber
+│   ├── feature-engineering.md          ← P1: Stripe, Shopify, Uber
+│   └── ab-testing-and-experimentation.md ← P0: Netflix (MLS5 Ads), Meta, Reddit, Stripe
 ├── deep-learning/
 │   ├── transformers-and-attention.md    ← P0: OpenAI, Meta
 │   ├── training-at-scale.md             ← P1: OpenAI, Meta

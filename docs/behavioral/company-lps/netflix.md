@@ -72,3 +72,38 @@ Staff answer: "I'm the person who can bridge ML research and production reliabil
 - Stories with no failure, no hard decision, no tension — life is not that easy and Netflix knows it
 - Not knowing your numbers — Netflix expects quantified outcomes
 - Political language — "I wanted to make sure everyone was aligned" without the hard conversation that created alignment
+
+---
+
+## Core Ads Algorithms Team-Specific Angle
+
+The MLS5 Ads role (Core Ads Algorithms team) has a distinct behavioral layer on top of the standard Netflix culture probes. The team is building Netflix's in-house bidding algorithms — expect questions that probe **advertiser vs. member tension**, **measurement rigor**, and **building from scratch in a new domain**.
+
+### Ads Team-Specific Question Patterns
+
+| Question | What it's probing | Story angle |
+|---|---|---|
+| "Tell me about building an ML system where two customers had conflicting objectives." | Advertiser performance vs. member experience | Bidding changes that improve ROAS but increase ad load → member churn risk. Show you held the member guardrail. |
+| "Tell me about setting up an evaluation framework for a system where ground truth was delayed." | Attribution lag / measurement rigor | Any story involving delayed labels (conversion, churn, LTV). Show you built a truncated-label correction, not just waited for data. |
+| "Tell me about a time you influenced the product definition, not just the ML solution." | Product partnership (role requirement: "partner with product team") | Story where you pushed back on the objective function or success metric, not just optimized the given one. |
+| "Tell me about making a bold technical bet in an uncertain domain." | Courage + Innovation | Story about building something new (new auction design, new bidding algorithm) where there was no prior art at the company. |
+| "Tell me about a time you caught a measurement problem before it misled stakeholders." | Measurement integrity | Attribution error, calibration drift, SRM in an A/B test — any story where you caught a data quality issue before it became a bad decision. |
+| "Tell me about operating with freedom and responsibility simultaneously." | Freedom & Responsibility | Story where you had wide scope, no one checking your work, and you delivered — or caught your own mistake. |
+
+### Ads Team Strong Framing
+
+**On advertiser vs. member tension:**
+> "The bidding algorithm I was building could improve advertiser ROAS by 15%, but our analysis showed it would increase ad load by 8% and trigger a 0.3% increase in churn. I treated churn as a hard guardrail, not a soft tradeoff. We shipped a version that improved ROAS by 9% with zero churn impact."
+
+**On measurement integrity:**
+> "We had a 30-day attribution window but were being asked to report ROAS at 7 days. I showed that 7-day ROAS was systematically 40% lower than 30-day ROAS for our category — not because the ads weren't working, but because the attribution window was wrong. I changed the measurement before stakeholders locked in on the wrong metric."
+
+**On building from scratch:**
+> "There was no prior art for this at the company. I identified the three highest-uncertainty assumptions, designed experiments to resolve each one before committing to the full architecture, and documented the decision log so the team could challenge each choice."
+
+### Behavioral Prep Files Most Relevant to Ads Team
+
+- `technical-leadership.md` — Template 2 (architectural decision): defining a new bidding system from scratch
+- `prioritization-and-tradeoffs.md` — Template 1 (saying no with data): holding the member churn guardrail
+- `cross-functional-influence.md` — Template 1 (aligning product and ML on objective): pushing back on the success metric
+- `failure-and-learning.md` — Template 1 (production incident): a bidding change that caused unintended ad load increase
