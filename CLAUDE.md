@@ -1,3 +1,48 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+---
+
+## Development Environment
+
+```bash
+# Setup (run once, from coding/ directory)
+cd coding
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+
+# Run any stdlib-only file (LeetCode, system-design-coding)
+python leetcode/graphs/number_of_islands.py
+python system-design-coding/lru-cache.py
+
+# Run ML files (require numpy/sklearn — activate venv first)
+python ml-coding/fundamentals/backprop_from_scratch.py
+python ml-coding/fundamentals/focal_loss.py
+
+# Run take-home FastAPI service
+uvicorn ml-coding.take-home.shopify_ml_service_template:app --reload
+```
+
+Each `.py` file has an inline test suite at the bottom; running it directly is how you verify correctness.
+
+---
+
+## Content Map
+
+| Path | What's in it |
+|---|---|
+| `coding/leetcode/` | 15+ problems by topic (graphs, DP, heaps, etc.) — run directly |
+| `coding/system-design-coding/` | LRU cache, rate limiter, task scheduler — P0 universals |
+| `coding/ml-coding/fundamentals/` | Backprop, BN, focal loss from scratch |
+| `coding/ml-coding/applied/` | Dataset→model pipelines (fraud, ranking, churn) |
+| `coding/ml-coding/take-home/` | Shopify FastAPI service template |
+| `docs/system-design/` | Full design docs organized by domain (ranking, ads, real-time-ml, etc.) |
+| `docs/behavioral/` | STAR stories |
+
+---
+
 # CLAUDE.md — MLE Interview Prep (Staff-Level Coach)
 
 ## Persona
