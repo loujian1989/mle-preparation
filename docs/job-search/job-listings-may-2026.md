@@ -70,10 +70,21 @@ Searched: May 26, 2026. Targeting Staff/E6-level MLE roles matching background i
 
 ---
 
-### Pinterest — Sr. Staff MLE, Homefeed
-- **Location:** San Francisco, CA
-- **Why it fits:** Recommendation/ranking at massive scale; Sr. Staff is above Staff — strong signal for career growth. Requires 5+ years proposing and delivering ML innovations end-to-end.
-- **Link:** [Pinterest Careers](https://www.pinterestcareers.com/jobs/6908633/sr-staff-machine-learning-engineer-homefeed/)
+### Meta — MLE, Core Ads Ecommerce
+- **Location:** Menlo Park / New York / Remote
+- **Level:** E5–E6 (Senior to Staff)
+- **Why it fits:** Ads ranking for ecommerce at Meta's scale — auction design, ranking models, causal inference for ad relevance. Your ads/auction prep maps directly; Meta's DLRM-based ranking stack is one of the most sophisticated in the world.
+- **Comp:** $430K median total comp at E6; $187K–$786K+ range across levels
+- **Link:** [Meta Careers](https://www.metacareers.com/jobs/924364862300411/)
+
+---
+
+### Meta — SWE (Technical Leadership), Machine Learning
+- **Location:** Menlo Park / New York / Seattle / Remote
+- **Level:** E6 (Staff)
+- **Why it fits:** Staff-level ML technical leadership at Meta — Feed ranking, Ads prediction, or Marketplace ML. Meta's rubric explicitly evaluates scale (1B+ users), two-tower models, ANN retrieval (FAISS/ScaNN), and real-time serving under p99 <100ms — all covered in your prep.
+- **Comp:** ~$550K total at E6
+- **Link:** [Meta Careers](https://www.metacareers.com/profile/job_details/1075389717795087) · [All ML roles](https://www.metacareers.com/jobs/572141908886347)
 
 ---
 
@@ -124,14 +135,6 @@ Searched: May 26, 2026. Targeting Staff/E6-level MLE roles matching background i
 
 ---
 
-### Spotify — Senior Staff MLE, Personalization
-- **Location:** Remote (US)
-- **Why it fits:** Recommendation at massive scale; understanding content better than anyone to drive next-play decisions for 600M+ users. Senior Staff is one level above Staff — strong for career growth signal.
-- **Comp:** $176K–$368K+ base (per levels.fyi)
-- **Link:** [Life at Spotify](https://www.lifeatspotify.com/jobs/senior-staff-machine-learning-engineer)
-
----
-
 ### Pinterest — Staff MLE, Closeup Relevance
 - **Location:** Palo Alto, CA (+ 1 other)
 - **Why it fits:** Relevance/retrieval at scale; recommendation systems. Requires 3+ years leading large-scale ML recommendation systems end-to-end.
@@ -154,18 +157,9 @@ Searched: May 26, 2026. Targeting Staff/E6-level MLE roles matching background i
 
 ---
 
-### Google — Principal Engineer, YouTube ML Recommendations Systems
-- **Location:** San Francisco / New York / remote-eligible
-- **Level:** L9 (above Staff — Distinguished Engineer bar)
-- **Why it fits:** Defining the next generation of YouTube recommendation ML systems at billion-user scale. Requires 15 years experience + technical leadership. The highest-leverage recommendation role at Google.
-- **Comp:** $294K–$414K base + bonus + equity
-- **Link:** [Google Careers](https://careers.google.com/jobs/results/128160610201281222-principal-engineer/)
-
----
-
 ### Google — Staff SWE, AI/ML GenAI, YouTube
 - **Location:** Various US offices
-- **Level:** L7 (Staff)
+- **Level:** L6 (Staff)
 - **Why it fits:** GenAI applied to YouTube's recommendation and content systems at Staff bar. Requires 3+ years technical leadership. Your ranking + deep learning background maps directly.
 - **Comp:** $207K–$300K base + bonus + equity
 - **Link:** [Google Careers](https://careers.google.com/jobs/results/95513926518612678-staff-software-engineer/)
@@ -174,7 +168,7 @@ Searched: May 26, 2026. Targeting Staff/E6-level MLE roles matching background i
 
 ### Google — Senior SWE, AI/ML Recommendations, Rankings, Predictions, YouTube
 - **Location:** Various US offices
-- **Level:** L6 (Senior)
+- **Level:** L5 (Senior)
 - **Why it fits:** Core recommendation + ranking + prediction work at YouTube scale — directly maps to your ranking/recommendation prep. Most accessible Google role at a strong seniority.
 - **Comp:** $166K–$244K base + bonus + equity
 - **Link:** [Google Careers](https://careers.google.com/jobs/results/111827390337819334-senior-software-engineer/)
@@ -191,7 +185,7 @@ Searched: May 26, 2026. Targeting Staff/E6-level MLE roles matching background i
 
 ### Google — Staff Machine Learning Engineer
 - **Location:** Various US offices
-- **Level:** L7 (Staff)
+- **Level:** L6 (Staff)
 - **Why it fits:** General Staff ML role at Google; cloud-based ML inference, ML systems at platform scale. Broad scope — good entry point into Google's ML org.
 - **Comp:** $197K–$291K base + bonus + equity
 - **Link:** [Google Careers](https://careers.google.com/jobs/results/101883578303816390-staff-machine-learning-engineer/)
@@ -200,6 +194,7 @@ Searched: May 26, 2026. Targeting Staff/E6-level MLE roles matching background i
 
 ### Google — Senior SWE, AI/ML, Maps Ads
 - **Location:** Mountain View / Sunnyvale, CA
+- **Level:** L5 (Senior)
 - **Why it fits:** ML for geo-contextual ads ranking; Maps ads require real-time spatial + demand signals — adjacent to your geospatial ML (H3, zone-level pricing) background.
 - **Link:** [Google Careers](https://careers.google.com/jobs/results/108075779757089478-senior-software-engineer/)
 
@@ -235,22 +230,21 @@ Searched: May 26, 2026. Targeting Staff/E6-level MLE roles matching background i
 | Staff DS, Marketplace Optimization | Airbnb | 2 | Remote | [Link](https://careers.airbnb.com/positions/7705161/) |
 | Staff MLE, Inventory Intelligence | Instacart | 2 | Remote | [Link](https://echojobs.io/job/instacart-staff-machine-learning-engineer-3ep4c) |
 | Sr. MLE, Operations Research | Instacart | 2 | Remote | [Link](https://remotivated.com/jobs/senior-machine-learning-engineer-operations-research-at-instacart) |
-| Sr. Staff MLE, Homefeed | Pinterest | 2 | San Francisco | [Link](https://www.pinterestcareers.com/jobs/6908633/sr-staff-machine-learning-engineer-homefeed/) |
+| MLE, Core Ads Ecommerce (E5–E6) | Meta | 2 | Menlo Park / NY | [Link](https://www.metacareers.com/jobs/924364862300411/) |
+| SWE Technical Leadership, ML (E6) | Meta | 2 | Menlo Park / NY | [Link](https://www.metacareers.com/profile/job_details/1075389717795087) |
 | Staff MLE, Monetization | Pinterest | 2 | San Francisco | [Link](https://www.pinterestcareers.com/jobs/6133257/staff-machine-learning-engineer-monetization/) |
 | Staff MLE (various teams) | Netflix | 2 | Los Gatos / Remote | [Link](https://explore.jobs.netflix.net/careers?query=Machine+Learning+Engineer) |
 | MLE, Buyer Growth (auction ranking) | Whatnot | 3 | SF / Remote | [Link](https://careers.whatnot.com/) |
 | MLE, Fraud | Whatnot | 3 | SF / Remote | [Link](https://jobs.ashbyhq.com/whatnot) |
 | MLE, Payments ML Accelerator | Stripe | 3 | SF / Seattle | [Link](https://stripe.com/jobs/listing/machine-learning-engineer-payments-ml-accelerator/7079044) |
 | Staff MLE, GenRecs | Spotify | 3 | Remote | [Link](https://www.lifeatspotify.com/jobs/staff-machine-learning-engineer-genrecs) |
-| Senior Staff MLE, Personalization | Spotify | 3 | Remote | [Link](https://www.lifeatspotify.com/jobs/senior-staff-machine-learning-engineer) |
 | Staff MLE, Closeup Relevance | Pinterest | 3 | Palo Alto | [Link](https://www.pinterestcareers.com/jobs/6482944/staff-machine-learning-engineer-closeup-relevance/) |
 | L6 Content/Ad Ranking MLE | Snap | 3 | Palo Alto | [Link](https://careers.snap.com/departments/machine-learning) |
 | SWE, Ads Product (Grok-powered) | xAI | 3 | Palo Alto | [Link](https://x.ai/careers/open-roles) |
-| Principal Engineer, YouTube ML Recs (L9) | Google | 3 | Various | [Link](https://careers.google.com/jobs/results/128160610201281222-principal-engineer/) |
-| Staff SWE, AI/ML GenAI, YouTube (L7) | Google | 3 | Various | [Link](https://careers.google.com/jobs/results/95513926518612678-staff-software-engineer/) |
-| Senior SWE, AI/ML Recs/Rankings, YouTube (L6) | Google | 3 | Various | [Link](https://careers.google.com/jobs/results/111827390337819334-senior-software-engineer/) |
-| Staff Research Engineer, Applied AI | Google DeepMind | 3 | MTV / London | [Link](https://www.linkedin.com/jobs/view/staff-research-engineer-applied-ai-at-google-deepmind-4370932476) |
-| Staff ML Engineer (L7) | Google | 3 | Various | [Link](https://careers.google.com/jobs/results/101883578303816390-staff-machine-learning-engineer/) |
-| Senior SWE, AI/ML, Maps Ads (L6) | Google | 3 | Mountain View | [Link](https://careers.google.com/jobs/results/108075779757089478-senior-software-engineer/) |
+| Staff SWE, AI/ML GenAI, YouTube (L6) | Google | 3 | Various | [Link](https://careers.google.com/jobs/results/95513926518612678-staff-software-engineer/) |
+| Senior SWE, AI/ML Recs/Rankings, YouTube (L5) | Google | 3 | Various | [Link](https://careers.google.com/jobs/results/111827390337819334-senior-software-engineer/) |
+| Staff Research Engineer, Applied AI (L6) | Google DeepMind | 3 | MTV / London | [Link](https://www.linkedin.com/jobs/view/staff-research-engineer-applied-ai-at-google-deepmind-4370932476) |
+| Staff ML Engineer (L6) | Google | 3 | Various | [Link](https://careers.google.com/jobs/results/101883578303816390-staff-machine-learning-engineer/) |
+| Senior SWE, AI/ML, Maps Ads (L5) | Google | 3 | Mountain View | [Link](https://careers.google.com/jobs/results/108075779757089478-senior-software-engineer/) |
 | SWE, Ads Monetization & Revenue Platform | OpenAI | 3 | San Francisco | [Link](https://openai.com/careers/software-engineer-ads-monetization-revenue-platform-san-francisco/) |
 | Senior MLE, Ads Core Targeting | TikTok | 3 | San Jose | [Link](https://www.linkedin.com/jobs/view/machine-learning-engineer-ads-core-targeting-at-tiktok-3516042064) |
