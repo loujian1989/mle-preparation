@@ -146,6 +146,35 @@ Searched: May 26, 2026. Targeting Staff/E6-level MLE roles matching background i
 
 ---
 
+### xAI — Software Engineer, Ads Product
+- **Location:** Palo Alto, CA
+- **Why it fits:** xAI rebuilt X's entire ad platform with Grok-powered recommendation models at its core — real-time personalized ads to 500M+ X users. Ads targeting, content ranking, campaign optimization, and audience modeling all powered by Grok. Your auction theory + real-time ranking prep applies directly to a genuinely large-scale ads ML system being built now.
+- **Company context:** Raised $20B Jan 2026; tightly integrated with X's user base. Frontier model + social ads platform is a rare combination.
+- **Links:** [LinkedIn](https://www.linkedin.com/jobs/view/software-engineer-ads-product-at-xai-4262577338) · [Built In SF](https://www.builtinsf.com/job/software-engineer-x-ads/4686271) · [xAI Careers](https://x.ai/careers/open-roles)
+
+---
+
+### Google — SWE III, AI/ML GenAI, Google Ads
+- **Location:** Sunnyvale, CA / Kirkland, WA
+- **Why it fits:** Gemini integrated into the core Google Ads stack — GenAI applied to the world's largest ads system. Directly relevant to your ads/auction/ranking background.
+- **Link:** [Google Careers](https://careers.google.com/jobs/results/116372522701595334-software-engineer-iii/)
+
+---
+
+### Google — Senior SWE, AI/ML, Maps Ads
+- **Location:** Mountain View / Sunnyvale, CA
+- **Why it fits:** ML for geo-contextual ads ranking; Maps ads require real-time spatial + demand signals — adjacent to your geospatial ML (H3, zone-level pricing) background.
+- **Link:** [Google Careers](https://careers.google.com/jobs/results/108075779757089478-senior-software-engineer/)
+
+---
+
+### Google — SWE III, Ads Infrastructure and Data AI
+- **Location:** New York, NY / Atlanta, GA
+- **Why it fits:** Ads infra + ML data pipelines at Google scale; overlaps with your real-time feature pipeline and Kafka/Flink background.
+- **Link:** [Google Careers](https://careers.google.com/jobs/results/99124346357719750-software-engineer-iii/)
+
+---
+
 ### OpenAI — Software Engineer, Ads Monetization & Revenue Platform
 - **Location:** San Francisco, CA
 - **Why it fits:** OpenAI launched ChatGPT ads in Feb 2026 and is building the ads ML stack from zero. This role owns ads delivery infrastructure, monetization systems, and the revenue platform end-to-end. Your auction theory + ads bidding prep transfers directly; whoever joins now defines the architecture for a $2.5B (2026) → $100B (2030) ads business.
@@ -186,5 +215,9 @@ Searched: May 26, 2026. Targeting Staff/E6-level MLE roles matching background i
 | Senior Staff MLE, Personalization | Spotify | 3 | Remote | [Link](https://www.lifeatspotify.com/jobs/senior-staff-machine-learning-engineer) |
 | Staff MLE, Closeup Relevance | Pinterest | 3 | Palo Alto | [Link](https://www.pinterestcareers.com/jobs/6482944/staff-machine-learning-engineer-closeup-relevance/) |
 | L6 Content/Ad Ranking MLE | Snap | 3 | Palo Alto | [Link](https://careers.snap.com/departments/machine-learning) |
+| SWE, Ads Product (Grok-powered) | xAI | 3 | Palo Alto | [Link](https://x.ai/careers/open-roles) |
+| SWE III, AI/ML GenAI, Google Ads | Google | 3 | Sunnyvale / Kirkland | [Link](https://careers.google.com/jobs/results/116372522701595334-software-engineer-iii/) |
+| Senior SWE, AI/ML, Maps Ads | Google | 3 | Mountain View | [Link](https://careers.google.com/jobs/results/108075779757089478-senior-software-engineer/) |
+| SWE III, Ads Infrastructure and Data AI | Google | 3 | New York / Atlanta | [Link](https://careers.google.com/jobs/results/99124346357719750-software-engineer-iii/) |
 | SWE, Ads Monetization & Revenue Platform | OpenAI | 3 | San Francisco | [Link](https://openai.com/careers/software-engineer-ads-monetization-revenue-platform-san-francisco/) |
 | Senior MLE, Ads Core Targeting | TikTok | 3 | San Jose | [Link](https://www.linkedin.com/jobs/view/machine-learning-engineer-ads-core-targeting-at-tiktok-3516042064) |
