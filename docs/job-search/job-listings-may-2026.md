@@ -146,6 +146,15 @@ Searched: May 26, 2026. Targeting Staff/E6-level MLE roles matching background i
 
 ---
 
+### OpenAI — Software Engineer, Ads Monetization & Revenue Platform
+- **Location:** San Francisco, CA
+- **Why it fits:** OpenAI launched ChatGPT ads in Feb 2026 and is building the ads ML stack from zero. This role owns ads delivery infrastructure, monetization systems, and the revenue platform end-to-end. Your auction theory + ads bidding prep transfers directly; whoever joins now defines the architecture for a $2.5B (2026) → $100B (2030) ads business.
+- **Company context:** $852B valuation (Mar 2026), pre-IPO. Targeting $2.5B ad revenue in 2026. 800M weekly ChatGPT users as addressable audience.
+- **Comp:** $266K–$555K base + pre-IPO equity
+- **Link:** [OpenAI Careers](https://openai.com/careers/software-engineer-ads-monetization-revenue-platform-san-francisco/)
+
+---
+
 ### TikTok — Senior MLE, Ads Core Targeting
 - **Location:** San Jose, CA
 - **Why it fits:** Large-scale ad ranking, auction-based decision making, recommendation systems. Salary range $198K–$416K for tech lead variants.
@@ -177,4 +186,5 @@ Searched: May 26, 2026. Targeting Staff/E6-level MLE roles matching background i
 | Senior Staff MLE, Personalization | Spotify | 3 | Remote | [Link](https://www.lifeatspotify.com/jobs/senior-staff-machine-learning-engineer) |
 | Staff MLE, Closeup Relevance | Pinterest | 3 | Palo Alto | [Link](https://www.pinterestcareers.com/jobs/6482944/staff-machine-learning-engineer-closeup-relevance/) |
 | L6 Content/Ad Ranking MLE | Snap | 3 | Palo Alto | [Link](https://careers.snap.com/departments/machine-learning) |
+| SWE, Ads Monetization & Revenue Platform | OpenAI | 3 | San Francisco | [Link](https://openai.com/careers/software-engineer-ads-monetization-revenue-platform-san-francisco/) |
 | Senior MLE, Ads Core Targeting | TikTok | 3 | San Jose | [Link](https://www.linkedin.com/jobs/view/machine-learning-engineer-ads-core-targeting-at-tiktok-3516042064) |
