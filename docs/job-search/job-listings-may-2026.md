@@ -154,10 +154,47 @@ Searched: May 26, 2026. Targeting Staff/E6-level MLE roles matching background i
 
 ---
 
-### Google — SWE III, AI/ML GenAI, Google Ads
-- **Location:** Sunnyvale, CA / Kirkland, WA
-- **Why it fits:** Gemini integrated into the core Google Ads stack — GenAI applied to the world's largest ads system. Directly relevant to your ads/auction/ranking background.
-- **Link:** [Google Careers](https://careers.google.com/jobs/results/116372522701595334-software-engineer-iii/)
+### Google — Principal Engineer, YouTube ML Recommendations Systems
+- **Location:** San Francisco / New York / remote-eligible
+- **Level:** L9 (above Staff — Distinguished Engineer bar)
+- **Why it fits:** Defining the next generation of YouTube recommendation ML systems at billion-user scale. Requires 15 years experience + technical leadership. The highest-leverage recommendation role at Google.
+- **Comp:** $294K–$414K base + bonus + equity
+- **Link:** [Google Careers](https://careers.google.com/jobs/results/128160610201281222-principal-engineer/)
+
+---
+
+### Google — Staff SWE, AI/ML GenAI, YouTube
+- **Location:** Various US offices
+- **Level:** L7 (Staff)
+- **Why it fits:** GenAI applied to YouTube's recommendation and content systems at Staff bar. Requires 3+ years technical leadership. Your ranking + deep learning background maps directly.
+- **Comp:** $207K–$300K base + bonus + equity
+- **Link:** [Google Careers](https://careers.google.com/jobs/results/95513926518612678-staff-software-engineer/)
+
+---
+
+### Google — Senior SWE, AI/ML Recommendations, Rankings, Predictions, YouTube
+- **Location:** Various US offices
+- **Level:** L6 (Senior)
+- **Why it fits:** Core recommendation + ranking + prediction work at YouTube scale — directly maps to your ranking/recommendation prep. Most accessible Google role at a strong seniority.
+- **Comp:** $166K–$244K base + bonus + equity
+- **Link:** [Google Careers](https://careers.google.com/jobs/results/111827390337819334-senior-software-engineer/)
+
+---
+
+### Google DeepMind — Staff Research Engineer, Applied AI
+- **Location:** Mountain View / London
+- **Level:** Staff
+- **Why it fits:** Bridges research and production ML systems at DeepMind. Applied AI at frontier model scale; strong overlap with real-time systems and optimization background.
+- **Link:** [LinkedIn](https://www.linkedin.com/jobs/view/staff-research-engineer-applied-ai-at-google-deepmind-4370932476) · [DeepMind Careers](https://deepmind.google/careers/)
+
+---
+
+### Google — Staff Machine Learning Engineer
+- **Location:** Various US offices
+- **Level:** L7 (Staff)
+- **Why it fits:** General Staff ML role at Google; cloud-based ML inference, ML systems at platform scale. Broad scope — good entry point into Google's ML org.
+- **Comp:** $197K–$291K base + bonus + equity
+- **Link:** [Google Careers](https://careers.google.com/jobs/results/101883578303816390-staff-machine-learning-engineer/)
 
 ---
 
@@ -165,13 +202,6 @@ Searched: May 26, 2026. Targeting Staff/E6-level MLE roles matching background i
 - **Location:** Mountain View / Sunnyvale, CA
 - **Why it fits:** ML for geo-contextual ads ranking; Maps ads require real-time spatial + demand signals — adjacent to your geospatial ML (H3, zone-level pricing) background.
 - **Link:** [Google Careers](https://careers.google.com/jobs/results/108075779757089478-senior-software-engineer/)
-
----
-
-### Google — SWE III, Ads Infrastructure and Data AI
-- **Location:** New York, NY / Atlanta, GA
-- **Why it fits:** Ads infra + ML data pipelines at Google scale; overlaps with your real-time feature pipeline and Kafka/Flink background.
-- **Link:** [Google Careers](https://careers.google.com/jobs/results/99124346357719750-software-engineer-iii/)
 
 ---
 
@@ -216,8 +246,11 @@ Searched: May 26, 2026. Targeting Staff/E6-level MLE roles matching background i
 | Staff MLE, Closeup Relevance | Pinterest | 3 | Palo Alto | [Link](https://www.pinterestcareers.com/jobs/6482944/staff-machine-learning-engineer-closeup-relevance/) |
 | L6 Content/Ad Ranking MLE | Snap | 3 | Palo Alto | [Link](https://careers.snap.com/departments/machine-learning) |
 | SWE, Ads Product (Grok-powered) | xAI | 3 | Palo Alto | [Link](https://x.ai/careers/open-roles) |
-| SWE III, AI/ML GenAI, Google Ads | Google | 3 | Sunnyvale / Kirkland | [Link](https://careers.google.com/jobs/results/116372522701595334-software-engineer-iii/) |
-| Senior SWE, AI/ML, Maps Ads | Google | 3 | Mountain View | [Link](https://careers.google.com/jobs/results/108075779757089478-senior-software-engineer/) |
-| SWE III, Ads Infrastructure and Data AI | Google | 3 | New York / Atlanta | [Link](https://careers.google.com/jobs/results/99124346357719750-software-engineer-iii/) |
+| Principal Engineer, YouTube ML Recs (L9) | Google | 3 | Various | [Link](https://careers.google.com/jobs/results/128160610201281222-principal-engineer/) |
+| Staff SWE, AI/ML GenAI, YouTube (L7) | Google | 3 | Various | [Link](https://careers.google.com/jobs/results/95513926518612678-staff-software-engineer/) |
+| Senior SWE, AI/ML Recs/Rankings, YouTube (L6) | Google | 3 | Various | [Link](https://careers.google.com/jobs/results/111827390337819334-senior-software-engineer/) |
+| Staff Research Engineer, Applied AI | Google DeepMind | 3 | MTV / London | [Link](https://www.linkedin.com/jobs/view/staff-research-engineer-applied-ai-at-google-deepmind-4370932476) |
+| Staff ML Engineer (L7) | Google | 3 | Various | [Link](https://careers.google.com/jobs/results/101883578303816390-staff-machine-learning-engineer/) |
+| Senior SWE, AI/ML, Maps Ads (L6) | Google | 3 | Mountain View | [Link](https://careers.google.com/jobs/results/108075779757089478-senior-software-engineer/) |
 | SWE, Ads Monetization & Revenue Platform | OpenAI | 3 | San Francisco | [Link](https://openai.com/careers/software-engineer-ads-monetization-revenue-platform-san-francisco/) |
 | Senior MLE, Ads Core Targeting | TikTok | 3 | San Jose | [Link](https://www.linkedin.com/jobs/view/machine-learning-engineer-ads-core-targeting-at-tiktok-3516042064) |
