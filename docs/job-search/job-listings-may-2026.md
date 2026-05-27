@@ -94,6 +94,44 @@ Searched: May 26, 2026. Targeting Staff/E6-level MLE roles matching background i
 
 ## Tier 3 — Good Fit, Worth Exploring
 
+### Whatnot — MLE, Buyer Growth
+- **Location:** San Francisco / Remote
+- **Why it fits:** Personalization, ranking, and user behavior modeling in a live auction marketplace — you have a dedicated system design doc for this team (`docs/system-design/marketplace/whatnot-live-auction-ranking.md`). Requires 8+ years (effectively Staff bar). Deep expertise in personalization, ranking, or user modeling explicitly required.
+- **Stack:** Python, PyTorch/TensorFlow, XGBoost, SQL
+- **Links:** [Glassdoor](https://www.glassdoor.com/job-listing/machine-learning-engineer-buyer-growth-whatnot-JV_IC1147401_KO0,38_KE39,46.htm?jl=1009841617100) · [Whatnot Careers](https://careers.whatnot.com/)
+
+---
+
+### Whatnot — MLE, Fraud
+- **Location:** San Francisco / Remote
+- **Why it fits:** ML + LLM-powered fraud detection across live auction marketplace interactions. Your trust/safety prep applies; live auction fraud is a niche angle you can speak to from the whatnot design work.
+- **Comp:** $245K–$345K + equity
+- **Link:** [Whatnot Jobs](https://jobs.ashbyhq.com/whatnot)
+
+---
+
+### Stripe — MLE, Payments ML Accelerator
+- **Location:** San Francisco / Seattle / Remote
+- **Why it fits:** Deep learning for fraud detection and authorization optimization; real-time payment decisioning systems (Radar, Adaptive Acceptance, Identity). You have Stripe behavioral prep (`docs/behavioral/company-lps/stripe.md`) and fraud coding (`coding/ml-coding/applied/fraud_detection.py`) already in place.
+- **Links:** [Stripe Careers](https://stripe.com/jobs/listing/machine-learning-engineer-payments-ml-accelerator/7079044) · [LinkedIn](https://www.linkedin.com/jobs/view/machine-learning-engineer-payments-ml-accelerator-at-stripe-4279934765)
+
+---
+
+### Spotify — Staff MLE, GenRecs
+- **Location:** Remote (US)
+- **Why it fits:** Generative recommender systems at hundreds-of-millions-of-users scale — GenAI + large-scale ranking combined. If you want to lean into the recommendation/GenAI intersection, this is the clearest signal role.
+- **Links:** [Life at Spotify](https://www.lifeatspotify.com/jobs/staff-machine-learning-engineer-genrecs) · [Lever](https://jobs.lever.co/spotify/5772f801-b4d0-4af0-894e-e6460bf2a2b2)
+
+---
+
+### Spotify — Senior Staff MLE, Personalization
+- **Location:** Remote (US)
+- **Why it fits:** Recommendation at massive scale; understanding content better than anyone to drive next-play decisions for 600M+ users. Senior Staff is one level above Staff — strong for career growth signal.
+- **Comp:** $176K–$368K+ base (per levels.fyi)
+- **Link:** [Life at Spotify](https://www.lifeatspotify.com/jobs/senior-staff-machine-learning-engineer)
+
+---
+
 ### Pinterest — Staff MLE, Closeup Relevance
 - **Location:** Palo Alto, CA (+ 1 other)
 - **Why it fits:** Relevance/retrieval at scale; recommendation systems. Requires 3+ years leading large-scale ML recommendation systems end-to-end.
@@ -132,6 +170,11 @@ Searched: May 26, 2026. Targeting Staff/E6-level MLE roles matching background i
 | Sr. Staff MLE, Homefeed | Pinterest | 2 | San Francisco | [Link](https://www.pinterestcareers.com/jobs/6908633/sr-staff-machine-learning-engineer-homefeed/) |
 | Staff MLE, Monetization | Pinterest | 2 | San Francisco | [Link](https://www.pinterestcareers.com/jobs/6133257/staff-machine-learning-engineer-monetization/) |
 | Staff MLE (various teams) | Netflix | 2 | Los Gatos / Remote | [Link](https://explore.jobs.netflix.net/careers?query=Machine+Learning+Engineer) |
+| MLE, Buyer Growth (auction ranking) | Whatnot | 3 | SF / Remote | [Link](https://careers.whatnot.com/) |
+| MLE, Fraud | Whatnot | 3 | SF / Remote | [Link](https://jobs.ashbyhq.com/whatnot) |
+| MLE, Payments ML Accelerator | Stripe | 3 | SF / Seattle | [Link](https://stripe.com/jobs/listing/machine-learning-engineer-payments-ml-accelerator/7079044) |
+| Staff MLE, GenRecs | Spotify | 3 | Remote | [Link](https://www.lifeatspotify.com/jobs/staff-machine-learning-engineer-genrecs) |
+| Senior Staff MLE, Personalization | Spotify | 3 | Remote | [Link](https://www.lifeatspotify.com/jobs/senior-staff-machine-learning-engineer) |
 | Staff MLE, Closeup Relevance | Pinterest | 3 | Palo Alto | [Link](https://www.pinterestcareers.com/jobs/6482944/staff-machine-learning-engineer-closeup-relevance/) |
 | L6 Content/Ad Ranking MLE | Snap | 3 | Palo Alto | [Link](https://careers.snap.com/departments/machine-learning) |
 | Senior MLE, Ads Core Targeting | TikTok | 3 | San Jose | [Link](https://www.linkedin.com/jobs/view/machine-learning-engineer-ads-core-targeting-at-tiktok-3516042064) |
