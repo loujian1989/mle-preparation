@@ -180,6 +180,101 @@ For confident predictions (p ≈ 0 or 1): `H ≈ 0` → denominator large → sm
 
 ---
 
+## Hyperparameter Interactions (Deep Dive)
+
+### `n_estimators` × `learning_rate`: The Coupled Pair
+
+These two are mathematically linked. Total movement through function space after M steps:
+
+```
+ΔF = η × h₁ + η × h₂ + ... + η × hₘ = η × Σhₘ
+```
+
+Halving `η` and doubling `M` gives roughly the same total correction — but a smoother path:
+
+```
+High η, few trees:   coarse steps → overshoots loss minima → high variance
+Low η, many trees:   fine steps   → finds flatter minima   → better generalization
+```
+
+`n_estimators` is not tuned independently. Tune it jointly with `learning_rate` via early stopping:
+
+```
+Step 1: Fix lr=0.1, find n_estimators via early_stopping_rounds=50
+Step 2: Optionally lr=0.05, re-run early stopping → n_estimators roughly doubles
+Step 3: Then tune max_depth, min_child_weight, subsample
+```
+
+### `max_depth`: Interaction Complexity Budget
+
+Each tree of depth `d` can model interactions between at most `d` features — one feature per split level:
+
+```
+depth=1 (stumps):  main effects only — additive model
+depth=3:           up to 3-way interactions
+depth=6:           up to 6-way interactions
+depth=∞:           memorizes training data
+```
+
+For fraud/ranking: depth 4–6. Most predictive signals are pairwise or three-way (amount × country, time × device). Deeper trees model noise.
+
+**LightGBM `num_leaves` vs. `max_depth`:**
+```
+XGBoost depth=6:     up to 64 leaves, uniformly distributed
+LightGBM leaves=64:  64 leaves, concentrated where gain is highest (leaf-wise)
+```
+
+LightGBM spends its leaf budget on the most informative branches — more expressive for the same budget. Always cap `num_leaves` to prevent overfitting on small datasets.
+
+### `subsample` and `colsample`: Stochastic Gradient Boosting
+
+Each tree sees a random subset of rows (`subsample`) and features (`colsample_bytree`):
+
+```
+subsample=0.8, colsample=0.8:
+  → each tree sees ~64% of feature-row combinations
+  → trees are less correlated → ensemble variance drops
+  → acts as implicit regularization without reducing model capacity
+```
+
+**Interaction with `max_depth`**: deep trees (depth 6+) need lower `subsample` (0.6–0.7). Shallow trees (depth 3–4) are more robust — `subsample=0.9` is fine.
+
+### `min_child_weight`: Leaf-Level Regularization
+
+Controls minimum sum of Hessians required to form a leaf node:
+
+```
+XGBoost: min_child_weight = min Σ H in a leaf
+         For log-loss: H = p(1-p) ≈ 0.25 per sample near p=0.5
+         min_child_weight=10 → requires ~40 samples per leaf
+```
+
+Most impactful on imbalanced datasets — minority class leaves naturally have small Hessian sums and will be pruned aggressively. Increase `min_child_weight` to prevent splits on tiny minority-class nodes.
+
+### Early Stopping
+
+```python
+model.fit(X_train, y_train,
+          eval_set=[(X_val, y_val)],
+          early_stopping_rounds=50)
+```
+
+`early_stopping_rounds=50`: stop if validation metric doesn't improve for 50 consecutive trees. Implicitly finds optimal `n_estimators` for the given `learning_rate`.
+
+**Rule**: set `early_stopping_rounds ≈ 10% of expected n_estimators`. Too small → stops at a local plateau. Too large → wastes compute.
+
+### Tuning Priority
+
+| Priority | Parameter | Reason |
+|---|---|---|
+| 1 | `learning_rate` + `n_estimators` (early stopping) | Coupled; determines overall capacity |
+| 2 | `max_depth` / `num_leaves` | Controls interaction complexity |
+| 3 | `min_child_weight` / `min_samples_leaf` | Leaf-level regularization |
+| 4 | `subsample`, `colsample_bytree` | Variance reduction; tune after structure is fixed |
+| 5 | `reg_alpha` (L1), `reg_lambda` (L2) | Fine-grained regularization; usually minor gains |
+
+---
+
 ## SHAP Values
 
 ### Q: What are SHAP values? Why are they preferred over split-gain feature importance?
@@ -197,6 +292,98 @@ For confident predictions (p ≈ 0 or 1): `H ≈ 0` → denominator large → sm
 **Company context:** Stripe, Shopify (take-home template uses SHAP), OpenAI (model audit).
 
 **Common wrong answer:** "Feature importance shows which features matter." — Split-gain importance is biased and doesn't explain individual predictions. SHAP provides both local (per-prediction) and global (aggregate) explanations with consistency guarantees.
+
+---
+
+## SHAP Values (Deep Dive)
+
+### The Problem With Split-Gain Importance
+
+Split-gain importance sums impurity reduction across all splits on a feature:
+
+```
+importance(age) = Σ (impurity_before - impurity_after) at all splits on age
+```
+
+Two failure modes:
+
+**1. High-cardinality bias**: a feature with 1000 unique values has more possible split points than a binary feature → more splits → more accumulated impurity reduction → artificially inflated importance. A random ID column can appear "important."
+
+**2. No local explanation**: one number per feature, averaged over all samples. Tells you nothing about why a specific prediction was made.
+
+### The Game Theory Foundation
+
+Features are **players** in a cooperative game. The **payout** is the model's prediction minus the baseline. SHAP asks: how much did each player contribute?
+
+The Shapley value = average marginal contribution of feature `i` across all possible orderings of features being added:
+
+```
+φᵢ = Σ_{S ⊆ F\{i}} [|S|!(|F|-|S|-1)! / |F|!] · [f(S∪{i}) - f(S)]
+```
+
+- `S` = subset of other features already in the coalition
+- `f(S∪{i}) - f(S)` = marginal contribution of adding feature `i` to coalition `S`
+- The weight averages over all orderings — every feature gets equal treatment
+
+**Concrete example** (features: amount, country, hour; prediction = fraud probability):
+
+```
+Coalition {country, hour}          → f = 0.60
+Coalition {country, hour, amount}  → f = 0.92
+Marginal contribution of amount in this coalition = +0.32
+
+Average across all 6 orderings of {amount, country, hour}
+→ φ(amount) = weighted average ≈ +0.40
+```
+
+### The Additive Property
+
+```
+f(x) = base_value + φ₁ + φ₂ + ... + φₙ
+```
+
+The sum of all SHAP values equals the prediction minus the baseline. Every unit of prediction is fully accounted for — no residual.
+
+**Example** (fraud model, prediction = 0.92, baseline = 0.05):
+
+```
+base_value:              0.05
++ φ(amount):            +0.40  ← large, unusual amount
++ φ(country):           +0.30  ← high-risk country
++ φ(hour):              +0.15  ← 3am transaction
++ φ(device_age):        +0.02  ← minor signal
+= prediction:            0.92
+```
+
+Fully explainable to a compliance officer.
+
+### Why TreeExplainer Is Efficient
+
+Naive Shapley: enumerate all `2^n` feature subsets. For 100 features: infeasible.
+
+TreeExplainer exploits the tree's split structure. Each path from root to leaf already encodes which features interacted. TreeExplainer reads these paths directly, computing exact Shapley values in `O(T × D × 2^D)` — at depth 6, `2^6 = 64` operations per tree.
+
+### Global vs. Local Importance
+
+| Type | How | Use case |
+|---|---|---|
+| Local SHAP | One SHAP vector per prediction | Explain a single fraud alert |
+| Global importance | `mean(\|φᵢ\|)` over all samples | Feature selection, model audit |
+| SHAP dependence plot | `φᵢ` vs. feature value | Detect nonlinear relationships |
+| SHAP interaction values | `φᵢⱼ` — joint effect of feature pair | Find feature interactions |
+
+**Global importance advantage**: `mean(|φᵢ|)` weights by actual prediction impact, not split count. A high-cardinality ID column used for many small splits → near-zero mean |SHAP| → correctly flagged as unimportant.
+
+### Summary
+
+| Concept | Intuition |
+|---|---|
+| Split-gain bias | Rewards features with many split opportunities, not actual prediction impact |
+| Shapley value | Average marginal contribution across all feature orderings — fair credit |
+| Additivity | SHAP values sum exactly to prediction − baseline — fully accountable |
+| TreeExplainer | Exploits tree path structure; exact in O(T × D × 2^D) |
+| Local explanation | Per-prediction SHAP vector — explains individual decisions |
+| Global importance | mean(\|φᵢ\|) — unbiased aggregate importance |
 
 ---
 
