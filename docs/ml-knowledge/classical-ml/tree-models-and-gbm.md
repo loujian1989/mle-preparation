@@ -49,6 +49,121 @@ P1: Stripe, Reddit, Shopify, Uber.
 
 ---
 
+## Gradient Boosting Internals (Deep Dive)
+
+### The Core Analogy: Gradient Descent in Function Space
+
+Standard gradient descent moves **model parameters** in the direction of steepest loss reduction:
+```
+θ_new = θ_old - η · ∂L/∂θ
+```
+
+Gradient boosting does the same thing, but instead of moving parameters, it moves the **prediction function** itself:
+```
+F_m(x) = F_{m-1}(x) + η · h_m(x)
+```
+
+Each new tree `h_m` is a **step in function space** — it directly adds a correction to the current predictions. You're doing gradient descent where the "parameter" is the entire prediction function.
+
+### Why Fit to Negative Gradients?
+
+The gradient of the loss tells you how each prediction needs to change to reduce loss:
+
+```
+r_i = -∂L/∂F(x_i)
+```
+
+If `r_i > 0`, the prediction needs to go up. If `r_i < 0`, it needs to go down.
+
+**The tree's job**: learn a mapping `x → r` so it can compute these corrections for any input, including unseen data. That's why you fit the tree to residuals rather than directly subtracting the gradient — you need a generalizable function, not just per-sample corrections.
+
+### Concrete: L2 Loss vs. Log-Loss
+
+**L2 regression loss**: `L = ½(y - F(x))²`
+
+```
+∂L/∂F = -(y - F(x))
+r_i   = y_i - F(x_i)   ← literal residual
+```
+
+The gradient IS the residual. This is why people say "fit to residuals" — it's only exactly true for L2.
+
+**Log-loss (binary cross-entropy)**: `L = -y·log(p) - (1-y)·log(1-p)`, where `p = σ(F(x))`
+
+```
+∂L/∂F = p - y   =  σ(F(x)) - y
+r_i   = y_i - σ(F(x_i))   ← residual in probability space
+```
+
+The gradient is `y - p` — the error between the true label and the predicted probability. The tree is correcting the **log-odds** `F(x)`, not the probability directly.
+
+This is why gradient boosting handles arbitrary losses: **any differentiable loss gives you a gradient, and the gradient defines what the next tree should fit to.**
+
+| Loss | Pseudo-residual `r_i` | Intuition |
+|---|---|---|
+| L2 | `y - F(x)` | Raw prediction error |
+| Log-loss | `y - σ(F(x))` | Probability error |
+| MAE (L1) | `sign(y - F(x))` | Direction only, not magnitude |
+| Huber | L2 residual if small, L1 sign if large | Robust to outliers |
+
+### Why Not Just Fit One Big Tree?
+
+```
+1 deep tree:
+  → Low bias (fits training data well)
+  → High variance (overfits, generalizes poorly)
+
+100 shallow trees (depth 3):
+  → Each tree: high bias, low variance
+  → Ensemble: low bias (accumulated corrections), low variance (averaging effect)
+```
+
+The learning rate `η` controls step size. Small `η` = many small corrections = smoother path through function space = better generalization.
+
+### XGBoost Second-Order: Why It Helps
+
+Standard GBT uses first-order (gradient only). XGBoost uses a second-order Taylor expansion of the loss:
+
+```
+L(y, F + h) ≈ L(y, F) + g·h + ½·H·h²
+
+where:
+  g = ∂L/∂F       (gradient)
+  H = ∂²L/∂F²     (Hessian — curvature)
+```
+
+This lets XGBoost solve for the **optimal leaf value analytically**:
+
+```
+Optimal leaf weight: w* = -Σg / (Σh + λ)
+```
+
+The Hessian `H` tells you how curved the loss is. High curvature → smaller step. Low curvature → bigger step. This is Newton's method applied to each leaf.
+
+**Example with log-loss:**
+```
+g = p - y          (gradient)
+H = p(1-p)         (Hessian — variance of Bernoulli)
+
+w* = -Σ(p_i - y_i) / (Σ p_i(1-p_i) + λ)
+```
+
+For confident predictions (p ≈ 0 or 1): `H ≈ 0` → denominator large → small step (don't over-correct). For uncertain predictions (p ≈ 0.5): `H ≈ 0.25` → normal step size.
+
+### Summary
+
+| Concept | Intuition |
+|---|---|
+| Pseudo-residuals | Direction each prediction must move to reduce loss |
+| Fit tree to residuals | Learn a generalizable correction function, not just per-sample fixes |
+| L2 residuals = gradients | Only true for L2 — for other losses, residuals are loss-specific |
+| Arbitrary loss support | Any differentiable loss → gradient → tree target |
+| Shallow trees + many iterations | High-bias low-variance learners accumulate into low-bias ensemble |
+| Learning rate | Step size in function space — smaller = smoother path = better generalization |
+| XGBoost Hessian | Curvature-aware step size → faster convergence, analytically optimal leaf values |
+
+---
+
 ## Hyperparameter Interactions
 
 ### Q: How do `n_estimators`, `learning_rate`, and `max_depth` interact?
