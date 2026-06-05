@@ -459,3 +459,107 @@ TreeExplainer exploits the tree's split structure. Each path from root to leaf a
 **Company context:** Reddit (LightGBM is the ranking model standard), Stripe (XGBoost historically, LightGBM in modern stacks).
 
 **Common wrong answer:** "XGBoost uses second-order gradients, LightGBM doesn't." — Both use second-order gradients (Hessian). The key difference is tree-growing strategy (level-wise vs. leaf-wise) and histogram binning for speed.
+
+---
+
+## XGBoost vs. LightGBM (Deep Dive)
+
+### Level-wise vs. Leaf-wise: The Core Difference
+
+**Level-wise (XGBoost)** — breadth-first. Split ALL nodes at depth `d` before going to depth `d+1`:
+
+```
+Depth 0:  [all 1000 samples]
+           split on: amount (gain=100)
+
+Depth 1:  [high amount: 400]  [low amount: 600]
+           split on: country   split on: hour
+           (gain=80)           (gain=12)   ← forced to split even though signal is weak
+
+Depth 2:  [4 nodes, all split regardless of gain]
+```
+
+At depth 3 you always get exactly `2³ = 8` leaves — even if 6 of them are in a low-signal region.
+
+**Leaf-wise (LightGBM)** — best-first. Always split the single leaf with highest gain:
+
+```
+Start:    [all 1000 samples]
+Split 1:  amount (gain=100)  → 2 leaves
+Split 2:  country on high-amount leaf (gain=80)  → 3 leaves
+Split 3:  country on low-amount leaf  (gain=60)  → 4 leaves
+Split 4:  hour on best remaining leaf (gain=45)  → 5 leaves
+```
+
+Same number of splits — but ALL of them went where the signal was highest. No wasted splits on low-gain branches.
+
+**Same leaf budget, different shapes:**
+```
+XGBoost depth=3:       balanced tree, 8 leaves, uniform depth
+LightGBM num_leaves=8: unbalanced tree, 8 leaves, concentrated on high-gain branches
+```
+
+LightGBM extracts more signal per leaf. But: without `num_leaves` constraints, leaf-wise keeps chasing the highest-gain leaf indefinitely → overfits on small datasets. Always set `num_leaves` explicitly.
+
+### Histogram Binning: Why LightGBM Is 5–10× Faster
+
+**XGBoost pre-sort**: to find the best split on feature `amount` across N samples:
+1. Sort all N samples by value: `O(N log N)`
+2. Scan sorted list for best threshold: `O(N)`
+
+**LightGBM histogram**: pre-bucket values into B=255 bins once before training:
+```
+amount values: [1.2, 45.3, 2.1, 999.0, ...]
+→ bin indices: [  0,   12,   0,   254, ...]
+```
+
+Build a histogram of gradients per bin, then scan B=255 bins instead of N=1M samples: `O(N)` build + `O(B)` scan.
+
+**Bonus — histogram subtraction**: parent histogram − left child histogram = right child histogram. Half the histogram-building work is free for every split.
+
+### GOSS: Smarter Row Sampling
+
+Standard `subsample=0.8` randomly discards 20% of rows. GOSS is smarter:
+
+```
+Large gradient samples = model is wrong on them = informative
+Small gradient samples = model already fits them = less informative
+```
+
+GOSS keeps all top-`a%` large-gradient samples + random `b%` of small-gradient samples (upweighted by `(1-a)/b` to correct for bias). Result: same sample count as random subsampling, but focused on hard cases → better gradient signal per sample.
+
+### EFB: Handling Sparse/High-Cardinality Features
+
+One-hot encoding 1000 categories → 1000 binary features, 99.9% zeros, mutually exclusive. EFB bundles them:
+
+```
+[country_US=1, country_UK=0, country_DE=0]
+[country_US=0, country_UK=1, country_DE=0]  →  encoded as [0, 1, 2] in one feature
+[country_US=0, country_UK=0, country_DE=1]
+
+1000 one-hot features → ~50 bundles → histogram over 50 features instead of 1000
+```
+
+XGBoost has no equivalent — it builds a full histogram for each of the 1000 features separately.
+
+### When to Use Each
+
+| Scenario | Choice | Reason |
+|---|---|---|
+| Large dataset (>500k rows) | LightGBM | Histogram + GOSS = much faster |
+| Small dataset (<50k rows) | XGBoost | Leaf-wise overfits without careful tuning |
+| Sparse/high-cardinality categoricals | LightGBM | EFB + native categorical support |
+| Need stable defaults | XGBoost | Level-wise is less sensitive to depth choice |
+
+**Overfitting guard for LightGBM on small data**: always set `num_leaves < 2^(max_depth)` and `min_child_samples ≥ 20`.
+
+### Summary
+
+| Concept | XGBoost | LightGBM |
+|---|---|---|
+| Tree growth | Level-wise (BFS) — uniform depth | Leaf-wise (best-first) — concentrated splits |
+| Split finding | Pre-sort O(N log N) | Histogram O(N) build + O(B) scan |
+| Row sampling | Random subsampling | GOSS — prioritizes large-gradient samples |
+| Sparse features | Histogram per feature | EFB bundles mutually exclusive features |
+| Speed | Baseline | 5–10× faster on large datasets |
+| Overfit risk | Lower | Higher on small data — needs explicit caps |
