@@ -437,6 +437,137 @@ TreeExplainer exploits the tree's split structure. Each path from root to leaf a
 
 ---
 
+## When Trees Beat Neural Nets (Deep Dive)
+
+### Inductive Bias: What Each Model Gets for Free
+
+Every model has built-in assumptions about data structure. The question is whether they match.
+
+**Trees**: axis-aligned splits — each decision is "feature X > threshold."
+**Neural nets**: smooth, continuous functions via weighted sums + activations.
+
+Tabular data is full of threshold effects — exactly what trees model natively:
+
+```
+Fraud detection:
+  amount > $10,000 AND country ∈ {high-risk} → flag
+  Trees: one split on amount, one split on country → done
+  Neural net: must approximate this sharp boundary
+              with many neurons → needs more data, more tuning
+```
+
+### The Irrelevant Feature Problem
+
+You have 200 features. 20 are predictive. 180 are noise.
+
+**Trees**: at each node, evaluate all features and split on the best one. Irrelevant features are never split on — automatically ignored with no explicit feature selection.
+
+**Neural nets**: every input connects to every hidden neuron. All 200 features contribute to every activation:
+
+```
+Neural net with 200 inputs, 128 hidden units:
+  200 × 128 = 25,600 weights in layer 1
+  180 × 128 = 23,040 of those weights should ideally → 0
+  Requires heavy L1/dropout to suppress noise features
+  On small data: not enough signal to reliably zero them out
+```
+
+Trees need zero regularization to ignore irrelevant features — it falls out of the split criterion naturally.
+
+### The Rotation Invariance Problem
+
+Neural nets learn linear combinations of features in the first layer:
+
+```
+h = σ(w₁·age + w₂·income + w₃·credit_score + ...)
+```
+
+This makes the representation **rotation-invariant** — rotating the feature space gives an equivalent model. But tabular features are NOT interchangeable. `age` and `income` have different units, distributions, and semantics. Mixing them linearly forces the network to first learn to "un-mix" them.
+
+Trees make decisions on one feature at a time — they respect feature identity by design:
+
+```
+Tree split: income > $50,000          ← pure, interpretable threshold
+Neural net: 0.3·income + 0.7·age > h  ← mixed, requires learning to separate
+```
+
+On tabular data with heterogeneous features, the axis-aligned constraint is an advantage, not a limitation.
+
+### Feature Heterogeneity: What Mixed Types Actually Cost
+
+A real tabular dataset might have: continuous, binary, ordinal, and high-cardinality categoricals.
+
+**Trees**: split criterion works identically for all types. No preprocessing beyond label encoding.
+
+**Neural nets**: each type needs different treatment:
+```
+Continuous:           normalize to zero mean, unit variance
+Binary:               fine as-is or embed
+Ordinal:              normalize or embed
+High-cardinality cat: embedding layer (adds parameters, needs data to train)
+```
+
+Each preprocessing choice is a hyperparameter. Each embedding layer needs sufficient data. On a 100k-row dataset with 50 mixed-type features, this overhead hurts generalization.
+
+### The Data Size Threshold
+
+```
+Generalization gap ≈ model_complexity / n_samples
+
+LightGBM on 50k rows:   manageable complexity → strong generalization
+Neural net on 50k rows: millions of parameters → large gap without heavy regularization
+```
+
+Empirical crossover points:
+```
+< 100k rows:   LightGBM almost always wins
+100k–1M rows:  LightGBM wins with default tuning; NNs can win with heavy tuning
+> 10M rows:    NNs start to win — capacity advantage emerges
+```
+
+Gorishniy et al. (2021): FT-Transformer and ResNet variants match LightGBM on some datasets but require 3–5× more tuning effort and still lose on datasets with many irrelevant features.
+
+### When Neural Nets Win on Tabular
+
+| Scenario | Why NNs win |
+|---|---|
+| High-cardinality embeddings | Entity embeddings (user ID, item ID) capture latent structure splits can't |
+| Sequential/temporal patterns | LSTMs, Transformers model time dependencies; trees see only snapshots |
+| Transfer learning available | Pre-trained tabular transformers can win with near-zero data |
+| Very large scale (>10M rows) | Capacity advantage; NNs use all data efficiently via mini-batches |
+| Dense cross-feature interactions | If nearly all features interact, smooth functions beat axis-aligned splits |
+
+**The embedding case is the most common exception in production**:
+
+```
+Ranking model (ads, feeds):
+  User ID → 256-dim embedding  (learned from billions of interactions)
+  Item ID → 256-dim embedding
+
+  Trees can't learn these — no split on a 256-dim vector is meaningful
+  → Neural net or DLRM wins here
+
+  But: downstream ranker that takes frozen embeddings as input?
+  → LightGBM on top of frozen embeddings often beats a fine-tuned NN
+```
+
+### Summary
+
+| Advantage | Trees | Neural Nets |
+|---|---|---|
+| Irrelevant features | Ignored automatically | Must regularize away |
+| Threshold effects | Native (axis-aligned splits) | Must approximate with many neurons |
+| Mixed feature types | No preprocessing needed | Normalization + embeddings per type |
+| Small-medium data (<1M rows) | Strong generalization | Needs heavy tuning |
+| Rotation invariance | Respected (one feature at a time) | Violated (linear mixing in layer 1) |
+| High-cardinality embeddings | Can't learn | Native |
+| Temporal/sequential patterns | No | Native (LSTM, Transformer) |
+| Very large data (>10M rows) | Hits capacity ceiling | Scales better |
+
+**Decision rule**: start with LightGBM. Switch to neural net only if: learned embeddings needed, temporal structure present, or >10M rows with compute budget to tune.
+
+---
+
 ## XGBoost vs. LightGBM
 
 ### Q: Key algorithmic differences between XGBoost and LightGBM?
