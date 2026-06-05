@@ -181,6 +181,147 @@ Low τ stretches the space → points that were close together get pulled far ap
 
 ---
 
+## Hard Negative Mining (Deep Dive)
+
+### The Problem With Random Negatives
+
+With random in-batch negatives, the batch looks like:
+
+| User | Positive | Negatives (random) |
+|---|---|---|
+| user₁ (likes Python ML content) | PyTorch tutorial | Justin Bieber music, cat videos, cooking recipes |
+
+The model sees scores like:
+```
+s(u₁, pytorch_tutorial) = 0.82
+s(u₁, justin_bieber)    = 0.10
+s(u₁, cat_video)        = 0.08
+s(u₁, cooking_recipe)   = 0.12
+```
+
+Softmax loss here is nearly zero — the model already confidently ranks the positive first. **Gradient ≈ 0. No learning happens.**
+
+This is the **"easy negative" problem**. The model saturates early and stops improving.
+
+### What Makes a Negative "Hard"
+
+A hard negative is an item that is **semantically close to the user's interest but was not engaged with**:
+
+```
+user₁ (likes Python ML content)
+  Easy negative:   Justin Bieber music     → clearly irrelevant, score = 0.1
+  Hard negative:   JavaScript tutorial     → same domain, wrong language, score = 0.75
+  Hardest:         PyTorch docs (unseen)   → almost identical, score = 0.80
+```
+
+The loss on the hard negative:
+```
+s(u₁, pytorch_tutorial)    = 0.82  ← positive
+s(u₁, javascript_tutorial) = 0.75  ← hard negative
+
+P(positive) = exp(0.82/τ) / (exp(0.82/τ) + exp(0.75/τ))
+            ≈ 0.57 at τ=0.1   ← model barely prefers the positive
+
+Loss = -log(0.57) = 0.56   ← large loss → large gradient → real learning
+```
+
+Compare to easy negative: Loss ≈ -log(0.99) = 0.01.
+
+### The Three Mining Strategies
+
+**1. In-Batch Hard Negatives (free)**
+
+After each forward pass, rank the B-1 negatives by current model score. Use the top-ranked non-positives:
+
+```
+Batch scores for user₁ against all items:
+  [pytorch_tutorial=0.82✅, javascript_tutorial=0.75, tensorflow_guide=0.72, cat_video=0.10 ...]
+
+→ Use javascript_tutorial and tensorflow_guide as negatives instead of random ones
+```
+
+Cost: zero extra forward passes. Just reorder the existing score matrix.
+
+**2. Offline Hard Negative Mining**
+
+Periodically (e.g. nightly), run ANN retrieval for each user against the full index. Sample negatives from positions K+1 to 2K:
+
+```
+Top-K retrieved for user₁:
+  Rank 1:       pytorch_tutorial   ← positive (shown, clicked)
+  Rank 2:       tensorflow_guide   ← hard negative candidate
+  Rank 3:       jax_tutorial       ← hard negative candidate
+  ...
+  Rank K+1–2K:  sampled as training negatives
+```
+
+Why K+1 and not rank 1? Because rank 1–K items might be positives the user hasn't seen yet — see "false hard negatives" below.
+
+**3. Semi-Hard Negatives (margin-based)**
+
+Mine negatives that satisfy:
+
+```
+s(u, v⁻) < s(u, v⁺)   AND   s(u, v⁺) - s(u, v⁻) < margin
+```
+
+The negative is already ranked below the positive, but only barely. Forces the model to increase the margin without pushing past the point where gradients vanish.
+
+| Strategy | Cost | Quality | When to use |
+|---|---|---|---|
+| In-batch hard | Free | Medium | Always — baseline |
+| Offline mining | Expensive (full retrieval) | High | After model is warm |
+| Semi-hard | Medium | Medium-high | Stable training, avoid collapse |
+
+### The False Hard Negative Problem
+
+The most dangerous failure mode:
+
+```
+user₁ has watched 50 Python videos.
+The catalog has 10,000 Python videos.
+user₁ has only seen 50 of them.
+
+If you sample "Python tutorial (unseen)" as a negative:
+  → The user would likely engage with it if shown
+  → You're training the model to push it away
+  → This corrupts the embedding space
+```
+
+**Mitigation strategies:**
+1. **Only use observed negatives**: items explicitly shown but not clicked (impressions without engagement).
+2. **Filter by negative signals**: user blocked, thumbs-down, skip within 2 seconds.
+3. **Skip-K buffer**: don't sample from the top-K retrieved items as negatives.
+4. **Confidence threshold**: only use items where `s(u, v⁻) > threshold` AND there's an observed non-engagement signal.
+
+### Training Curriculum
+
+Don't start with hard negatives. The model needs to learn basic structure first:
+
+```
+Phase 1 (epoch 1–5):   Random in-batch negatives only
+                        → model learns coarse structure
+Phase 2 (epoch 6–15):  In-batch hard negatives added
+                        → model learns fine-grained distinctions
+Phase 3 (epoch 16+):   Offline mined hard negatives
+                        → model pushed to recall@K ceiling
+```
+
+Starting with hard negatives on an untrained model causes training instability — the signal is too noisy before the embeddings are meaningful.
+
+### Summary
+
+| Concept | Intuition |
+|---|---|
+| Easy negative | Score gap is large → loss ≈ 0 → no gradient → no learning |
+| Hard negative | Score gap is small → large loss → large gradient → real learning |
+| False hard negative | Item user would like but hasn't seen — corrupts training if used |
+| In-batch hard | Free reuse of batch scores; always use |
+| Offline mining | Best quality; expensive; use after warm-up |
+| Curriculum | Random → in-batch hard → offline mined |
+
+---
+
 ## ANN Algorithms
 
 ### Q: Compare HNSW, IVF (FAISS), and ScaNN for approximate nearest neighbor search.
