@@ -26,6 +26,142 @@ P1: Meta, Pinterest, Roblox, Netflix.
 
 ---
 
+## Contrastive Loss & In-Batch Negative Sampling (Deep Dive)
+
+### The Goal
+
+Train user embedding `u` and item embedding `v` so that:
+- `u · v` is **high** for items the user engaged with (positives)
+- `u · v` is **low** for items they didn't (negatives)
+
+### The Loss Function (Batch Softmax)
+
+For a batch of B user-item positive pairs `{(u₁,v₁), (u₂,v₂), ..., (uB,vB)}`:
+
+For user `uᵢ`, treat all **other items in the batch** as negatives:
+
+```
+Loss(uᵢ) = -log [ exp(uᵢ·vᵢ / τ) / Σⱼ exp(uᵢ·vⱼ / τ) ]
+```
+
+- `τ` = temperature (usually 0.05–0.1). Lower τ = sharper distribution = harder task.
+- Numerator: score of the positive item.
+- Denominator: score of positive + all B-1 negatives.
+
+This is **cross-entropy where the "correct class" is the positive item** out of B candidates.
+
+### Concrete Example (Batch Size = 4)
+
+| | item₁ (Avengers) | item₂ (Inception) | item₃ (Cooking tutorial) | item₄ (Jazz playlist) |
+|---|---|---|---|---|
+| user₁ (likes action) | ✅ positive | ❌ negative | ❌ negative | ❌ negative |
+| user₂ (likes thrillers) | ❌ negative | ✅ positive | ❌ negative | ❌ negative |
+| user₃ (likes cooking) | ❌ negative | ❌ negative | ✅ positive | ❌ negative |
+| user₄ (likes music) | ❌ negative | ❌ negative | ❌ negative | ✅ positive |
+
+For **user₁**: the model must score Avengers higher than Inception, Cooking tutorial, and Jazz playlist.
+You get **3 negatives for free** from the same batch — no extra data needed.
+With batch size 256, every user gets **255 negatives per step**.
+
+### Why "In-Batch" Is Efficient
+
+**Naive alternative**: for each positive pair, explicitly sample K random items from the catalog as negatives. Requires K extra forward passes per sample.
+
+**In-batch trick**: the B items already in the batch *are* the negatives. The item tower already computed their embeddings for their own positive pairs — reuse them. Zero extra compute.
+
+### The `scale_pos_weight` / Log-Frequency Correction
+
+**Problem**: popular items appear as negatives much more often than rare items (because popular items are disproportionately sampled into batches as positives for other users). The model learns to push popular items' scores down — **popularity bias**.
+
+**Fix**: correct for sampling frequency. If item `v` appears in the batch with probability `p(v)`, subtract a log-frequency correction:
+
+```
+corrected score = uᵢ · vⱼ - log(p(vⱼ))
+```
+
+This debiases the loss so the model doesn't unfairly penalize popular items just for being common in batches.
+
+| Concept | What it does |
+|---|---|
+| Contrastive loss | Trains embeddings to rank positive above negatives |
+| In-batch negatives | Reuses other batch items as free negatives — O(B²) pairs from B forward passes |
+| Temperature τ | Controls how "hard" the task is; lower = sharper penalties |
+| Log-frequency correction | Removes popularity bias from in-batch sampling |
+
+---
+
+## Temperature Parameter — The Math
+
+### Effect on the Distribution
+
+The softmax output assigns probability to each item. Let `sᵢⱼ = uᵢ·vⱼ`:
+
+```
+P(j | uᵢ) = exp(sᵢⱼ / τ) / Σₖ exp(sᵢₖ / τ)
+```
+
+Two items with scores `s₊ = 0.8` (positive) and `s₋ = 0.6` (hard negative):
+
+| τ | P(positive) | P(hard negative) | Effect |
+|---|---|---|---|
+| 1.0 | 0.55 | 0.45 | Soft — barely distinguishes them |
+| 0.1 | 0.98 | 0.02 | Sharp — confident separation |
+| 0.01 | ~1.00 | ~0.00 | Extremely sharp — near one-hot |
+
+For the two-item case this reduces to a sigmoid:
+
+```
+P(positive) = 1 / (1 + exp(-(s₊ - s₋) / τ))
+```
+
+As τ → 0, the gap `(s₊ - s₋)` gets amplified by `1/τ` → sigmoid saturates to 1.
+
+### Effect on Gradients
+
+Gradient w.r.t. positive score `s₊`:
+
+```
+∂Loss/∂s₊ = -(1 - P(positive)) / τ
+```
+
+Gradient w.r.t. a negative score `sⱼ`:
+
+```
+∂Loss/∂sⱼ = P(j | uᵢ) / τ
+```
+
+Both gradients are scaled by `1/τ`:
+- **Low τ** → large gradients → strong updates → large margins forced between positive and negatives.
+- **High τ** → small gradients → weak updates → model tolerates ambiguous scores.
+
+### Two Failure Modes
+
+**τ too high (e.g. 1.0):** distribution near-uniform → tiny gradients → model barely learns.
+
+**τ too low (e.g. 0.001):** gradients vanish for all but the single hardest negative → training unstable, collapses to trivial solutions.
+
+### Geometric Interpretation
+
+Dividing by τ is equivalent to rescaling the embedding space:
+
+```
+uᵢ·vⱼ / τ  =  (uᵢ/√τ) · (vⱼ/√τ)
+```
+
+Low τ stretches the space → points that were close together get pulled far apart → model must learn tighter, more separated clusters.
+
+### Production Values
+
+| System | τ |
+|---|---|
+| SimCLR (vision) | 0.07 |
+| Meta EBR / DPR | 0.05 |
+| Google YouTube two-tower | 0.05–0.1 |
+
+**Rule of thumb**: start at 0.07, tune on recall@K on a validation set. τ is one of the highest-leverage hyperparameters — a poorly chosen value can hurt recall@10 by 5–10% even with a correct architecture.
+
+---
+
 ## Hard Negative Mining
 
 ### Q: What is hard negative mining and why is it necessary for two-tower training?
