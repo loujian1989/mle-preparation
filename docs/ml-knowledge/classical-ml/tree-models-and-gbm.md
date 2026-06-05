@@ -53,17 +53,42 @@ P1: Stripe, Reddit, Shopify, Uber.
 
 ### The Core Analogy: Gradient Descent in Function Space
 
-Standard gradient descent moves **model parameters** in the direction of steepest loss reduction:
+**Setup: predicting house prices, 3 training houses**
+
 ```
-θ_new = θ_old - η · ∂L/∂θ
+F₀ = $300k (initialized to the mean — everyone gets the same prediction)
+
+House A (large, good location):  true=$450k  prediction=$300k  → need +$150k
+House B (small, bad location):   true=$200k  prediction=$300k  → need -$100k
+House C (medium, good location): true=$380k  prediction=$300k  → need  +$80k
 ```
 
-Gradient boosting does the same thing, but instead of moving parameters, it moves the **prediction function** itself:
+**Standard gradient descent (neural net)**: you have weights `[w_size, w_location]`. Gradient descent updates those weights directly. The function changes because the weights change.
+
+**Gradient boosting**: there are no weights to update. Instead, ask: *"what correction function, added on top of $300k, would reduce the loss?"* The answer is the residuals `[+150, -100, +80]`. Fit a tree to those:
+
 ```
-F_m(x) = F_{m-1}(x) + η · h_m(x)
+Tree 1 learns:  large + good location → predict +$120k correction
+                small + bad location  → predict  -$90k correction
+                medium + good         → predict  +$70k correction
+
+F₁ = F₀ + 0.1 × Tree₁
+
+House A: $300k + 0.1×$120k = $312k   (true=$450k — closer)
+House B: $300k + 0.1×(-$90k) = $291k (true=$200k — closer)
+House C: $300k + 0.1×$70k = $307k    (true=$380k — closer)
 ```
 
-Each new tree `h_m` is a **step in function space** — it directly adds a correction to the current predictions. You're doing gradient descent where the "parameter" is the entire prediction function.
+New residuals: `[+138, -91, +73]`. Fit Tree 2 to these. Repeat.
+
+| | Standard GD | Gradient Boosting |
+|---|---|---|
+| What you optimize | Parameters θ ∈ ℝⁿ | Prediction function F: X → ℝ |
+| One step | θ := θ - η·∇L | F := F + η·(new tree) |
+| "Gradient" | ∂L/∂θ — direction in parameter space | residuals — direction in prediction space |
+| Model capacity | Fixed (same network) | Grows — one tree added per step |
+
+**Key insight**: the "gradient" is a vector of per-sample corrections `[+150, -100, +80]`. You can't subtract it directly — that would memorize training data. Instead, fit a tree that *generalizes* the correction to unseen houses. That's the step in function space.
 
 ### Why Fit to Negative Gradients?
 
