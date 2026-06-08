@@ -534,6 +534,146 @@ Low memory + high speed   → accepts lower recall (fewer vectors scanned)
 
 ---
 
+## Dot Product vs. Cosine vs. L2 (Deep Dive)
+
+### What Each Metric Measures Geometrically
+
+```
+Dot product:       u · v = ||u|| · ||v|| · cos(θ)   ← magnitude AND angle
+Cosine similarity: u · v / (||u|| · ||v||) = cos(θ) ← angle only
+L2 distance:       ||u - v||                         ← Euclidean distance
+```
+
+Visualized in 2D:
+
+```
+         v₁ (magnitude=5, θ=10°)
+        /
+       /   ← dot product with u is HIGH (close angle, large magnitude)
+      /
+u ——→
+      \
+       \   ← dot product with u is LOWER (same angle as v₂, but v₂ magnitude=1)
+        \
+         v₂ (magnitude=1, θ=10°)
+```
+
+Cosine(u, v₁) = Cosine(u, v₂) — they're the same angle. Dot product(u, v₁) > dot product(u, v₂) — magnitude of v₁ matters.
+
+**Key question**: is item magnitude a meaningful signal? That determines which metric to use.
+
+---
+
+### Why Magnitude Emerges During Training
+
+In a two-tower model trained with batch softmax, items that appear frequently in the training data receive more gradient updates. More updates → larger weight adjustments → naturally larger embedding magnitude.
+
+```
+Popular item  (1M interactions): many gradient steps → ||v_popular|| ≈ 3.2
+Rare item     (100 interactions): few gradient steps  → ||v_rare||   ≈ 0.8
+```
+
+Under dot product search, popular items get a ~4× head start in ranking before angle even factors in. This is not a bug — it encodes a real signal: popular items are broadly appealing and likely relevant to many users.
+
+Under cosine search, both items are treated as equally relevant candidates at baseline. The rare item competes on angle alone.
+
+---
+
+### Concrete Retrieval Comparison
+
+User embedding: `u = [0.6, 0.8]` (normalized, ||u|| = 1.0)
+
+Three candidate items:
+```
+v₁ = [0.58, 0.81]  popular   → ||v₁|| = 1.0 (normalized)  θ ≈ 1°
+v₂ = [0.55, 0.77]  popular   → ||v₂|| = 2.8 (high magnitude) θ ≈ 3°
+v₃ = [0.59, 0.80]  long-tail → ||v₃|| = 0.3 (low magnitude) θ ≈ 0.5°
+```
+
+Scores under each metric:
+```
+                    v₁       v₂       v₃
+Dot product:       0.999    2.77     0.299   → ranking: v₂ > v₁ > v₃
+Cosine:            0.999    0.998    0.999   → ranking: v₁ ≈ v₃ > v₂
+```
+
+- Dot product: popular v₂ wins even though v₃ has the closest angle to u
+- Cosine: long-tail v₃ competes fairly; popular v₂ slightly penalized for lower angle
+
+Neither is wrong — the choice is a business decision about how much to weight popularity.
+
+---
+
+### The Mathematical Relationship
+
+L2 distance for normalized vectors:
+
+```
+||u - v||² = ||u||² + ||v||² - 2(u·v)
+           = 1 + 1 - 2(u·v)        (if ||u|| = ||v|| = 1)
+           = 2(1 - cos(θ))
+```
+
+For L2-normalized vectors: **minimizing L2 distance = maximizing cosine similarity = maximizing dot product**. They're the same ranking. This is why the standard pattern is:
+
+```python
+# L2-normalize item embeddings before indexing
+item_embs = item_embs / np.linalg.norm(item_embs, axis=1, keepdims=True)
+# Build FAISS inner product index (faster than L2 index)
+index = faiss.IndexFlatIP(d)
+index.add(item_embs)
+# At query time: L2-normalize user embedding too
+user_emb = user_emb / np.linalg.norm(user_emb)
+scores, ids = index.search(user_emb, k=100)
+```
+
+You get cosine similarity semantics (magnitude-invariant) but use FAISS's fast inner product implementation. Best of both worlds.
+
+---
+
+### When to Use Each
+
+**Use dot product (unnormalized) when:**
+- Popularity is a valid relevance signal (most production recommendation systems)
+- You want the model to naturally learn to promote broadly-appealing content
+- Items have very different amounts of training signal and you want that reflected
+
+**Use cosine (or normalized dot product) when:**
+- Long-tail fairness matters — every item should compete on angle alone
+- You're doing semantic search where relevance = topic match, not popularity
+- Items have been trained with equal exposure (e.g., content-based embeddings with no collaborative signal)
+- You're comparing embeddings from different models or modalities
+
+**L2 distance:** rarely used for retrieval. Common in clustering (K-Means) and anomaly detection (distance from cluster centroid). For normalized vectors, identical to cosine — no practical distinction.
+
+---
+
+### The Popularity Bias Trade-off
+
+Dot product implicitly promotes popular items. Whether this is good or bad depends on the use case:
+
+| Use case | Dot product behavior | Good or bad? |
+|---|---|---|
+| New feed ranking | Popular posts surfaced more | Good — popular = broadly relevant |
+| Music discovery | Popular songs dominate | Bad — defeats the purpose of discovery |
+| E-commerce search | Popular products ranked higher | Neutral — depends on query intent |
+| Long-tail creator support | Popular creators over-indexed | Bad — suppresses niche creators |
+
+Production systems often apply an **explicit popularity correction** on top of dot product retrieval: `score = u·v - α·log(popularity)` to partially offset magnitude bias without fully discarding the signal.
+
+---
+
+### Summary
+
+| Metric | Formula | Captures | Use when |
+|---|---|---|---|
+| Dot product | `u·v` | Magnitude + angle | Popularity is a valid signal; production default |
+| Cosine | `u·v / (‖u‖‖v‖)` | Angle only | Long-tail fairness; semantic search |
+| L2 | `‖u-v‖` | Euclidean distance | Clustering; equivalent to cosine on normalized vectors |
+| Normalized dot product | L2-normalize then `u·v` | Angle only (cosine) + fast FAISS IP index | Best of both: cosine semantics + IP speed |
+
+---
+
 ## Embedding Dimensionality
 
 ### Q: How do you choose embedding dimensionality for a two-tower model?
