@@ -26,6 +26,212 @@ P1: Meta, Pinterest, Roblox, Netflix.
 
 ---
 
+## Two-Tower Architecture (Deep Dive)
+
+### Why Separate Towers — The Precomputation Insight
+
+The core design choice is **decoupling user from item at inference time**. Consider the alternative — a single joint model:
+
+```
+Cross-attention model: f(user_features, item_features) → score
+
+Serving 1B items per user request:
+  1B × f(user, item) forward passes
+  At 1ms per pass: 1B ms = 11 days per request  ← completely infeasible
+```
+
+Two-tower breaks the dependency:
+
+```
+User tower: g(user_features) → u          ← computed once per request (~5ms)
+Item tower: h(item_features) → v          ← precomputed offline for all items
+Score:      u · v                          ← ANN search (~5ms)
+
+Total: ~10ms regardless of catalog size
+```
+
+The key constraint this imposes: **the score must decompose as a function of u alone and v alone — no interaction between user and item features inside the model.** The dot product is the only interaction, and it happens outside the network.
+
+---
+
+### What Each Tower Encodes
+
+**User tower** — must capture intent for this specific request, not just who the user is:
+
+```
+Long-term signals (stable across sessions):
+  - Watch history: [video_id₁, video_id₂, ..., video_idₙ]  → mean-pooled embedding
+  - Demographic features: age_bucket, country, device_type
+  - Explicit preferences: subscribed channels, liked topics
+
+Short-term signals (this session):
+  - Last 5 videos watched in current session
+  - Search query (if present)
+  - Time of day, day of week
+```
+
+The user tower fuses all of this into a single d-dim vector. The challenge: the same user has different intent at 8am (commute, short clips) vs. 10pm (relaxing, long-form). The session context must dominate when present.
+
+**Item tower** — must capture what the item is about, independent of any user:
+
+```
+Content signals:
+  - Title, description: text embeddings (BERT or trained from scratch)
+  - Tags, categories: sparse categorical features
+  - Audio/visual features: thumbnail embeddings, audio spectrograms
+
+Engagement signals (aggregated, not user-specific):
+  - Watch-through rate: avg % of video watched across all users
+  - CTR: click rate from impressions
+  - Engagement velocity: how fast it's gaining interactions
+```
+
+Engagement signals are aggregate statistics — they don't leak per-user information and can be precomputed. They encode item quality, which helps the model learn that quality items should be in many users' neighborhoods.
+
+---
+
+### The No-Cross-Feature Limitation — Concrete Impact
+
+Because user and item are only joined at the dot product layer, the model cannot learn:
+
+```
+"This user watches cooking videos AND this video is a cooking tutorial"
+  → requires knowing both simultaneously inside the model
+  → not possible in two-tower (u and v computed independently)
+```
+
+What two-tower CAN learn:
+
+```
+User tower learns: "cooking-interested users have embeddings near [0.3, 0.8, ...]"
+Item tower learns: "cooking tutorials have embeddings near [0.3, 0.8, ...]"
+Score: high because they're in the same neighborhood
+```
+
+The model learns to place users and items in the same neighborhood if the user would engage with the item — but it can only do so based on general affinity, not on specific feature combinations.
+
+**Why this matters in practice:**
+
+```
+User: watches action movies + is in France
+Item A: French action movie  → user would love it (intersection of both interests)
+Item B: American action movie → user likes it (matches one interest)
+Item C: French documentary    → user might watch (matches one interest)
+
+Two-tower: probably retrieves B and C, may miss A
+           because it can't model "French AND action" jointly
+Ranking model (gets top-K from retrieval): can model this interaction
+           → reranks A to the top
+```
+
+This is the fundamental reason the retrieval-ranking pipeline exists: two-tower handles scale, ranking model handles cross-feature interactions.
+
+---
+
+### Training: What the Model Is Actually Learning
+
+Batch softmax trains the model to answer: *"which item in this batch did this user engage with?"*
+
+```
+For user uᵢ with positive item vᵢ in a batch of B=256:
+
+The model must learn:
+  u₁ · v₁ > u₁ · v₂, u₁ · v₃, ..., u₁ · v₂₅₆
+
+This means: user 1's embedding must be closer to item 1's embedding
+            than to any of the other 255 items' embeddings
+```
+
+At convergence, the embedding space self-organizes so that users cluster near the items they engage with:
+
+```
+Embedding space visualization:
+  [action cluster]  u_action_fan₁, u_action_fan₂, v_avengers, v_terminator
+  [cooking cluster] u_chef₁, u_chef₂, v_cooking101, v_pasta_recipe
+  [music cluster]   u_musician₁, v_jazz_intro, v_guitar_lesson
+```
+
+The contrastive loss is what creates this cluster structure — it pulls positive pairs together and pushes everything else apart.
+
+---
+
+### Feature Engineering Choices
+
+**Handling user history (variable length)**:
+
+```
+Option 1: Mean pooling of item embeddings in history
+  h = (1/n) Σ v_i  for all items i in history
+  Fast. Loses ordering. Works well for general taste.
+
+Option 2: Weighted mean (recent items weighted higher)
+  h = Σ wᵢ · vᵢ  where wᵢ = exp(-λ · age_in_days)
+  Better for capturing recency.
+
+Option 3: Transformer over history
+  h = Transformer([v₁, v₂, ..., vₙ])[:, 0]  ← CLS token
+  Captures sequential patterns and item interactions.
+  Expensive — but YouTube, Netflix use this for long-horizon modeling.
+```
+
+**Handling new users (cold start)**:
+
+```
+No history → user tower gets zero or mean-of-all-items embedding
+→ retrieves popular items (broadest appeal)
+→ as interactions accumulate, embedding personalizes
+
+After 1 interaction:  embedding shifts toward that item's neighborhood
+After 10 interactions: reasonable personalization
+After 100 interactions: full personalization
+```
+
+---
+
+### The Full Serving Pipeline
+
+```
+Request arrives: user_id=12345, context={time=9am, device=mobile}
+
+1. User tower inference (~2ms):
+   - Fetch user features from feature store (last 50 interactions, demographics)
+   - Run user tower forward pass → u ∈ R^256
+
+2. ANN retrieval (~5ms):
+   - Query FAISS IVF+PQ index with u
+   - Retrieve top-500 candidate items
+
+3. Candidate scoring + ranking (~20ms):
+   - Fetch item features for 500 candidates
+   - Run full cross-feature ranking model
+   - Output: ranked list of 500 items
+
+4. Business logic filters (~1ms):
+   - Remove already-watched items
+   - Apply content policy filters
+   - Inject diversity (no 10 consecutive cooking videos)
+
+5. Return top-20 to client
+```
+
+Two-tower retrieval (steps 1–2) takes ~7ms. The ranking model (step 3) takes the bulk. The two-tower exists to reduce the ranking model's input from 1B items to 500 — a 2,000,000× reduction.
+
+---
+
+### Summary
+
+| Concept | Intuition |
+|---|---|
+| Why separate towers | Enables offline item precomputation; decouples serving cost from catalog size |
+| Score decomposition | u·v is the only user-item interaction — forces embeddings to carry all signal |
+| No cross-features | Can't model "user likes X AND item is X" jointly — retrieval finds neighborhoods, ranking finds exact matches |
+| User tower | Fuses long-term taste + short-term session intent into one vector |
+| Item tower | Encodes content + aggregate quality signals, precomputed offline |
+| Contrastive training | Creates cluster structure: users near items they engage with |
+| Serving pipeline | Two-tower reduces 1B → 500 candidates; ranking model handles the rest |
+
+---
+
 ## Contrastive Loss & In-Batch Negative Sampling (Deep Dive)
 
 ### The Goal
