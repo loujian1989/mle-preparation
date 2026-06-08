@@ -29,6 +29,119 @@ P1: Stripe, Reddit, Shopify, Uber.
 
 ---
 
+## GBT vs. Random Forest (Deep Dive)
+
+Both build ensembles of trees. The strategies are opposite: RF reduces **variance** by averaging independent trees; GBT reduces **bias** by sequentially correcting errors.
+
+### Bias-Variance: What Each Term Actually Means
+
+```
+Error = Bias² + Variance + Irreducible Noise
+
+Bias:     how wrong is the model on average across all possible training sets?
+Variance: how much does the prediction change across different training sets?
+```
+
+A single deep tree: low bias (memorizes training data), high variance (change 10 training samples → completely different tree).
+
+### How RF Attacks Variance
+
+RF trains T trees on bootstrap samples with random feature subsets, then averages:
+
+```
+F_RF(x) = (1/T) Σ hₜ(x)
+```
+
+For T independent estimators with variance σ²: `Var(average) = σ²/T`. But bootstrap trees aren't truly independent — they're correlated. The actual formula:
+
+```
+Var(RF) = ρ·σ² + (1-ρ)·σ²/T
+
+ρ = correlation between any two trees
+```
+
+- First term (`ρ·σ²`): irreducible floor — correlated predictions can't be averaged away regardless of T
+- Second term (`(1-ρ)·σ²/T`): shrinks to 0 as T → ∞
+
+**Why RF uses random feature subsets** (`max_features=√p`): forces trees to use different features → lower ρ → lower variance floor. Beyond ~200 trees, diminishing returns as the second term approaches zero.
+
+**What RF doesn't fix**: bias. Averaging doesn't change the average prediction — only stabilizes it. If every tree systematically underpredicts high-value houses, the average still underpredicts.
+
+### How GBT Attacks Bias
+
+GBT fits each tree to the current model's residuals — directly correcting systematic errors:
+
+```
+After tree 1:  House A: $312k (true $450k, error=$138k remaining)
+After tree 50: House A: $445k (true $450k, error=$5k)  ← bias nearly eliminated
+```
+
+RF at iteration 50: still averaging T independent trees with unchanged per-tree bias.
+
+**What GBT doesn't fix well**: variance. Fitting to residuals that include noise means GBT eventually memorizes label noise:
+
+```
+Clean label:  y = true_value       → GBT converges to true_value ✓
+Noisy label:  y = true_value + ε   → GBT converges to true_value + ε ✗
+```
+
+RF is largely immune — noise is random across bootstrap samples, so it averages out.
+
+### The Label Noise Failure Mode
+
+```
+Scenario: fraud labels, 5% of non-fraud cases mislabeled.
+
+RF:  Mislabeled samples appear in ~63% of trees but in different contexts.
+     Averaging washes out the random noise signal → robust.
+
+GBT: Mislabeled sample has high residual → tree explicitly corrects for it.
+     With enough iterations, GBT memorizes the mislabeled samples.
+     Symptom: validation AUC plateaus while training AUC keeps rising.
+```
+
+Fix for GBT on noisy data: aggressive early stopping + high `min_child_samples`. But these also limit bias reduction — you're fighting the core mechanism.
+
+### Out-of-Bag Evaluation — RF's Hidden Advantage
+
+Each RF tree trains on ~63% of samples (bootstrap). The remaining ~37% are out-of-bag:
+
+```
+For each sample i:
+  Collect predictions from all trees that did NOT train on i (~37% of trees)
+  Average those predictions → OOB prediction
+  Compare to true label → OOB error ≈ held-out validation error
+```
+
+Free validation with no data split required — valuable when data is small. GBT has no equivalent.
+
+### Hyperparameter Sensitivity
+
+RF is nearly self-tuning:
+```
+n_estimators:  more = better, diminishing returns after ~200. Set 500 and forget.
+max_features:  √p (classification), p/3 (regression). Rarely needs tuning.
+max_depth:     None (fully grown) usually works. Bagging handles overfitting.
+```
+
+GBT has 5+ coupled parameters (learning rate, n_estimators, max_depth, subsample, min_child_weight). Poorly tuned GBT easily underperforms RF.
+
+**Practical implication**: 2 hours to build → RF wins. 2 days, care about top accuracy → tuned GBT wins.
+
+### Summary
+
+| Concept | RF | GBT |
+|---|---|---|
+| Error reduction | Reduces variance via averaging | Reduces bias via residual correction |
+| Bias | Higher — averaging doesn't fix systematic errors | Lower — each tree targets remaining errors |
+| Variance | Lower — decorrelated averaging, ρ·σ² floor | Higher — sequential fitting amplifies noise |
+| Label noise | Robust — noise averages out across bootstrap samples | Vulnerable — high-residual noisy labels get memorized |
+| OOB evaluation | Free — 37% per tree | Not available |
+| Hyperparameter sensitivity | Low | High — 5+ coupled parameters |
+| When to use | Quick baseline, noisy labels, small data | Clean data, time to tune, need maximum accuracy |
+
+---
+
 ## GBT Internals
 
 ### Q: How does gradient boosting work? Why does it minimize an arbitrary loss function?
