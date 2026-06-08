@@ -194,3 +194,344 @@ MLS5 Ads role explicitly requires "online and offline evaluation frameworks."
 **Company context:** Netflix MLS5 Ads (explicitly: "online and offline evaluation frameworks"), Reddit (ads auction), Meta, Pinterest.
 
 **Common wrong answer:** "I'd run a 7-day A/B test with conversion as the metric." — Truncated attribution window → wrong metric. Shared auction → control contamination. Staff answer addresses both.
+
+---
+
+## Experiment Design Fundamentals (Deep Dive)
+
+### The Power Calculation — Intuition Behind Each Term
+
+```
+n = (z_α/2 + z_β)² × 2σ² / δ²
+
+z_α/2 = 1.96:  how far out on the null distribution to set the rejection threshold
+z_β = 0.84:    how far the treatment distribution must be to have 80% power
+σ²:            variance of your metric per observation
+δ:             minimum detectable effect (MDE) — smallest lift that matters
+```
+
+The `δ²` in the denominator is the critical relationship: **halving the MDE quadruples the required sample size**. This is why "detect a 0.1% improvement" is 100× more expensive than "detect a 1% improvement."
+
+```
+Conversion rate experiment, p=0.05 (5% baseline), δ=0.005 (0.5% absolute lift):
+  σ² ≈ p(1-p) = 0.05 × 0.95 = 0.0475
+  n = (1.96+0.84)² × 2×0.0475 / (0.005)² = 7.84 × 0.095 / 0.000025 ≈ 29,800 per arm
+
+Same experiment, δ=0.001 (0.1% absolute lift):
+  n = 7.84 × 0.095 / (0.001)² ≈ 745,000 per arm  ← 25× more users
+```
+
+**The MDE is a business input, not a statistical choice.** "What's the smallest effect we'd actually ship?" — below that effect size, the product change isn't worth the engineering cost regardless of significance.
+
+### Sample Ratio Mismatch (SRM) — Why It Invalidates Everything
+
+If you assign 50/50 but observe 55/45, the experiment is broken:
+
+```
+Root causes:
+  - Bot/crawler traffic filtered differently per variant
+  - Redirect delays causing users to drop out of treatment
+  - Feature flags applied incorrectly (some treatment users get control experience)
+  - Logging bugs (treatment events logged at lower rate)
+```
+
+SRM test: Chi-squared test on the observed vs. expected assignment counts. p < 0.001 → SRM detected → invalidate and debug before interpreting any metric.
+
+**Why SRM invalidates everything**: if assignment probabilities differ, the randomization guarantee breaks. You no longer have a clean causal comparison. Even if the primary metric looks good, you can't trust it.
+
+### Guardrail Metrics — Why You Need Them Pre-Committed
+
+```
+Experiment: new recommendation algorithm
+Primary: CTR ↑ 3% (significant, exciting)
+Guardrail check: session_depth ↓ 8% (users get what they want faster, then leave)
+                 p99_latency ↑ 40% (algorithm is slower)
+
+Without pre-committed guardrails: team ships because "CTR improved"
+With pre-committed guardrails: experiment fails on session_depth → debug
+```
+
+Post-hoc guardrail selection is rationalization. If guardrails are defined after results are seen, they'll be chosen to support the preferred conclusion.
+
+---
+
+## CUPED (Deep Dive)
+
+### Why It Works — The Variance Decomposition
+
+Each user's outcome Y has two components:
+
+```
+Y = baseline_behavior + treatment_effect + noise
+
+baseline_behavior: how this user always behaves (their "type")
+treatment_effect:  the causal impact of the treatment
+noise:             random variation this session
+```
+
+Standard A/B: both treatment and control groups have high baseline variance (some users are always heavy engagers, some are always light). This baseline variance makes it hard to detect the treatment effect.
+
+CUPED removes the baseline component:
+
+```
+Y_cuped = Y - θ·X   where X = same metric in pre-experiment period
+
+Var(Y_cuped) = Var(Y) + θ²·Var(X) - 2θ·Cov(Y,X)
+Minimized at θ* = Cov(Y,X)/Var(X)  →  Var(Y_cuped) = Var(Y)·(1 - ρ²)
+```
+
+`ρ` = correlation between pre-experiment and experiment-period metrics. Typical values:
+
+```
+Daily active users:   ρ ≈ 0.8 → Var reduction = 1 - 0.64 = 36%
+Weekly watch time:    ρ ≈ 0.7 → Var reduction = 1 - 0.49 = 51%
+Rare events (churn):  ρ ≈ 0.2 → Var reduction = 1 - 0.04 = 4%  ← barely helps
+```
+
+High-frequency stable metrics benefit most. Rare, bursty events have low autocorrelation — CUPED doesn't help.
+
+### CUPAC — ML-Based Extension
+
+CUPED uses a single pre-experiment metric as the covariate. CUPAC replaces it with an ML model's prediction:
+
+```
+CUPED:  Y_cuped = Y - θ·X_pre
+CUPAC:  Y_cuped = Y - θ·f(X_pre, X_demographics, X_device, ...)
+```
+
+`f` is a gradient boosted model trained to predict Y from all available pre-experiment features. If `f` explains 80% of variance in Y (vs. 50% for CUPED), variance reduction is 80% vs. 50%.
+
+**Used at**: Airbnb (reduced experiment runtime by 50%), LinkedIn, Netflix.
+
+---
+
+## Multiple Testing (Deep Dive)
+
+### The 64% False Positive Problem — Concrete
+
+20 metrics tested at α=0.05:
+
+```
+P(at least one false positive) = 1 - P(no false positives)
+                                = 1 - (1 - 0.05)^20
+                                = 1 - 0.95^20
+                                = 1 - 0.358
+                                = 0.642  ← 64% chance of a spurious finding
+```
+
+Every time you add a metric to the dashboard, you're increasing this probability. 50 metrics → `1 - 0.95^50 = 92%` false positive rate.
+
+### Bonferroni vs. FDR — When Each Applies
+
+**Bonferroni** controls FWER (probability of ANY false positive):
+```
+α_adjusted = 0.05 / 20 = 0.0025 per test
+Each metric needs p < 0.0025 to be declared significant
+```
+
+Very conservative — assumes tests are independent. For product metrics (CTR, session_depth, latency all tend to move together), this is too strict. You'll miss real effects.
+
+**Benjamini-Hochberg** controls FDR (expected fraction of discoveries that are false):
+```
+Sort p-values: p₁ ≤ p₂ ≤ ... ≤ pₘ
+Reject H₀ for all i where pᵢ ≤ (i/m)·α
+
+Example (5 metrics, α=0.05):
+  p₁=0.001 ≤ (1/5)×0.05=0.010  ✓ significant
+  p₂=0.013 ≤ (2/5)×0.05=0.020  ✓ significant
+  p₃=0.031 ≤ (3/5)×0.05=0.030  ✗ not significant (stops here)
+```
+
+More liberal than Bonferroni, appropriate when tests are correlated (product metrics).
+
+**Staff-level answer**: neither correction is the real fix. The fix is **one primary metric, decided before the experiment**. Corrections are band-aids for poor experiment design.
+
+---
+
+## SUTVA Violations (Deep Dive)
+
+### The Marketplace Interference Mechanism
+
+In a two-sided marketplace (Uber, Airbnb), user outcomes depend on the entire system state:
+
+```
+Treatment: new matching algorithm → treatment drivers get 20% more rides
+Effect on control: same driver pool, but treatment drivers are more efficient
+                   → they take rides that would have gone to control drivers
+                   → control drivers get fewer rides
+
+Result:
+  Treatment: +20% rides
+  Control:   -5% rides  ← harmed by treatment
+  Naive ATE estimate: +20% - (-5%) = +25%  ← overestimates true effect
+
+True incremental effect: what would happen if ALL drivers were on treatment?
+  Answer is somewhere between 0% and 25%, not 25%.
+```
+
+### Switchback Experiments — How They Work
+
+Used at Uber, Lyft. Time is the randomization unit instead of user:
+
+```
+Time windows (e.g. 30-minute slots):
+  8:00-8:30:  Control   (all users see control algorithm)
+  8:30-9:00:  Treatment (all users see treatment algorithm)
+  9:00-9:30:  Control
+  9:30-10:00: Treatment
+  ...
+```
+
+At any given time, ALL users are in the same condition → no within-period contamination. The interference is temporal (state from control period affects treatment period), but this can be modeled with time-series methods.
+
+**Why this works for marketplaces**: during a treatment window, the marketplace dynamics are entirely governed by the treatment algorithm. No mixing of treatment and control supply/demand.
+
+**Tradeoff**: requires assuming temporal interference decays quickly (no long-term carryover between windows). If a treatment window causes driver positioning changes that persist into the next control window, estimates are biased.
+
+---
+
+## Novelty Effect (Deep Dive)
+
+### How to Detect It — The Time-Sliced Effect Plot
+
+Plot the treatment effect (treatment − control) as a function of day-in-experiment:
+
+```
+Day 1:  +8% CTR
+Day 2:  +7%
+Day 3:  +6%
+Day 7:  +4%
+Day 10: +3%
+Day 14: +2.5%  ← stabilizing
+Day 21: +2.5%  ← stable
+
+Conclusion: real effect is ~2.5%, not 8%. First 3 days inflated by novelty.
+```
+
+Versus a real effect:
+```
+Day 1:  +3% CTR
+Day 7:  +3%
+Day 14: +3%  ← flat line = no novelty effect
+```
+
+### New User Cohort Analysis — The Cleanest Test
+
+New users who joined during the experiment have no prior experience with the old product:
+
+```
+Existing users in treatment: they notice the change → novelty response
+New users in treatment:       they have no baseline → no novelty response
+
+If new users show same effect as existing users → effect is real, not novelty
+If new users show smaller effect → novelty effect confirmed
+```
+
+This is why new user cohort analysis is the most rigorous novelty test — it directly compares users with and without prior expectations.
+
+---
+
+## Interleaving (Deep Dive)
+
+### Team-Draft Interleaving — The Mechanics
+
+```
+Model A ranking:  [item₁, item₂, item₃, item₄, item₅]
+Model B ranking:  [item₃, item₁, item₅, item₂, item₄]
+
+Team-draft process:
+  Round 1 (A picks first): A picks item₁ → merged list: [item₁]
+  Round 1 (B picks):       B picks item₃ → merged list: [item₁, item₃]
+  Round 2 (A picks):       A picks item₂ → merged list: [item₁, item₃, item₂]
+  Round 2 (B picks):       B picks item₅ → merged list: [item₁, item₃, item₂, item₅]
+  ...
+
+User sees merged list: [item₁, item₃, item₂, item₅, item₄]
+User clicks item₃ → Model B gets credit (B originally ranked it higher)
+User clicks item₁ → Model A gets credit
+```
+
+After many queries: A wins if its items get more clicks in the merged list.
+
+### Why It's 10–100× More Sensitive
+
+Standard A/B: user A sees Model A, user B sees Model B. The comparison is confounded by user differences (user A and B have different engagement patterns). You need many users to wash out user variance.
+
+Interleaving: the SAME user sees items from both models in the SAME session. User variance cancels exactly. The only difference is which model's item the user preferred.
+
+```
+Variance of A/B treatment effect estimate: σ²_user + σ²_treatment
+Variance of interleaving effect estimate:  σ²_treatment only
+
+σ²_user is typically 10-100× σ²_treatment for engagement metrics
+→ interleaving is 10-100× more efficient
+```
+
+**The limitation**: interleaving only measures preference ("which ranking is better?"), not magnitude ("by how much does CTR improve?"). Use interleaving to filter quickly, then full A/B for magnitude measurement before shipping.
+
+---
+
+## A/B Testing in Ads (Deep Dive)
+
+### The Attribution Window Problem — Mechanics
+
+```
+Timeline:
+  Day 0:   user clicks ad
+  Day 0-7: user considers purchase
+  Day 7:   user converts (buys)
+
+Experiment runtime: 7 days
+Measurement at day 7: Day 7 conversions only captured for users who clicked on day 0
+
+Users who clicked on day 6: their conversions haven't happened yet
+→ treatment group's conversion rate is systematically underestimated
+→ the underestimation is WORSE for treatment if treatment drove more late-session clicks
+```
+
+The fix:
+
+```
+Experiment runtime: 7 days
+Attribution window: 30 days
+Total wait: 37 days before analysis
+
+During the 7-day experiment: record which users were assigned to which arm
+During the 30-day window: wait for conversions to roll in
+At day 37: compute conversions per arm using full 30-day attribution
+```
+
+**Survival model alternative**: instead of waiting 30 days, model the conversion time distribution and estimate P(convert | time elapsed, treatment) using a survival model. Provides early estimates with uncertainty bounds.
+
+### The Shared Auction Problem — Who Gets Harmed
+
+```
+Advertiser A (treatment): new bidding algo bids aggressively
+Advertiser B (control):   old bidding algo
+
+In each auction:
+  If A and B compete for the same impression:
+    A bids higher → A wins more often
+    B now faces a more competitive auction → B's win rate drops
+
+Naive ATE:
+  Treatment: +15% ROAS
+  Control:   -8% ROAS  ← harmed by treatment
+  ATE = +23%  ← overestimates true incremental value
+
+True effect: what would happen if ALL advertisers used the new algo?
+  No control group to contaminate → true effect is probably ~10-15%, not 23%
+```
+
+**Fix — advertiser-level holdout**:
+
+```
+Assign advertisers (not users) to treatment/control.
+All of advertiser A's impressions use new algo.
+All of advertiser B's impressions use old algo.
+
+Advertisers still compete in the same auctions, but:
+  - Each advertiser's own performance is internally consistent
+  - You measure "does advertiser A do better under new algo vs. advertiser B under old algo?"
+  - Contamination exists but is symmetric and estimable
+```

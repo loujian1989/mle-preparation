@@ -117,3 +117,312 @@ P1: Stripe, Shopify, Uber, Reddit.
 **Company context:** Stripe (transaction time patterns), Shopify (merchant activity), Uber (ride timing), Reddit (posting patterns).
 
 **Common wrong answer:** "I'd use the raw timestamp." — Raw timestamp is a non-periodic integer with no relationship encoding. Cyclical encoding, recency, and velocity are the production standard.
+
+---
+
+## Leakage (Deep Dive)
+
+### Why Leakage Is Insidious — It Always Improves Offline Metrics
+
+Leakage makes a model look better in evaluation while being useless or harmful in production:
+
+```
+Churn model with leakage feature "support_ticket_in_next_30_days":
+  Offline AUPRC: 0.91  ← suspiciously high
+  Production:    feature doesn't exist at prediction time
+                 model falls back to random guessing when deployed
+```
+
+The signal is real — it just comes from the future. The model learns it perfectly, passes all offline tests, and fails at serving time.
+
+### The Temporal Leakage Pattern — Most Common in Practice
+
+The root cause: aggregating data without respecting the prediction cutoff:
+
+```
+Prediction task: will this user churn in the next 30 days?
+Observation cutoff: day T (when prediction is made)
+
+WRONG — temporal leakage:
+  Feature: avg_session_length_last_90_days
+  If "last 90 days" is computed relative to label time (day T+30),
+  it includes session data from days T to T+30 — after prediction time.
+
+RIGHT:
+  Feature: avg_session_length_from_day(T-90)_to_day(T)
+  Only uses data available when prediction is made.
+```
+
+In code, this typically happens when joins are written carelessly:
+
+```python
+# WRONG: computes aggregate over all time including future
+features = events.groupby('user_id').agg({'session_length': 'mean'})
+
+# RIGHT: filter to observation window first
+features = events[events['event_date'] <= observation_date] \
+               .groupby('user_id').agg({'session_length': 'mean'})
+```
+
+### Detection Protocol
+
+1. **Implausibly high performance**: AUPRC > 0.90 on a hard problem → investigate. Real fraud models rarely exceed 0.80.
+2. **Feature correlation with label**: correlation(feature, label) > 0.5 → trace the feature's derivation.
+3. **Feature importance suspicion**: a feature you didn't expect to be strong is the #1 feature. Investigate its construction.
+4. **Sanity check**: remove the suspicious feature and re-evaluate. If AUPRC drops dramatically, it was doing the work.
+5. **Point-in-time validation**: rebuild the feature at several historical dates using only data available at that date. If feature values differ from the "leaky" version, leakage confirmed.
+
+### Row-Level Leakage — The Preprocessing Trap
+
+```python
+# WRONG: fit scaler on full dataset before split
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)  # uses test set statistics!
+X_train, X_test = train_test_split(X_scaled)
+
+# RIGHT: fit only on training data
+X_train, X_test = train_test_split(X)
+scaler = StandardScaler()
+X_train_scaled = scaler.fit_transform(X_train)   # fit on train
+X_test_scaled = scaler.transform(X_test)          # apply to test
+```
+
+The test set's mean and variance influenced the scaler → each test sample is partially described by its own statistics → subtle leakage that inflates performance.
+
+---
+
+## Target Encoding (Deep Dive)
+
+### Why Naive Target Encoding Leaks — The Single-Sample Case
+
+For a category with one training sample:
+
+```
+merchant_id = "XYZ123", appears once, label = 1 (churned)
+Naive encoding: mean(label for XYZ123) = 1.0/1 = 1.0
+```
+
+The model receives `1.0` as the feature value exactly when the label is `1`. For this sample, the feature IS the label. The model learns the trivial mapping `feature=1.0 → label=1`. On new data, `XYZ123` won't have `feature=1.0` unless it also churned.
+
+### K-Fold Target Encoding — How the Out-of-Fold Fix Works
+
+```
+Split training data into 5 folds.
+
+For sample i in fold k:
+  encoding(i) = mean(label for all samples NOT in fold k with same category)
+
+This means: sample i's encoding never uses its own label.
+```
+
+The model trains on encodings that were computed without data leakage. At inference, use the global mean from all training data (all 5 folds combined).
+
+### Smoothing — Preventing Noise From Rare Categories
+
+Without smoothing: a category that appears once with label=1 gets encoding=1.0 — noise masquerading as signal.
+
+Smoothed encoding:
+
+```
+enc_k = (n_k · mean_k + m · global_mean) / (n_k + m)
+
+n_k:          count of samples in category k
+mean_k:       raw target mean for category k
+global_mean:  overall target mean (e.g. 0.05 for 5% churn)
+m:            smoothing parameter (typically 10–300)
+
+n_k=1, mean_k=1.0, global_mean=0.05, m=100:
+enc_k = (1×1.0 + 100×0.05) / (1+100) = 6.0/101 ≈ 0.059  ← pulled to global mean
+
+n_k=1000, mean_k=0.20, global_mean=0.05, m=100:
+enc_k = (1000×0.20 + 100×0.05) / (1000+100) = 205/1100 ≈ 0.186  ← close to category mean
+```
+
+Rare categories get pulled toward the global mean. High-frequency categories retain their category-specific mean. `m` controls how many samples you need before trusting the category-specific mean.
+
+---
+
+## Log Transform (Deep Dive)
+
+### When Skewness Actually Hurts — Linear Models vs. Trees
+
+**Linear models** (logistic regression, linear SVM): assume linear relationship between feature and output. For a right-skewed feature:
+
+```
+transaction_amount: [1, 5, 10, 50, 500, 10000]
+label (fraud):      [0, 0,  0,  0,   1,     1]
+
+Linear model: w × amount + b
+  To separate fraud (amount>100) from non-fraud (amount<100):
+  w must be large (to create a big decision boundary)
+  But then the few extreme values (10000) dominate the loss
+  → model is numerically unstable, weights blow up
+
+Log transform: [0, 1.6, 2.3, 3.9, 6.2, 9.2]
+  A simple threshold at ~4.6 separates the classes cleanly
+  w can be small → stable optimization
+```
+
+**Tree models**: split on `amount > 500`. The actual scale of values doesn't matter — only the ordering does. Log transform preserves ordering → same splits → identical model. Zero benefit.
+
+### The Multiplicative Interaction — Help or Hurt?
+
+Two features with a multiplicative relationship:
+
+```
+revenue = price × quantity
+log(revenue) = log(price) + log(quantity)  ← additive in log space
+```
+
+For linear models: instead of needing an interaction term `w_pq × price × quantity`, the model can use two additive terms. Simpler model, easier to regularize.
+
+For tree models: this doesn't matter — trees naturally discover the multiplicative interaction through nested splits (`price > X` then `quantity > Y`).
+
+### The log1p Pattern and Negative Values
+
+```python
+# Handles zeros (log(0) = -∞)
+np.log1p(x)   # = log(1 + x), defined at x=0, returns 0
+
+# Handles negatives (e.g., P&L, signed returns)
+np.sign(x) * np.log1p(np.abs(x))   # symmetric log transform
+```
+
+The symmetric log transform preserves the sign while compressing both tails. Useful for financial features where negative values are meaningful (loss-making merchants).
+
+---
+
+## Missing Values (Deep Dive)
+
+### Why MNAR Is the Most Dangerous Pattern
+
+Three types of missingness:
+
+```
+MCAR (Missing Completely At Random):
+  A sensor randomly glitches. P(missing) independent of everything.
+  Simple imputation is fine. No information in missingness.
+
+MAR (Missing At Random):
+  Income is more often missing for younger users.
+  P(missing | age) is predictable. Missingness is explained by observed data.
+  Impute, optionally add is_missing flag.
+
+MNAR (Missing Not At Random):
+  High-risk transactions have incomplete merchant data (fraudsters provide less info).
+  P(missing) depends on the unobserved true value.
+  Missingness IS the signal. Must add is_missing flag.
+```
+
+**The MNAR trap**: if you impute MNAR values with the mean and don't add a flag, you've erased the signal. The model sees mean-imputed values for both high-risk (MNAR) and randomly-missing (MCAR) cases — they look identical. The pattern that distinguishes them (missing vs. not) is gone.
+
+```python
+# Right way for a potentially MNAR feature
+df['amount_missing'] = df['merchant_revenue'].isna().astype(int)
+df['merchant_revenue'] = df['merchant_revenue'].fillna(df['merchant_revenue'].median())
+# Model now sees both the imputed value AND the missing indicator
+```
+
+### XGBoost's Learned Direction — What It Actually Does
+
+XGBoost doesn't just route NaN values to a default branch. It learns which direction (left or right at each split) minimizes loss for NaN values:
+
+```
+Split: amount > $500
+  Left subtree:  low-amount transactions → mostly legit
+  Right subtree: high-amount transactions → more fraud
+
+For missing amount values, XGBoost tries both directions during training:
+  Route NaN left → compute gain
+  Route NaN right → compute gain
+  Pick the direction with higher gain
+
+Result: if NaN amount correlates with fraud, XGBoost learns to route NaN right
+        effectively treating "missing amount" as a signal for the fraud branch
+```
+
+This is why XGBoost/LightGBM often outperform sklearn's GBT on real data — real data has meaningful missing values, and the learned direction captures the MNAR signal automatically.
+
+---
+
+## Normalization (Deep Dive)
+
+### Why Distance-Based Models Need Normalization — Concrete Math
+
+KNN: distance between sample A `[income=100000, age=30]` and sample B `[income=100001, age=60]`:
+
+```
+Without normalization (raw values):
+  L2 distance = sqrt((100000-100001)² + (30-60)²)
+              = sqrt(1 + 900) ≈ 30
+  Age difference of 30 years contributes 900 to distance.
+  Income difference of $1 contributes 1 to distance.
+  KNN is effectively doing age-only nearest neighbor.
+
+With StandardScaler (both features ~ N(0,1)):
+  L2 distance = sqrt((0.001)² + (2.0)²) ≈ 2.0
+  Both features now on comparable scale.
+```
+
+The model's notion of "nearest" matches the semantics of the problem.
+
+### RobustScaler — When Outliers Are Real
+
+Transaction amounts: `[10, 15, 12, 14, 11, 50000]`
+
+StandardScaler: mean ≈ 8352, std ≈ 20397. Every normal transaction scales to ≈ -0.41. The entire non-outlier distribution is compressed into a tiny range.
+
+RobustScaler: median = 13, IQR = 3. Normal transactions scale to `[-1, 0.67]`. The outlier scales to ≈ 16,662 — still extreme, but the non-outlier distribution is readable.
+
+```
+When to use:
+  StandardScaler:  no significant outliers (e.g. age, normalized scores)
+  RobustScaler:    known outliers that are real (amount, count, duration)
+  MinMaxScaler:    bounded-range features with known min/max (pixel values, percentiles)
+```
+
+---
+
+## Temporal Features (Deep Dive)
+
+### Why Cyclical Encoding Is Necessary — The Distance Problem
+
+Raw hour encoding: `hour=23` and `hour=0` are 1 apart in real time but 23 apart numerically. A linear model treats them as very different. A distance-based model places them far apart.
+
+Cyclical encoding maps to a unit circle:
+```
+sin_hour = sin(2π × hour / 24)
+cos_hour = cos(2π × hour / 24)
+
+hour=0:  sin=0.00,  cos=1.00
+hour=6:  sin=1.00,  cos=0.00
+hour=12: sin=0.00,  cos=-1.00
+hour=18: sin=-1.00, cos=0.00
+hour=23: sin=-0.26, cos=0.97  ← close to hour=0 ✓
+```
+
+The Euclidean distance between hour=23 and hour=0 is:
+```
+sqrt((0.00-(-0.26))² + (1.00-0.97)²) = sqrt(0.068 + 0.001) ≈ 0.26  ← small, correct
+```
+
+**Why two features (sin AND cos)?** One feature is ambiguous: `sin(hour=2) = sin(hour=10)`. You need both sin and cos to uniquely identify the position on the circle.
+
+### Velocity Features — The Fraud Detection Workhorse
+
+Velocity = count (or sum) of events in a rolling time window, computed per entity:
+
+```
+transactions_1h:   how many transactions by this card in the last 1 hour
+transactions_24h:  how many transactions by this card in the last 24 hours
+amount_7d:         total spend by this card in the last 7 days
+```
+
+These are the most predictive fraud features because:
+- Normal behavior: 1-3 transactions per day, $50-200 each
+- Card testing: 20+ transactions in 1 hour, all for small amounts
+- Account takeover: large transaction spike after months of inactivity
+
+**Velocity ratio** is even more powerful: `transactions_1h / (transactions_24h + 1)`. A ratio near 1.0 means all of today's activity happened in the last hour — strong fraud signal.
+
+**Implementation**: requires a point-in-time feature store to compute at prediction time without leakage. The 1h window must use only events with timestamp < prediction_time.

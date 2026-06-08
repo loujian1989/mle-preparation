@@ -105,3 +105,140 @@ P0: Universal. OpenAI, Meta, Stripe, Reddit, Uber, Shopify, Pinterest.
 **Company context:** OpenAI, Meta (transformer training).
 
 **Common wrong answer:** "Weight decay and L2 regularization are the same thing." — True for SGD, false for Adam/AdamW. This is a Staff-level discriminator.
+
+---
+
+## L1 vs. L2 (Deep Dive)
+
+### The Geometric Intuition — Why L1 Gives Sparsity
+
+Both regularizers constrain the weights to lie within a ball. The loss contours are ellipsoids. The optimal solution is where the loss contour first touches the constraint ball:
+
+```
+L2 (sphere):            L1 (diamond in 2D):
+   /---\                      /\
+  / opt \   ← off-axis       /  \
+  \ (dense)                 / opt \  ← hits corner
+   \---/                    \ (sparse!)
+                              \  /
+                               \/
+```
+
+The L2 ball is smooth — the loss contour meets it at a generic curved surface point where both `w₁` and `w₂` are nonzero. The L1 ball has corners at the coordinate axes. The loss contour is likely to hit a corner, where one coordinate is exactly zero.
+
+**Why corners cause sparsity — the subgradient argument:**
+
+For L2: gradient of penalty at `w_i = 0` is `2λw_i = 0`. The penalty provides no force pushing `w_i` to exactly zero.
+
+For L1: subgradient of `|w_i|` at `w_i = 0` is any value in `[-λ, +λ]`. The optimizer can choose the subgradient to exactly cancel the loss gradient, pinning `w_i = 0`. This is the mechanism that achieves exact zeros.
+
+### L2 Divergence Prevention — The Equilibrium Argument
+
+On linearly separable data, logistic regression loss decreases forever as weights grow:
+
+```
+As ||w|| → ∞:  σ(w·x) → 0 or 1 for all training points
+               log-loss → 0 for all training points
+               gradient of loss → 0 but never reaches it
+```
+
+**With L2**: total gradient = data gradient + λ·w. As `w` grows, `λ·w` grows proportionally. Eventually `λ·w ≈ -data_gradient` → equilibrium at finite `w*`.
+
+**With L1**: total gradient = data gradient ± λ (constant). As `w` grows large:
+```
+data_gradient ≈ tiny (predictions saturated)
+penalty gradient = ±λ (constant, doesn't grow)
+→ data gradient can still dominate → no equilibrium → divergence
+```
+
+The constant magnitude of the L1 subgradient is why it fails here. L2's proportional penalty is what creates the restoring force.
+
+### Dropout — The Ensemble Interpretation
+
+A network with N neurons and dropout rate p can be seen as training an ensemble of 2^N sub-networks, one for each possible binary mask:
+
+```
+Full network:  h₁, h₂, h₃, h₄, h₅
+Dropout mask:  [1,  0,  1,  1,  0]  → this forward pass trains sub-network #37
+Next batch:    [1,  1,  0,  1,  1]  → this forward pass trains sub-network #112
+```
+
+At inference, instead of explicitly ensembling 2^N networks (infeasible), we use the full network with all weights scaled by (1-p) — this approximates the geometric mean of the 2^N sub-networks' predictions.
+
+**Why this prevents co-adaptation:** if neuron A always fires with neuron B, the network can learn `A AND B → feature`. With dropout, A is sometimes absent, B is sometimes absent — the network can't rely on the joint signal. Each neuron must be individually useful.
+
+**The train-test variance mismatch without inverted dropout:**
+```
+Training:   each neuron active with probability (1-p)
+            expected activation: (1-p) × h
+Inference:  all neurons active
+            activation: h  ← (1/(1-p))× larger than training
+
+Inverted dropout fix: scale by 1/(1-p) during training
+  training activation: h/(1-p) × (1-p) = h  ← same expectation as inference
+  inference: no scaling needed
+```
+
+### Early Stopping — The L2 Equivalence
+
+For gradient descent on a quadratic loss (linear model):
+
+```
+Without regularization, after T steps:
+  w_T = (I - (I - ηH)^T) H⁻¹ g
+
+This is equivalent to L2 regularization with λ ≈ 1/(ηT):
+  w_L2* = (H + λI)⁻¹ g
+
+As T → ∞: w_T → H⁻¹g (exact solution, full overfit)
+As T → 0:  w_T → 0 (stays near initialization)
+```
+
+Early stopping is implicit shrinkage — it keeps the solution near the (small) initialization, equivalent to penalizing distance from the origin.
+
+**The practical mechanism for neural nets** (non-convex, not exactly equivalent):
+- Weights start small at initialization (near zero)
+- Without regularization: weights grow to fit training noise
+- With early stopping: weights never leave the neighborhood of initialization → stay small → less overfitting
+
+Monitor validation loss, not training loss. Save the checkpoint at validation minimum. Restore after patience is exceeded.
+
+### Data Augmentation — Invariance as Regularization
+
+Standard framing: augmentation increases dataset size. The deeper mechanism is **invariance injection**:
+
+```
+Horizontal flip augmentation:
+  The model must predict the same class for img and flip(img)
+  → The decision boundary must be symmetric under horizontal flip
+  → This is a constraint on the model's function class
+  → Equivalent to adding a regularization term: L(f(x)) + L(f(flip(x)))
+```
+
+Mixup makes this explicit:
+
+```
+x_mix = λ·x_i + (1−λ)·x_j
+y_mix = λ·y_i + (1−λ)·y_j
+
+Model must predict y_mix for x_mix.
+This forces linear interpolation in the output space along the path between x_i and x_j.
+→ Enforces a Lipschitz constraint on the decision boundary.
+→ Prevents the model from placing sharp decision boundaries between training examples.
+```
+
+**For tabular data** (no natural geometric transformations):
+- Feature noise: add `ε ~ N(0, σ²)` to numeric features → forces robustness to small measurement errors
+- Feature dropout: randomly zero out feature values → forces the model to not rely on any single feature
+- SMOTE: generate synthetic minority class examples by interpolating between existing ones → directly addresses class imbalance without the false negative risk of downsampling
+
+### Summary
+
+| Technique | Mechanism | What it limits |
+|---|---|---|
+| L2 | Proportional penalty → equilibrium at finite w | Weight magnitude |
+| L1 | Constant subgradient → corners of constraint ball | Number of nonzero weights |
+| Dropout | Trains exponential ensemble, prevents co-adaptation | Feature co-dependence |
+| Early stopping | Keeps weights near (small) initialization | Weight magnitude implicitly |
+| Data augmentation | Injects invariances as constraints on function class | Model sensitivity to specified transformations |
+| AdamW weight decay | Uniform weight shrinkage independent of gradient variance | Weight magnitude, correctly decoupled from adaptive LR |
