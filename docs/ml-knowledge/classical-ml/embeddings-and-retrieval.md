@@ -693,6 +693,106 @@ Production systems often apply an **explicit popularity correction** on top of d
 
 ---
 
+## Embedding Dimensionality (Deep Dive)
+
+### Why Dimension Has Diminishing Returns
+
+Think of embedding dimensions as **degrees of freedom** for the model to encode distinctions between items.
+
+```
+d=2:   model can only encode 2 independent axes of variation
+       (e.g. "action vs. drama" and "old vs. new")
+       Two items that differ on a third axis → same embedding → retrieval failure
+
+d=64:  64 axes → can encode genre, mood, pacing, era, language, ...
+       Most meaningful item-to-item distinctions are captured
+
+d=256: 256 axes → captures finer-grained nuances
+       Marginal gain: distinguishes "fast-paced action thriller" from
+       "slow-burn action thriller" — real but small improvement
+
+d=1024: 1024 axes → axes start encoding noise in the training data
+        Overfits to idiosyncrasies of the training set
+        Recall@10 may actually drop vs. d=256
+```
+
+The recall-dimension curve follows an S-shape: slow improvement at low d (too few axes to capture structure), steep rise in the middle, then plateau + noise at high d.
+
+### The ANN Search Cost Penalty
+
+Increasing dimension doesn't just cost more memory — it directly slows ANN search:
+
+**HNSW**: each distance computation during graph traversal is `O(d)`. More hops × more dims = slower query.
+
+**IVF+PQ**: PQ splits the vector into M subspaces of `d/M` dims each. Doubling d with fixed M doubles the subspace size → slower distance table lookups.
+
+**FAISS flat (exact)**: scan cost is exactly `O(N × d)`. Doubling d doubles query time.
+
+```
+d=128, 1B items, FAISS flat: 1B × 128 = 128B ops  → ~13ms
+d=256, 1B items, FAISS flat: 1B × 256 = 256B ops  → ~26ms
+d=512, 1B items, FAISS flat: 1B × 512 = 512B ops  → ~51ms  ← may breach SLA
+```
+
+This is why dimension is a **joint optimization between model quality and serving latency** — not a pure quality decision.
+
+### The `d ≈ 4 × ⁴√N` Heuristic — Where It Comes From
+
+From the Johnson-Lindenstrauss lemma: to preserve pairwise distances between N points under random projection, you need at least `O(log N)` dimensions. The `⁴√N` heuristic is a tighter empirical fit:
+
+```
+N = 1M items:   d ≈ 4 × ⁴√(10⁶) = 4 × 31.6 ≈ 126 → round to 128
+N = 10M items:  d ≈ 4 × ⁴√(10⁷) = 4 × 56.2 ≈ 178 → round to 256
+N = 1B items:   d ≈ 4 × ⁴√(10⁹) = 4 × 177  ≈ 178 → 256 (already sufficient)
+```
+
+This gives a starting point — always validate empirically. The heuristic assumes a uniform distribution of items; structured catalogs (e.g. mostly English-language movies) may need less.
+
+### Practical Tuning Protocol
+
+```
+Step 1: Train models at d ∈ {64, 128, 256, 512} — same architecture, same data
+Step 2: For each d, build ANN index and measure:
+          - Offline recall@10 on held-out queries
+          - p99 query latency under target QPS
+Step 3: Plot recall vs. latency per dimension
+Step 4: Pick the point on the Pareto frontier that satisfies your SLA
+```
+
+**Elbow detection**: recall improvement from 64→128 is usually large. 128→256 is moderate. 256→512 is often small. If 256→512 gives <1% recall gain but 2× latency increase → stay at 256.
+
+### Dimensionality Reduction Before Indexing
+
+If your model outputs 512-dim embeddings but latency requires 128-dim:
+
+**PCA projection**: fit PCA on item embeddings, keep top 128 components. Lossless in the sense of preserving maximum variance, but loses fine-grained directions.
+
+**Trained linear projection**: add a linear layer `W ∈ R^{512×128}` at the end of each tower and train end-to-end with the contrastive loss. The model learns which 128 directions are most discriminative for retrieval — better than PCA because it's task-aware.
+
+```python
+# Trained projection in two-tower model
+user_emb = user_tower(user_features)        # [B, 512]
+user_emb = F.normalize(user_proj(user_emb)) # [B, 128]  ← learned projection
+
+item_emb = item_tower(item_features)        # [B, 512]
+item_emb = F.normalize(item_proj(item_emb)) # [B, 128]
+
+scores = user_emb @ item_emb.T              # [B, B]
+```
+
+### Summary
+
+| Concept | Intuition |
+|---|---|
+| Why dimensions help | More axes of variation → finer item distinctions representable |
+| Diminishing returns | After ~256, new axes encode noise rather than signal |
+| ANN latency cost | Query time scales linearly with d — dimension is a latency parameter too |
+| `4 × ⁴√N` heuristic | Empirical fit from JL lemma; use as starting point, validate empirically |
+| Elbow method | Plot recall@K vs. d; pick inflection before plateau |
+| Trained projection | Better than PCA — learns which dimensions matter for retrieval specifically |
+
+---
+
 ## Online Index Update
 
 ### Q: How do you handle new items being added to a retrieval index in production?
@@ -710,3 +810,157 @@ Production systems often apply an **explicit popularity correction** on top of d
 **Company context:** Pinterest (new pins added in real-time), Roblox (new games), Netflix (new titles).
 
 **Common wrong answer:** "I'd rebuild the index hourly." — Hourly rebuilds are expensive for large catalogs and introduce index lag during build time. The two-tier pattern is the standard production solution.
+
+---
+
+## Online Index Update (Deep Dive)
+
+### Why This Problem Is Hard
+
+A retrieval index isn't just a list of vectors — it's a data structure optimized for fast search. HNSW stores graph edges. IVF stores Voronoi cluster assignments. Adding a new item requires updating the structure, not just appending a row.
+
+The core tension:
+```
+Users expect new items to be retrievable immediately (Pinterest pin, new YouTube video)
+  ↕
+Index rebuild at 1B items takes hours; you can't rebuild on every insert
+```
+
+### Option 1: Periodic Full Rebuild
+
+```
+Schedule: nightly at 2am (low traffic window)
+Process:  1. Re-embed all items with current model
+          2. Build fresh index from scratch
+          3. Atomic swap: new index goes live, old index discarded
+```
+
+**Why this is the production default**: it's the only option that guarantees index consistency after model retraining. When you retrain the embedding model, ALL item embeddings change — you must rebuild anyway. Nightly rebuild aligns with the retraining cadence.
+
+**Limitation**: new items published at 3am aren't retrievable until the next night's rebuild — up to 23h lag. Acceptable for Netflix (new titles are announced in advance) but not for Pinterest (pins created in real time).
+
+### Option 2: HNSW Online Insert
+
+HNSW supports inserting a new vector without full rebuild:
+
+```
+Insert(new_item_embedding):
+  1. Assign new node to layers probabilistically (same as during build)
+  2. For each layer the node appears in:
+       a. Run ANN search to find M nearest neighbors at this layer
+       b. Add bidirectional edges: new_node ↔ each neighbor
+  Cost: O(log N) ANN searches × O(ef) work per search
+```
+
+For N=1B, this is ~30 ANN searches — fast enough for real-time inserts.
+
+**The degradation problem**: HNSW's graph quality depends on the global structure of all nodes when edges were built. Late inserts can't retroactively add edges to nodes that were built earlier. Over time, the graph develops "dead ends" — regions where new items are reachable from their neighbors but the neighbors don't have back-edges to other well-connected nodes.
+
+```
+Fresh HNSW (at build time): recall@10 = 98%
+After 10% new inserts:       recall@10 = 96%
+After 30% new inserts:       recall@10 = 91%  ← noticeable degradation
+```
+
+Mitigation: periodic rebuild (weekly or monthly) to restore graph quality, with HNSW inserts filling the gap between rebuilds.
+
+### Option 3: IVF Online Insert
+
+Inserting into IVF is cheaper but has a different failure mode:
+
+```
+Insert(new_item_embedding):
+  1. Find nearest centroid: O(K) distance computations (K = number of clusters)
+  2. Append new vector to that cluster's list
+  Cost: O(K) — very cheap
+```
+
+**The cluster imbalance problem**: K-Means centroids are fixed at build time. If a new content category emerges (e.g. a viral new format), hundreds of new items all map to the same centroid — that cluster grows unboundedly while others stay small.
+
+```
+At build time:  all K=1000 clusters have ~1000 items each
+After 6 months: cluster 42 (trending category) has 50,000 items
+                nprobe=10 searches 10 clusters
+                If cluster 42 is one of them → 50,000-item linear scan → slow
+                If cluster 42 isn't searched → 50,000 relevant items missed
+```
+
+Mitigation: periodic rebuild with fresh K-Means clustering to re-balance cells.
+
+### Option 4: Two-Tier Serving (Production Standard)
+
+The pattern used at Pinterest, YouTube, Meta:
+
+```
+Tier 1 (main index):  all items older than 24h → large ANN index, rebuilt nightly
+Tier 2 (new items):   items added in the last 24h → small flat (exact) index
+
+Query time:
+  1. ANN search on Tier 1 → top-K₁ candidates
+  2. Exhaustive search on Tier 2 → top-K₂ candidates (brute force, but tiny)
+  3. Merge and re-rank → final top-K
+```
+
+Why Tier 2 can be brute-force: new items are < 1% of the catalog. If the total catalog is 1B items and 24h adds 1M new items (0.1%), brute-force over 1M items at 256 dims is fast:
+
+```
+1M × 256 dot products = 256M ops ≈ 0.03ms  ← negligible
+```
+
+After 24h, items graduate from Tier 2 to Tier 1 in the next nightly rebuild.
+
+### Cold Start: The Embedding Problem for New Items
+
+A new item has zero interaction history. The collaborative tower (trained on user-item co-engagement) produces a near-random embedding — it has no signal to work with.
+
+```
+Item tower inputs:
+  Collaborative signal: user IDs who engaged → empty for new items
+  Content signal:       title, description, tags, thumbnail → available immediately
+```
+
+**Solutions in priority order:**
+
+1. **Content-only embedding at launch**: use the content tower alone until the item has ≥ N interactions (N=100 is typical). Index under this embedding.
+
+2. **Warm start from similar items**: find the K most similar items by content features, average their collaborative embeddings, use as the new item's initial collaborative embedding.
+
+3. **Propagation**: as the first users interact with the new item, incrementally update its embedding using online learning (rare in production — adds serving complexity).
+
+```
+t=0 (publish):    embedding = content_tower(title, tags, thumbnail)
+t=100 interactions: embedding = α·content_tower() + (1-α)·collab_tower()
+t=1000 interactions: embedding = collab_tower()  ← fully collaborative
+```
+
+### Failure Mode: Index Serving During Rebuild
+
+Full rebuild takes hours. During this window you need to keep serving:
+
+```
+Naive: take index offline during rebuild → retrieval outage
+Better: blue-green index swap
+
+  Blue index (current, live):  serving traffic
+  Green index (new, building): being rebuilt in background
+
+  When green is ready:
+    1. Load green into memory
+    2. Atomic pointer swap: route traffic to green
+    3. Deallocate blue
+
+  Zero downtime. Memory spike during swap: 2× index memory required.
+```
+
+At 1B items with IVF+PQ: each index ≈ 8GB → peak memory during swap ≈ 16GB. Plan capacity accordingly.
+
+### Summary
+
+| Approach | Latency to serve new item | Recall degradation | Cost |
+|---|---|---|---|
+| Nightly full rebuild | Up to 23h | None (fresh index) | High compute, low ops complexity |
+| HNSW online insert | Immediate | Grows with insert volume | Low compute, graph degrades over time |
+| IVF online insert | Immediate | Cluster imbalance over time | Very low compute, degrades differently |
+| Two-tier (standard) | Immediate (Tier 2) | None | Moderate — dual index, brute-force on Tier 2 |
+
+**Cold start rule**: never index a new item with a purely collaborative embedding. Always fall back to content-tower embedding until sufficient interactions accumulate.
