@@ -345,6 +345,176 @@ Starting with hard negatives on an untrained model causes training instability �
 
 ---
 
+## ANN Algorithms (Deep Dive)
+
+### Why Exact Search Fails at Scale
+
+At 1B items, 256 dimensions, float32:
+
+```
+Memory: 1B × 256 × 4 bytes = 1TB  (doesn't fit in RAM)
+Compute per query: 1B × 256 multiply-adds = 256B operations
+Modern CPU: ~10B float ops/sec (single core)
+Latency: 256B / 10B = 25 seconds per query  ← 250× over p99 SLA of 100ms
+```
+
+ANN trades a small amount of recall for orders-of-magnitude speedup. At recall@10 = 95%, you're serving users 19/20 correct results — imperceptible quality loss, query in <10ms.
+
+---
+
+### HNSW — How It Works
+
+Intuition: "six degrees of separation." Any two people are connected by ~6 acquaintances. HNSW builds a graph with this property over your item vectors.
+
+**Structure — layered graph:**
+
+```
+Layer 2 (few nodes):  A ——————————————— F   (long-range connections, coarse navigation)
+Layer 1 (more nodes): A ——— C ——— E ——— F   (medium-range)
+Layer 0 (all nodes):  A-B-C-D-E-F-G-H-I-J  (short-range, dense)
+```
+
+Each node exists in layer 0. A random subset also exists in layer 1. A smaller subset in layer 2. Higher layers have fewer nodes and longer edges.
+
+**Search for query q:**
+
+```
+1. Start at the single entry point in the top layer
+2. Greedily navigate: at each node, move to whichever neighbor is closest to q
+3. When no neighbor is closer → drop to the next layer, start from current node
+4. Repeat until layer 0 → return top-K neighbors found
+```
+
+Analogy: Google Maps navigation. Start zoomed out (continent → country), progressively zoom in (city → street). Long hops first, fine-grained at the end.
+
+**Why recall is very high**: layer 0 is densely connected — every node has `efConstruction` neighbors. Once you reach the right neighborhood in the top layers, layer 0 exhaustively searches the local cluster.
+
+**Why build is slow**: inserting a new node requires finding its neighbors at every layer it appears in — each insertion is an ANN search itself: `O(log N)` layers × `O(ef)` search per layer. For 1B items, building from scratch takes hours.
+
+**Why memory is high**: stores the graph edges explicitly. Each node stores ~M=16 neighbor pointers per layer. At 1B nodes: `1B × 16 × 8 bytes ≈ 128GB` just for edges.
+
+---
+
+### IVF (Inverted File Index) — How It Works
+
+Intuition: partition the vector space into neighborhoods, then only search the relevant neighborhoods.
+
+**Build phase — K-Means clustering:**
+
+```
+Train K-Means on all N vectors → K centroids (Voronoi cells)
+Assign each vector to its nearest centroid
+Store: centroid → [list of vectors in this cell]   ← the "inverted file"
+```
+
+**Search phase:**
+
+```
+Query q arrives
+1. Find the nprobe nearest centroids to q  (cheap: compare q to K centroids only)
+2. Search all vectors in those nprobe cells (full dot product within cells)
+3. Return top-K from the union of results
+```
+
+**The `nprobe` knob:**
+
+```
+nprobe=1:   search 1 cell  → fastest, misses items near cell boundaries → low recall
+nprobe=10:  search 10 cells → 10× slower, catches boundary cases → higher recall
+nprobe=K:   search all cells → exact search, slowest
+```
+
+Typical: `nprobe = sqrt(K)` as a starting point. Tune by plotting recall@10 vs. QPS.
+
+**Why IVF is better for dynamic indexes than HNSW**: adding a new vector just requires computing its nearest centroid and inserting it into that cell's list — no graph edges to update, no index rebuild.
+
+**Product Quantization (PQ) — memory compression:**
+
+1B × 256-dim float32 vectors = 1TB. PQ compresses this drastically:
+
+```
+Split each 256-dim vector into M=8 subvectors of 32 dims each
+For each of the 8 subspaces, train K=256 centroids
+Encode each subvector as its nearest centroid ID → 1 byte (log₂256 = 8 bits)
+
+Result: 256 floats × 4 bytes = 1024 bytes  →  8 bytes (128× compression)
+1TB → ~8GB  ←  fits in memory
+```
+
+Distance computation with PQ: precompute distances from the query to all 256 centroids in each subspace (256 × 8 = 2048 lookups), then approximate full distance via table lookups instead of dot products. Fast and memory-efficient at slight recall cost (~1–2% recall drop).
+
+---
+
+### ScaNN — Anisotropic Quantization
+
+Standard PQ minimizes L2 reconstruction error **uniformly** across all directions — it treats all reconstruction errors equally.
+
+**The problem**: for maximum inner product search (MIPS), not all errors are equal. An error in the direction **parallel** to the query vector changes the dot product (affects ranking). An error **perpendicular** to the query has no effect on the dot product at all.
+
+```
+Item vector v, query q:
+
+Reconstruction error ε parallel to q:      q·(v+ε) = q·v + q·ε  ← changes ranking
+Reconstruction error ε perpendicular to q:  q·(v+ε) = q·v + 0   ← no effect
+```
+
+**ScaNN's fix — anisotropic quantization**: weight the quantization error by its impact on the dot product. Penalize errors in the query direction heavily; tolerate errors perpendicular to the query:
+
+```
+Standard PQ:  minimize  ||v - v̂||²
+ScaNN:        minimize  Σ wᵢ · (vᵢ - v̂ᵢ)²   where wᵢ ∝ importance for ranking
+```
+
+Result: better recall at the same compression ratio — the quantized vectors are "wrong" in ways that don't affect ranking, not in ways that do.
+
+---
+
+### Recall-Speed-Memory Triangle
+
+You can only optimize two of the three:
+
+```
+High recall + high speed  → needs full vectors in memory (high memory)
+High recall + low memory  → needs more cells/graph edges to search (low speed)
+Low memory + high speed   → accepts lower recall (fewer vectors scanned)
+```
+
+| Algorithm | Optimizes | Sacrifices |
+|---|---|---|
+| HNSW | Recall + speed | Memory (graph edges) |
+| IVF flat | Recall + memory efficiency | Speed (linear scan within cells) |
+| IVF+PQ | Speed + memory | Slight recall (quantization error) |
+| ScaNN | Recall + memory (vs IVF+PQ) | Build complexity |
+
+---
+
+### Production Decision Guide
+
+| Situation | Choice | Reason |
+|---|---|---|
+| Static catalog, recall critical, <100M items | HNSW | Best recall/QPS; rebuild cost amortized |
+| Dynamic catalog (new items daily), >100M items | FAISS IVF+PQ | Cheap insertion; memory-efficient |
+| Memory severely constrained | FAISS IVF+PQ | 128× compression via PQ |
+| Google infra / want slightly better recall than PQ | ScaNN | Anisotropic quantization advantage |
+| Nightly full rebuild acceptable | FAISS IVF+PQ | Simpler ops; Meta's production default |
+
+**Meta's choice (FAISS)**: catalog is rebuilt nightly with updated item embeddings anyway (model retraining). Full index rebuild is acceptable. IVF+PQ fits the 1B-item catalog in ~8GB. HNSW would require >100GB just for edges.
+
+---
+
+### Summary
+
+| Concept | Intuition |
+|---|---|
+| Why ANN | Exact search at 1B items = 25s/query; ANN = <10ms at 95% recall |
+| HNSW layers | Coarse → fine navigation; long hops at top, dense search at layer 0 |
+| HNSW weakness | Build is slow (O(log N) per insert); memory-heavy (explicit graph edges) |
+| IVF nprobe | Recall-speed knob: more cells searched = higher recall, lower QPS |
+| PQ compression | Split vector into subspaces, encode each as centroid ID → 128× smaller |
+| ScaNN insight | Quantization errors perpendicular to query don't affect ranking — tolerate them |
+
+---
+
 ## Dot Product vs. Cosine vs. L2
 
 ### Q: Which similarity function do you use for ANN, and why does the choice matter?
