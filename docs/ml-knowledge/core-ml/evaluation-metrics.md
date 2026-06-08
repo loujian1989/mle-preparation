@@ -125,3 +125,338 @@ P0: Universal — asked by every company in some form.
 **Company context:** Shopify (churn probability drives intervention budget — probability quality matters), Stripe (fraud score used for dynamic thresholds).
 
 **Common wrong answer:** Treating Brier score as only a calibration metric. It's a proper scoring rule that measures both calibration and sharpness (discrimination).
+
+---
+
+## Precision, Recall, and Threshold (Deep Dive)
+
+### What the Confusion Matrix Actually Encodes
+
+```
+                 Predicted Positive    Predicted Negative
+Actual Positive:       TP                    FN
+Actual Negative:       FP                    TN
+```
+
+Every threshold choice traces out a path through this table. Lowering the threshold:
+- Flags more items as positive → TP goes up, FP goes up
+- Misses fewer positives → FN goes down
+- Precision drops (more FPs in the denominator), recall rises
+
+**The threshold is a lever that trades FP for FN.** The model's job is to make that trade-off as efficient as possible — the business decides where on the curve to operate.
+
+### Why It's a Business Decision — The Cost Formula
+
+```
+Total cost = FP_cost × FP + FN_cost × FN
+```
+
+The optimal threshold minimizes this cost. Plugging in real numbers:
+
+```
+Fraud model at Stripe:
+  FP: block a legitimate transaction → customer calls support, possible churn
+      FP_cost ≈ $15 (support cost + churn probability × LTV)
+  FN: miss a fraud → chargeback + fee + reputational damage
+      FN_cost ≈ $90 (average fraud amount + $25 chargeback fee)
+
+Optimal threshold: set so that the marginal FP and marginal FN have equal cost
+  P(fraud | score=t) × FN_cost = (1 - P(fraud | score=t)) × FP_cost
+  t* = FP_cost / (FP_cost + FN_cost) = 15 / (15 + 90) ≈ 0.14
+```
+
+The model never sees these dollar amounts — they come from the finance and ops teams. Maximizing F1 implicitly sets `FP_cost = FN_cost`, which is almost never the right business assumption.
+
+### Why Accuracy Fails at Imbalance — Concrete Math
+
+```
+Dataset: 100,000 transactions, 0.5% fraud (500 fraud, 99,500 legit)
+
+Naive model: always predict "not fraud"
+  TP=0, FP=0, FN=500, TN=99,500
+  Accuracy = (0 + 99,500) / 100,000 = 99.5%  ← looks great
+  Recall = 0 / 500 = 0%                       ← catches nothing
+```
+
+Accuracy rewards the model for being good at the easy task (classifying the majority class) and never penalizes it for failing at the hard task. AUPRC focuses exclusively on the positive class performance across all thresholds.
+
+### The Precision-Recall Curve — What Shape Tells You
+
+```
+Perfect model:   curve hugs top-right corner (P=1, R=1 achievable simultaneously)
+Random model:    flat line at P = prevalence (0.5% for fraud)
+Production goal: high area under curve, especially at high-recall operating points
+```
+
+The "area" interpretation: average precision across all recall thresholds. An AUPRC of 0.70 means: if you randomly sample operating points across the recall range, you average 70% precision — 140× better than random (0.5% baseline).
+
+---
+
+## AUPRC vs. AUROC (Deep Dive)
+
+### What AUROC Actually Measures — And Why It Hides Imbalance
+
+AUROC = P(score(random positive) > score(random negative))
+
+For a fraud model at 0.5% rate:
+```
+Random positive = 1 fraud transaction
+Random negative = 1 of 199 legitimate transactions (on average)
+
+AUROC=0.95: 95% of the time, the fraud has a higher score than the legit
+             Sounds great — but doesn't say anything about what happens
+             when you actually set a threshold and flag transactions
+```
+
+The problem: AUROC includes the TN-dominated region. At a fraud rate of 0.5%, most of the ROC curve is about ranking negatives against each other — a task that's easy and irrelevant. The curve area is dominated by the bottom-right region (high recall, high FP rate) where there are thousands of TN-TN comparisons for every TP.
+
+### Where AUROC and AUPRC Diverge — Concrete Example
+
+```
+Model A: excellent at high precision, poor at high recall
+  AUROC = 0.95   (ranks positives above negatives most of the time)
+  AUPRC = 0.60   (when you need high recall, precision tanks)
+
+Model B: mediocre overall but consistent
+  AUROC = 0.92
+  AUPRC = 0.55
+
+A is strictly better. But the AUROC gap (0.95 vs 0.92) looks small.
+The AUPRC gap (0.60 vs 0.55) correctly signals A is meaningfully better
+at the high-recall operating points that production actually uses.
+```
+
+### Reporting Convention
+
+```
+Imbalanced binary classification (fraud, spam, abuse):
+  Primary:   AUPRC  ← how well you rank positives among themselves
+  Secondary: AUROC  ← overall discrimination quality
+
+Balanced classification or multi-class:
+  Primary:   AUROC or macro-averaged F1
+  Calibration check: ECE or Brier score separately
+```
+
+---
+
+## NDCG, MRR, Precision@K (Deep Dive)
+
+### Why Position Matters — The Log Discount
+
+Users don't read equally. Eye-tracking studies show attention drops off rapidly:
+```
+Position 1: ~100% of users see it
+Position 3: ~80% see it
+Position 5: ~50% see it
+Position 10: ~20% see it
+```
+
+NDCG encodes this with a logarithmic discount:
+
+```
+DCG@K = Σ_{i=1}^{K} (2^rel_i − 1) / log₂(i+1)
+
+Position 1: discount = 1/log₂(2) = 1.0
+Position 2: discount = 1/log₂(3) = 0.63
+Position 3: discount = 1/log₂(4) = 0.50
+Position 10: discount = 1/log₂(11) = 0.29
+```
+
+A highly relevant item (rel=3) at position 1 is worth `(2³-1)/1.0 = 7.0`.
+The same item at position 10 is worth `7.0 × 0.29 = 2.03`. 3.4× less credit.
+
+### Precision@K vs. NDCG@K — Concrete Example
+
+Two ranking systems for the same query (★★★ = highly relevant, ★ = slightly relevant, — = irrelevant):
+
+```
+System A: [★★★, —, —, —, ★★★]   top-5
+System B: [★★★, ★★★, —, —, —]   top-5
+
+Precision@5: both = 2/5 = 0.40  ← identical, can't distinguish
+NDCG@5: A ≈ 0.64, B ≈ 0.87     ← B correctly ranked higher (both relevant items early)
+```
+
+Precision@K is position-blind within the top K. NDCG rewards systems that surface the most relevant items earliest.
+
+### MRR — When Only First Matters
+
+```
+MRR = (1/|Q|) Σ_q 1/rank_q(first relevant item)
+
+Query 1: first relevant item at rank 3 → 1/3
+Query 2: first relevant item at rank 1 → 1/1
+Query 3: first relevant item at rank 5 → 1/5
+MRR = (1/3 + 1 + 1/5) / 3 = 0.51
+```
+
+Use MRR for navigational queries ("find the official site") or question answering ("what is X?") — the user stops at the first good result. Use NDCG when users consume multiple items (feed, search results page with multiple useful entries).
+
+### The Offline-Online Gap
+
+NDCG computed on historical click logs has a fundamental problem: **position bias**. Items shown at rank 1 got more clicks simply because they were shown there, not because they're more relevant. This inflates the NDCG of the current production model (which determined the positions used in the logs).
+
+```
+Naive NDCG on logs: biased toward current production model
+IPS-weighted NDCG:  weight each click by 1/P(shown at that position)
+                    corrects for the fact that position 1 gets shown more
+```
+
+In production: always report IPS-corrected offline metrics when evaluating ranking quality, and validate against A/B before deploying.
+
+---
+
+## Calibration (Deep Dive)
+
+### Why GBT Scores Are Systematically Miscalibrated
+
+GBT trains on log-loss (cross-entropy), which rewards correct ranking — not correct probability estimation. The loss is minimized when the model's ordering of predictions is correct, not when the predicted probabilities are accurate.
+
+The result: GBT pushes scores toward extremes.
+
+```
+True fraud probability: 0.7
+GBT output:             0.95  ← overconfident
+
+True fraud probability: 0.3
+GBT output:             0.08  ← overconfident in the other direction
+```
+
+A calibration plot (predicted probability vs. observed rate) for GBT typically shows an S-shaped curve — underestimates at low probabilities, overestimates at high.
+
+### ECE — What the Formula Means
+
+```
+ECE = Σ_b (|B_b| / N) × |mean_score(B_b) − true_rate(B_b)|
+```
+
+Split predictions into B bins (e.g. [0, 0.1), [0.1, 0.2), ..., [0.9, 1.0)):
+
+```
+Bin [0.7, 0.8): model predicted ~0.75 for these 200 samples
+                actual fraud rate among them: 0.52
+                contribution: (200/10000) × |0.75 - 0.52| = 0.0046
+
+Sum over all bins → ECE
+```
+
+ECE = 0.05 means: on average, the model's probabilities are off by 5 percentage points. Acceptable for most production systems; ECE > 0.1 is a signal that calibration is needed before using the score as a probability.
+
+### Platt Scaling vs. Isotonic Regression
+
+Both are post-hoc calibration methods applied to a held-out calibration set (separate from the validation set used for model selection):
+
+**Platt scaling** — fit a logistic regression on raw scores:
+```
+P(y=1 | score) = σ(A·score + B)
+```
+Two parameters. Works well with < 1000 calibration samples. Assumes a sigmoid relationship between raw score and true probability (reasonable for GBT).
+
+**Isotonic regression** — fit a non-parametric monotone step function:
+```
+P(y=1 | score) = f(score)  where f is monotone non-decreasing
+```
+No parametric assumption. Needs ≥ 5000 calibration samples to avoid overfitting the step function. Better when the raw score-probability relationship is non-sigmoid.
+
+**When calibration matters most:**
+- Score is multiplied by a dollar amount (fraud chargeback risk = score × average_fraud_value)
+- Downstream system sets its own threshold (your score is a component, not the final decision)
+- Multiple models' scores are combined (uncalibrated scores from different models aren't comparable)
+
+---
+
+## Offline vs. Online Metrics (Deep Dive)
+
+### The Three Failure Modes — Mechanisms
+
+**1. Proxy metric divergence**: the offline metric is optimizing for a proxy that doesn't match the actual user value:
+
+```
+Optimize for:  CTR (clicks per impression)
+Actual goal:   user satisfaction (time spent, return visit)
+
+What happens:  model learns clickbait headlines are high-CTR
+               users click, immediately leave (pogo-sticking)
+               CTR ↑, watch time ↓, churn ↑
+```
+
+**2. Distribution shift between offline and online:**
+
+```
+Offline: model trained on Jan-March data, validated on April data
+Online:  deployed in May → new seasonal patterns, new content categories
+
+AUPRC on April holdout: 0.72  ← looks good
+FPR on May production:  2×    ← covariate shift not captured in April holdout
+```
+
+**3. Feedback loop — the labels change when you deploy:**
+
+```
+Fraud model improved → deployed → blocks more fraudsters
+Fraudsters adapt → change transaction patterns
+New patterns not in training data → model deteriorates
+AUPRC on static holdout: still 0.72
+Production recall: declining month over month
+```
+
+### The Surrogate Gap — How to Minimize It
+
+The surrogate gap is the difference between offline metric improvement and online metric improvement.
+
+```
+ΔOffline > 0 but ΔOnline ≤ 0 → surrogate gap
+```
+
+Strategies to reduce it:
+1. **Counterfactual offline evaluation**: use IPS-weighted metrics that correct for position bias and exposure bias in logged data
+2. **Interleaving tests**: cheaper than full A/B — interleave two rankers' results and measure user preference signals
+3. **Proxy validation history**: track the empirical correlation between ΔNDCG and ΔCTR over past experiments; if correlation is low, the metric is unreliable as a development signal
+4. **Holdout by time**: always split by time, not randomly — random splits leak future patterns into training
+
+---
+
+## Brier Score (Deep Dive)
+
+### The Decomposition — Why It Captures Both Things
+
+Brier score decomposes as:
+
+```
+Brier = Uncertainty − Resolution + Calibration_error
+
+Uncertainty:       p̄(1-p̄)  — inherent difficulty of the task (fixed)
+Resolution:        how much your predictions vary around the base rate
+                   high resolution = model confidently separates positives from negatives
+Calibration_error: how far predicted probabilities are from true frequencies
+```
+
+A perfectly calibrated but useless model (always predicts base rate p̄):
+```
+Brier = p̄(1-p̄) − 0 + 0 = p̄(1-p̄)
+For fraud at 0.5%: Brier = 0.005 × 0.995 = 0.00498
+```
+
+A perfect model (predicts 1.0 for all frauds, 0.0 for all legits):
+```
+Brier = 0
+```
+
+Your model should be between these two. A useful reference: if your Brier score is worse than `p̄(1-p̄)`, you're doing worse than "always predict the base rate" — a red flag.
+
+### Brier vs. ECE — When Each Is More Useful
+
+```
+Use Brier when:
+  - Comparing two models holistically (captures both discrimination + calibration)
+  - No concern about specific probability bins being well-calibrated
+  - Want a single number that's a proper scoring rule (can't be gamed)
+
+Use ECE when:
+  - Need to communicate calibration to a stakeholder ("our scores are off by X%")
+  - Diagnosing WHERE calibration breaks down (which bin is worst)
+  - Setting thresholds for downstream systems that need accurate probabilities
+```
+
+**The gaming problem with ECE**: ECE is sensitive to binning strategy. With 5 bins vs. 20 bins you get different ECE values for the same model. Brier is bin-free and therefore more comparable across experiments.
