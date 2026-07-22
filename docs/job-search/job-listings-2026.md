@@ -1,4 +1,4 @@
-# Job Listings — May 2026 (Revised July 2026)
+# Job Listings — 2026
 
 Searched: May 26, 2026. Revised: July 22, 2026. Targeting Staff/E6-level MLE roles matching background in dynamic pricing, real-time ML, marketplace optimization, causal inference, recommendation/ranking, and ads/auction systems. On market: July 2026.
 
