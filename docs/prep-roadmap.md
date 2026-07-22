@@ -6,7 +6,7 @@
 
 ## 0. Verified Job Listings + Interview Intel (Research as of March 2026)
 
-> All JDs verified live. Netflix Ads-specific JD links returned 404 at time of research (roles may have been filled/rotated — check explore.jobs.netflix.net for current postings). All other listings confirmed active.
+> All JDs verified live. Netflix target role updated July 2026: Research Scientist 5, Marketplace - Ads DSE (posted July 7, 2026 — confirmed active). All other listings confirmed active or flagged where status is uncertain.
 
 ---
 
@@ -191,37 +191,33 @@
 
 ### Netflix
 
-**Titles:** Machine Learning Engineer (L5, L5 Senior)
+**Target role:** Research Scientist 5 (RS5), Marketplace - Ads DSE *(updated July 2026)*
 
 | Role | Level | URL |
 |---|---|---|
-| MLE L5 - Ads | L5 (Senior) | explore.jobs.netflix.net — search "MLE Ads" |
-| MLE L5 Senior - Ads Inventory Management & Forecasting | L5 Senior | explore.jobs.netflix.net — search "Inventory Forecasting" |
-| MLE L5 - Content and Studio | L5 | jobs.netflix.com/jobs/308370003 |
+| Research Scientist 5, Marketplace - Ads DSE | RS5 ≈ Staff | [Netflix Careers](https://explore.jobs.netflix.net/careers?query=Machine%20Learning%20Scientist&pid=790315832704&domain=netflix.com&sort_by=relevance) |
 
-> Note: Specific Ads JD direct links returned 404 at research time — roles confirmed active via moaijobs.com and earlier search results. Check explore.jobs.netflix.net directly.
+> Posted July 7, 2026 · Open through January 3, 2027 · Remote (US)
 
-**JD Key Requirements (from earlier verified search, Dec 2025):**
-- ML for ad ranking, pacing, and personalization (L5 Ads)
-- Predictive models for advertising campaign effectiveness + campaign delivery forecasting (L5 Senior - Inventory)
-- Low-latency real-time ad systems — productionized predictive model deployment
-- Metaflow-style orchestration background valued
+**JD Key Requirements (verified July 2026):**
+- PhD or MS in CS, Statistics, Mathematics, or quantitative field
+- Python, Scala, or Java
+- Deep expertise in ML, optimization, and data analysis applied to ad tech (targeting, ranking, bidding) — explicitly required
+- Experience prototyping algorithms on production-scale data
+- Must translate technical results into business outcomes (strong business acumen required)
 
-**Interview Process (from Blind + InterviewQuery + Exponent, 2024–2025):**
-1. Recruiter screen — background, motivation, Freedom & Responsibility culture fit
-2. Technical screen — take-home modeling quiz (feature engineering, model evaluation) + live Python coding (algorithmic)
-3. Virtual onsite (3 rounds):
-   - ML system design: online training pipelines, ad-break prediction, recommendation architecture; latency budgets (<200ms) required
-   - Algorithmic coding: array manipulation, DP, bit operations, linked lists; medium to hard
-   - Behavioral: collaboration, previous project deep-dive
-4. For L5: confirmed as "1 coding, 1 previous experience, 2 director-level conversations" including cross-team partner director
-- Comp: $455K–$525K median total; base $200K–$631K range
+**Interview Process (3 rounds, 3–5 weeks):**
+1. High-level technical discussion with hiring manager — background, research fit, culture
+2. Deep-dive technical screenings — ML fundamentals, optimization algorithms, production deployment; expect first-principles math derivations (not API-level answers)
+3. Virtual onsite panel — ML system design + **research deep-dive**: present your own past work/projects, defend methodology, discuss how it translates to Netflix Ads problems
+- **Key difference from MLE loop:** heavier research framing throughout; production accountability still required (you must demonstrate deployed impact, not just research output)
+- Comp (RS5): $466K–$750K (salary + stock options annually; no bonus structure)
 
 **Key insider notes:**
-- Director-level conversations at L5 are real — they assess whether you can communicate technical decisions at exec level, not just team level
 - "Ad-break prediction" has been cited as an actual system design question — prepare this specifically
 - Netflix ghosting after friendly interviews is a documented complaint — don't assume silence = good news
 - Freedom & Responsibility culture: expect to be asked how you operate autonomously without process guardrails
+- Monitoring is not an afterthought — proactively say "here's how I'd know it's working in prod: shadow scoring for 48h, holdout group sized at X%, alert on P(drift) > threshold"
 
 ---
 
@@ -516,16 +512,17 @@ Your background is a genuine moat for ~8 of the 10 companies. Here's how to depl
 **Your delta:** Lower than originally estimated — both companies are actively building ads ML stacks (validated March 2026)
 
 #### Netflix
-**Ads context (verified):** Netflix is actively hiring MLEs specifically for ads — open roles include "MLE L5 - Ads" (ad ranking, pacing, personalization) and "MLE L5 Senior - Ads Inventory Management & Forecasting". They are building an in-house ad tech ecosystem from scratch, making this a greenfield problem structurally similar to early-stage ads infrastructure at DoorDash/Amazon.
+**Ads context (verified July 2026):** Target role is now **Research Scientist 5, Marketplace - Ads DSE** — owns ML and optimization algorithms for ad quality, targeting, ranking, and bidding on the Ad Marketplace team. RS5 ≈ Staff bar. This is a production-accountability research role, not pure research — deployed impact is required.
 
-**Your angle:** "Netflix Ads is at the stage DoorDash Ads was 2–3 years ago — building the core auction, pacing, and forecasting systems. My experience designing those systems from first principles at Amazon and DoorDash maps directly." Frame your work as a template for what Netflix Ads needs to build.
+**Your angle:** "Netflix Ads is building the optimization layer on top of an already-scaled delivery platform — the gap is the ML rigor on targeting, pacing, and auction design. My work designing those systems from first principles at Amazon and DoorDash maps directly, and I can speak to the same subscriber-retention tension (ads must not degrade watch experience) from the marketplace health angle." Lead with the research depth (mechanism design PhD), close with production credibility.
 
 **Preparation:**
-- Ad inventory forecasting: predicting available impression supply by targeting segment — this is a time-series + uncertainty quantification problem
-- Ad pacing under inventory constraints: same Lagrangian relaxation framing as budget pacing at DoorDash
-- Product-mindedness still required: tie every design to subscriber retention (ads must not degrade watch experience) — this tension is unique to Netflix vs. pure-play ad platforms
-- Know their general ML stack: Metaflow-style DAG orchestration, real-time inference SLA requirements
-- Netflix gotcha: Monitoring is not an afterthought. Proactively say "Here's how I'd know it's working in prod: shadow scoring for 48h, holdout group sized at X%, alert on P(drift) > threshold."
+- Ad inventory forecasting: predicting available impression supply by targeting segment — time-series + uncertainty quantification (prepare this as a system design)
+- Ad pacing under inventory constraints: Lagrangian relaxation framing (same as budget pacing at DoorDash)
+- Ad quality optimization: multi-objective ranking (relevance, pacing, revenue) — this is the core RS5 problem
+- Research deep-dive prep: select one project to present end-to-end (problem → methodology → tradeoffs → deployed impact → what you'd do differently)
+- Know their ML stack: Metaflow-style DAG orchestration, real-time inference SLA requirements
+- Product-mindedness required: tie every design decision to subscriber retention — this tension is unique to Netflix vs. pure-play ad platforms
 
 #### Roblox
 **Ads/platform economics context (verified):** Roblox launched rewarded video ads (6–30s, opt-in for 13+ users) in 2025, integrated with Google Ad Manager, and is under investor pressure to prove ad revenue can scale without degrading engagement. Their Q3 2025 earnings explicitly discussed advertising/monetization strategy as a key growth lever. Users 13+ grew from 40M (Q3 2023) to 101M (Q3 2025) — the addressable ad audience is now majority adult.
