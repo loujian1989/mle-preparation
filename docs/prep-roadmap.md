@@ -6,7 +6,7 @@
 
 ## 0. Verified Job Listings + Interview Intel (Research as of March 2026)
 
-> All JDs verified live. Netflix target role updated July 2026: Research Scientist 5, Marketplace - Ads DSE (posted July 7, 2026 — confirmed active). All other listings confirmed active or flagged where status is uncertain.
+> All JDs verified live. Netflix target role updated July 2026: Research Scientist 5, Marketplace - Ads DSE (previous listing filled — new listing active). All other listings confirmed active or flagged where status is uncertain.
 
 ---
 
@@ -195,9 +195,7 @@
 
 | Role | Level | URL |
 |---|---|---|
-| Research Scientist 5, Marketplace - Ads DSE | RS5 ≈ Staff | [Netflix Careers](https://explore.jobs.netflix.net/careers?query=Machine%20Learning%20Scientist&pid=790315832704&domain=netflix.com&sort_by=relevance) |
-
-> Posted July 7, 2026 · Open through January 3, 2027 · Remote (US)
+| Research Scientist 5, Marketplace - Ads DSE | RS5 ≈ Staff | [Netflix Careers](https://explore.jobs.netflix.net/careers?pid=790315989769&domain=netflix.com&sort_by=relevance) |
 
 **JD Key Requirements (verified July 2026):**
 - PhD or MS in CS, Statistics, Mathematics, or quantitative field

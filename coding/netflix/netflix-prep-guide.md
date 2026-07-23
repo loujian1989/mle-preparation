@@ -889,20 +889,6 @@ undo(tag):          get last node_pointer from hashmap[tag]; use it to splice no
 
 ---
 
-### Bucket 7 — Recommendation & Deduplication
-**Problems:** Viewport dedup, Event dedup, Movie similarity (`findFriends`)
-
-| Problem | Key insight | Time | Space |
-|---|---|---|---|
-| Viewport dedup | Limit list to K visible; use set to track seen; skip duplicates | O(n) | O(K) |
-| Event dedup (10s window) | `{event_id: timestamp}`; on new event, check if already seen within TTL | O(1) | O(events in window) |
-| Friends by movie overlap | `{user: set(movies)}`; find pairs with non-empty intersection; top-k by size | O(U² × M) | O(U × M) |
-| Weighted random (pickIndex) | Prefix sum array + `bisect_left` on random(0, total) | O(log n) | O(n) |
-
-**RS5 angle:** Viewport dedup = candidate generation dedup in two-tower retrieval. Event dedup = deduplication layer for impression/click tracking pipelines.
-
----
-
 #### System-Flavored Data Structures — MLE Deep Dive
 
 **Why this matters to you as an MLE:**
