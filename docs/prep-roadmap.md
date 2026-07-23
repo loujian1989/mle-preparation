@@ -276,17 +276,27 @@
 
 ### Reddit
 
-**Titles:** Staff MLE (Ads Engineering)
+**Titles:** Staff MLE, Senior MLE (Ads Engineering)
 
 | Role | Level | URL |
 |---|---|---|
-| Staff MLE, Ads Auction (Ads Marketplace Quality) | Staff | job-boards.greenhouse.io/reddit/jobs/7181821 |
-| Staff MLE, Bidding and Pacing (Advertiser Optimization) | Staff | job-boards.greenhouse.io/reddit/jobs/7074763 |
+| Staff MLE, Ads Auction (Ads Marketplace Quality) | IC5 (Staff) | job-boards.greenhouse.io/reddit/jobs/7181821 |
+| Staff MLE, Bidding and Pacing (Advertiser Optimization) | IC5 (Staff) | job-boards.greenhouse.io/reddit/jobs/7074763 |
 | Senior Staff MLE, Bidding and Pacing | Senior Staff | job-boards.greenhouse.io/reddit/jobs/6158103 |
+| **MLE, Ads Optimization** | IC4 (Senior) | [greenhouse.io/reddit/jobs/8029120](https://job-boards.greenhouse.io/reddit/jobs/8029120) *(verified July 2026)* |
 
-**Best fit for you:** Staff MLE Ads Auction — directly owns auction/pricing strategy. Staff MLE Bidding and Pacing owns TCPA/TROAS/autobidding (exact DoorDash analogue). Fully remote US. Comp: $230K–$322K base + RSUs; MLE IC median total $506K (levels.fyi).
+**Best fit for you:** MLE Ads Optimization (IC4) is the strongest match for a direct hire — owns auction, bidding, and budget pacing end-to-end; remote US; base $216K–$303K. Staff roles (IC5) are longer-term targets once internal bar is established. MLE IC median total $506K at Staff (levels.fyi); IC4 lands ~$350K–$480K total.
 
-**JD Key Requirements (Staff MLE Ads Auction, verified):**
+**JD Key Requirements (MLE Ads Optimization IC4, verified July 2026):**
+- 5+ years building and operating production ML systems
+- Python + Spark, Kafka, Airflow, BigQuery, Redis
+- Design optimization algorithms for auctions, bidding strategies, and pacing (CPC, CPA, ROAS)
+- Budget pacing: prevent overspend/underspend, allocate spend across segments/surfaces/time zones
+- Translate ambiguous business goals into optimization problems with ROI + fairness constraints
+- Advanced math/optimization skills; comfort implementing custom optimization logic
+- Preferred: direct ad/auction experience, MS/PhD in CS, ML, Operations Research, or Applied Math
+
+**JD Key Requirements (Staff MLE Ads Auction IC5, verified):**
 - 8+ years industry experience; 5+ years focused on data-driven marketplace optimization at scale
 - Ads marketplace optimization, auction/pricing mechanisms
 - Spark, Kafka, Beam, Flink; TensorFlow/PyTorch; Java, Python, Golang, C++
@@ -312,6 +322,7 @@
 - Headcount risk: one documented case of offer rescinded due to headcount re-prioritization after a positive process — confirm headcount status with recruiter
 - 33% positive experience on Glassdoor (below average) — process quality is inconsistent; follow up proactively
 - Stack: Kafka (65B+ daily events), Flink (real-time stream processing), Spark (batch), TF/PyTorch; control theory + RL for autobidding/pacing; products: Lowest Cost, Cost Caps, Campaign Budget Optimization, TCPA, TROAS
+- **IC4 Ads Optimization prep priorities:** (1) budget pacing algorithms — throttle-based vs. bid-modification; simulate overspend/underspend failure modes; (2) multi-objective bidding — derive CPA/ROAS targets as constrained optimization (Lagrangian dual); (3) auction design — balancing advertiser performance, user experience, and marketplace efficiency is explicitly in the JD; (4) system design for a real-time bidding pipeline: feature freshness, serving latency, feedback loop latency; (5) ML model building in 45 min from a dataset — practice in a notebook, narrate feature engineering + model selection trade-offs out loud
 
 ---
 
