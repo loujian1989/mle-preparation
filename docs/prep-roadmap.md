@@ -1,12 +1,12 @@
 # MLE Interview Prep: 10-Week Strategy for Staff/Senior Roles
-**Target Companies:** Stripe, Uber, Meta, OpenAI, Shopify, Netflix, Roblox, Reddit, Pinterest, Whatnot
+**Target Companies:** Stripe, Uber, Meta, OpenAI, Shopify, Netflix, Roblox, Reddit, Pinterest, Whatnot, Microsoft
 **Background:** PhD CS (game theory/mechanism design), DoorDash Ads (auction/pricing/autobidding), Amazon (Sponsored Products)
 
 ---
 
 ## 0. Verified Job Listings + Interview Intel (Research as of March 2026)
 
-> All JDs verified live. Netflix target role updated July 2026: Research Scientist 5, Marketplace - Ads DSE (previous listing filled — new listing active). All other listings confirmed active or flagged where status is uncertain.
+> All JDs verified live. Netflix target role updated July 2026: Research Scientist 5, Marketplace - Ads DSE (previous listing filled — new listing active). Microsoft Principal Applied Scientist (Auction & Bidding) added July 2026 — active listing. All other listings confirmed active or flagged where status is uncertain.
 
 ---
 
@@ -375,6 +375,47 @@
 - Stack: Kafka (Confluent Cloud), KSQL, Snowflake, Rockset, Redis, PyTorch, LightGBM, gRPC, FastAPI
 - Read before interviews: "Evolving Feed Ranking at Whatnot", "6x Faster ML Inference: Why Online > Batch", "Feeds with Real-time Signals", "How Whatnot Utilizes Generative AI for Trust & Safety" — all on medium.com/whatnot-engineering
 
+### Microsoft
+
+**Target role:** Principal Applied Scientist, Auction & Bidding *(added July 2026)*
+
+| Role | Level | URL |
+|---|---|---|
+| Principal Applied Scientist, Auction & Bidding | L64 (Principal) | [Microsoft Careers](https://apply.careers.microsoft.com/careers/job/1970393556852883) |
+
+**Best fit for you:** Direct overlap with DoorDash Ads + Amazon Sponsored Products background — auto-bidding, auction mechanism design, advertiser ROI optimization. 3+ years auto-bidding required (you have it); PhD preferred.
+
+**JD Key Requirements (verified July 2026):**
+- BS+6yr / MS+4yr / PhD+3yr in Statistics, Econometrics, CS, or quantitative field
+- 8+ years developing and deploying production systems within product teams
+- 3+ years auto-bidding or auction design
+- Design + analyze bidding strategies using optimization and control theory
+- Prototype auction mechanisms for specific product areas; large-scale A/B experimentation for marketplace health
+- Build automation algorithms to improve advertiser ROI via AI/ML
+- Causal reasoning models (explicitly listed in JD)
+
+**Interview Process (from Glassdoor + Blind + InterviewQuery, 2025–2026):**
+1. Recruiter screen (30 min) — background, comp alignment, timeline
+2. Technical screen with HM or Senior Scientist (45–60 min) — resume deep-dive + 1 domain-relevant problem (auto-bidding or optimization framing)
+3. Virtual onsite loop (4–5 rounds, same day):
+   - **Coding** — DS&A, LeetCode medium/hard (2 problems, ~45 min); clean code + complexity analysis required
+   - **ML depth** — model design, feature engineering, experimentation; first-principles derivations expected at L64+
+   - **ML system design** — design an auto-bidding system or auction serving pipeline; expect scale, latency, and monitoring discussion
+   - **Domain/Research depth** — auction theory, control theory for bidding, causal inference for incrementality; derive GSP equilibrium or constrained optimization setup from scratch
+   - **Behavioral/Culture** — Microsoft "growth mindset" values; STAR format; skip-level manager may attend
+4. Research talk (L64+): 20–30 min presentation of past work → Q&A on methodology, production impact, limitations
+- Total: ~3–5 weeks average
+
+**Key insider notes:**
+- Auto-bidding depth is the hiring signal differentiator — derive target-CPA/target-ROAS optimization (Lagrangian relaxation, dual decomposition) from first principles; do not just name-drop
+- Auction mechanism questions: GSP vs VCG trade-offs, first-price auction equilibrium, revenue equivalence theorem — expect at least one derivation
+- Control theory framing: PID controllers for bid adjustment / budget pacing; LQR for multi-constraint optimization — know the vocabulary, be able to position alternatives
+- Causal inference is a stated JD requirement: incrementality measurement via geo-holdout, synthetic control, or DID — design an experiment end-to-end
+- Microsoft Advertising (MSAI) team runs Bing Ads / Microsoft Advertising platform — frame all past work in terms of advertiser ROI and marketplace health, not just model metrics
+- L64 principal comp: ~$280K–$420K+ TC (Redmond / Mountain View); no forced ranking curve (different from Meta stack-rank culture)
+- Growth Mindset culture: prepare a concrete story about learning from failure or reversing a major technical decision under pressure
+- Reports on Blind flag an intense L62 loop — L64 principal bar adds research talk and domain depth; plan for a 5–6 hour onsite day
+
 ---
 
 ## 1. The Overlap Strategy
@@ -482,7 +523,7 @@ Your background is a genuine moat for ~8 of the 10 companies. Here's how to depl
 
 ## 3. Company-Specific Deep Dives (The Deltas)
 
-### Cluster A: Ads/Marketplace ML — Meta, Uber, Reddit, Pinterest, Whatnot
+### Cluster A: Ads/Marketplace ML — Meta, Uber, Reddit, Pinterest, Whatnot, Microsoft
 **Common thread:** Real-time bidding, two-sided marketplace, high-throughput feature serving, auction mechanism design
 **Your delta:** Minimal — this is your core domain
 **What to add:**
