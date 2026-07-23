@@ -1,7 +1,7 @@
 # MLE Interview Prep: 8-Week Strategy for Staff/Senior Ads ML Roles
 
 **Target Companies:** Uber, Meta, OpenAI, Netflix, Reddit, Whatnot, Microsoft
-**Background:** PhD CS (game theory/mechanism design), DoorDash Ads (auction/pricing/autobidding/causal inference), Amazon (Sponsored Products)
+**Background:** PhD CS (game theory/mechanism design), Amazon (Sponsored Products), current: DoorDash Ads MLE
 
 ---
 
@@ -9,11 +9,11 @@
 
 | # | Company | Role | Level | TC Est. | Domain Fit | Priority |
 |---|---|---|---|---|---|---|
-| 1 | Netflix | RS5, Marketplace Ads DSE | RS5 ≈ Staff | $466K–$750K | Research + Ads ML | **P0** |
+| 1 | Netflix | ML Scientist 5, Ads Bidding | MLS5 ≈ Staff | $466K–$750K | Research + Ads ML | **P0** |
 | 2 | Reddit | MLE, Ads Optimization | IC4 (Senior) | ~$350K–$480K | Auction/bidding/pacing | **P0** |
 | 3 | Meta | MLE, Ads | Senior/Staff | ~$400K–$600K | Ads at scale | **P0** |
 | 4 | Microsoft | Principal Applied Scientist, Auction & Bidding | L64 | ~$280K–$420K | Auction/auto-bidding | **P1** |
-| 5 | Uber | Senior MLE, Marketplace Pricing | Senior/Staff | ~$300K–$450K | Marketplace ML | **P1** |
+| 5 | Uber | Senior MLE, Marketplace Pricing | Senior/Staff | ~$300K–$450K | Marketplace ML | **P0** |
 | 6 | OpenAI | Research Scientist / MLE | Senior/Staff | ~$400K–$700K | Foundation models | **P2** |
 | 7 | Whatnot | MLE, Growth | Senior | ~$190K–$280K base (pre-IPO equity) | Growth ML | **P2** |
 
@@ -35,8 +35,8 @@
 |---|---|---|
 | Senior MLE - Marketplace Pricing | Senior | uber.com/global/en/careers/list/145740 |
 | Staff MLE - Marketplace Pricing & Incentives | Staff | uber.com/global/en/careers/list/140494 |
-| MLE II - Pricing | Mid | uber.com/global/en/careers/list/146338 |
-| MLE II - Optimization | Mid | uber.com/global/en/careers/list/145150 |
+| MLE II - Pricing | Mid | *(URL unverified — search jobs.uber.com)* |
+| MLE II - Optimization | Mid | *(URL unverified — search jobs.uber.com)* |
 | Staff MLE - Applied AI | Staff | uber.com/global/en/careers/list/146989 |
 
 **Best fit for you:** Senior MLE Marketplace Pricing + Staff MLE Marketplace Pricing & Incentives
@@ -106,8 +106,8 @@
 | Role | Level | URL |
 |---|---|---|
 | MLE, Integrity | Mid-Senior | openai.com/careers/machine-learning-engineer-integrity-san-francisco |
-| Research Engineer, Applied AI Engineering | Senior | openai.com/careers/research-engineer-applied-ai-engineering-san-francisco |
-| Research Engineer / Research Scientist, Post-Training | Senior | openai.com/careers/research-engineer-research-scientist-post-training-san-francisco |
+| Research Engineer, Applied AI Engineering | Senior | [jobs.ashbyhq.com/openai](https://jobs.ashbyhq.com/openai/d44c9f70-4aef-45a4-a36a-54fb65663ccb) |
+| Research Engineer / Research Scientist, Post-Training | Senior | *(URL unverified — search openai.com/careers)* |
 | SWE, Model Inference | Senior | openai.com/careers/software-engineer-model-inference-san-francisco |
 
 **Best fit for you:** MLE Integrity (adversarial ML, game theory angle) + Research Engineer Applied AI
@@ -140,11 +140,11 @@
 
 ### Netflix
 
-**Target role:** Research Scientist 5 (RS5), Marketplace - Ads DSE *(updated July 2026)*
+**Target role:** Machine Learning Scientist 5, Ads Bidding *(updated July 2026)*
 
 | Role | Level | URL |
 |---|---|---|
-| Research Scientist 5, Marketplace - Ads DSE | RS5 ≈ Staff | [Netflix Careers](https://explore.jobs.netflix.net/careers?pid=790315989769&domain=netflix.com&sort_by=relevance) |
+| Machine Learning Scientist 5, Ads Bidding | MLS5 ≈ Staff | [Netflix Careers](https://explore.jobs.netflix.net/careers?pid=790315989769) |
 
 **JD Key Requirements (verified July 2026):**
 - PhD or MS in CS, Statistics, Mathematics, or quantitative field
