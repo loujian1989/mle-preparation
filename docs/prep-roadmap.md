@@ -30,7 +30,7 @@
 
 ### Uber
 
-**Titles:** MLE (various teams), Staff MLE
+**Titles:** MLE (various teams), Staff MLE, Staff Scientist
 
 | Role | Level | URL |
 |---|---|---|
@@ -39,8 +39,9 @@
 | MLE II - Pricing | Mid | *(URL unverified — search jobs.uber.com)* |
 | MLE II - Optimization | Mid | *(URL unverified — search jobs.uber.com)* |
 | Staff MLE - Applied AI | Staff | uber.com/global/en/careers/list/146989 |
+| **Staff Scientist - Ads & Offers** | Staff | uber.com/global/en/careers/list/142820 |
 
-**Best fit for you:** Senior MLE Marketplace Pricing + Staff MLE Marketplace Pricing & Incentives
+**Best fit for you:** Senior MLE Marketplace Pricing + Staff MLE Marketplace Pricing & Incentives (MLE track); Staff Scientist Ads & Offers (DS/econometrics track — stronger fit if causal inference angle is emphasized)
 
 **JD Key Requirements (Senior MLE Marketplace Pricing, verified):**
 - 4+ years deploying ML models in production
@@ -66,6 +67,20 @@
 - Bring production incident stories — they ask about operational impacts, not just model metrics
 - Graph algorithms appear in coding (word transformation, graph traversal)
 - Rolling metrics computation is a common coding question
+
+**Staff Scientist - Ads & Offers (additional role, verified July 2026):**
+
+**JD Key Requirements:**
+- Design and productionize econometric models and experiments for the Ads & Offers space
+- Build statistical and ML models for auction, bidding, pacing, and ranking
+- Propose and analyze large-scale online A/B experiments; causal inference and incrementality measurement
+- Collaborate with product, engineering, and operations — translate findings into product decisions
+- Base: $216K–$240K (Seattle); total TC ~$350K–$450K with RSU + bonus
+
+**Track distinction vs. MLE roles:**
+- MLE track (Marketplace Pricing): production ML engineering focus — model building, feature pipelines, real-time serving
+- Staff Scientist track (Ads & Offers): applied science focus — econometrics, causal inference, experiment design, ML models for business decisions
+- Your PhD game theory + causal inference background makes both tracks viable; Staff Scientist interview will weight causal methods (DID, synthetic control, geo-holdout) more heavily than the MLE loop
 
 ---
 
@@ -466,6 +481,7 @@ Your background is a genuine moat for most companies on this list. Here's how to
 - H3 geospatial indexing, Michelangelo feature store, prediction intervals for ETA (not just point estimates)
 - Marketplace thinking is explicitly scored: narrate how prediction errors cascade through pricing, supply, driver incentives
 - Graph algorithms appear in coding (word transformation, traversal)
+- **Staff Scientist track (Ads & Offers):** interview weights causal inference heavily — prepare geo-holdout incrementality design, synthetic control, DID; also expect econometric framing of auction/bidding problems (not just ML model outputs)
 
 ### Reddit
 - Control theory + RL framing for budget pacing (vs. Lagrangian); bridge the two: "same budget constraint problem, different update rule"
