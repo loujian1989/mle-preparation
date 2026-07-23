@@ -647,8 +647,14 @@ Your background is a genuine moat for most companies on this list. Here's how to
 
 ---
 
-## Appendix: Other Companies Evaluated (Research as of March 2026)
+## Appendix: Other Companies Evaluated (Research as of July 2026)
 
 **Snap** — Principal MLE, Ads Marketplace (Palo Alto only, ~$480K median total). Strong RTB auction + DL ads ranking match; Palo Alto HQ only — no remote option confirmed. Monitor if open to relocation. Interview: no dedicated behavioral round; values ("Kind, Smart, Creative") evaluated across all rounds; team matching after offer can take weeks.
 
-**Skipped:** Expedia ($184K–$258K, below bar), Lyft ($176K–$220K + hybrid 3 days/week), Amazon DSP (prior employer — evaluate separately), Google/YouTube Seattle (3–6 month process, LeetCode-heaviest bar), TikTok/ByteDance (geopolitical risk).
+**The Trade Desk** — MLE, programmatic DSP (Ventura CA HQ, strong remote culture). Pure-play demand-side platform building RTB auction/bidding infrastructure — exact domain match. TC at Senior level est. ~$300K–$450K. Confirm whether Seattle-remote is eligible before applying; if so, upgrade to P1.
+
+**Rakuten Advertising** — MLE / programmatic (Seattle HQ). Performance advertising and programmatic RTB; smaller company (~1,000 people). TC unknown — below FAANG. Domain fit is good; treat as pipeline volume / backup if target companies are slow to respond.
+
+**LinkedIn** — MLE, Ads (Sunnyvale primary, some Seattle presence). Microsoft-owned; strong ads ML team (sponsored content ranking, bidding). Covered via Microsoft loop — pursue separately only if recruiter reaches out with a Seattle-based or remote role.
+
+**Skipped:** Expedia ($184K–$258K, below bar), Lyft ($176K–$220K + hybrid 3 days/week), Amazon DSP (prior employer — evaluate separately), Google/YouTube Seattle (no Seattle openings confirmed), Disney/Hulu (TC ~$200K–$330K, below threshold), TikTok/ByteDance (geopolitical risk), Chewy (TC ~$200K–$300K, below bar), Walmart AdTech Bellevue (base $110K–$264K, far below bar).
