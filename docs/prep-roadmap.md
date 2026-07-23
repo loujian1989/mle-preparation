@@ -1,6 +1,6 @@
 # MLE Interview Prep: 8-Week Strategy for Staff/Senior Ads ML Roles
 
-**Target Companies:** Uber, Meta, OpenAI, Netflix, Reddit, Whatnot, Microsoft, Google, Disney (Hulu), Moloco
+**Target Companies:** Uber, Meta, OpenAI, Netflix, Reddit, Whatnot, Microsoft, Moloco
 **Background:** PhD CS (game theory/mechanism design), Amazon (Sponsored Products), current: DoorDash Ads MLE
 
 ---
@@ -16,17 +16,15 @@
 | 5 | Uber | Senior MLE, Marketplace Pricing | Senior/Staff | ~$300K–$450K | Marketplace ML | **P0** |
 | 6 | OpenAI | Research Scientist / MLE | Senior/Staff | ~$400K–$700K | Foundation models | **P2** |
 | 7 | Whatnot | MLE, Growth | Senior | ~$190K–$280K base (pre-IPO equity) | Growth ML | **P2** |
-| 8 | Google | SWE/MLE, Ads Auction Mechanisms | L5–L6 | ~$380K–$750K | Auction/ML | **P0** |
-| 9 | Disney (Hulu) | Senior MLE, Ad Platforms | Senior | ~$200K–$330K | Streaming ads | **P2** |
-| 10 | Moloco | Senior MLE, Pricing/Auction | Senior | ~$250K–$380K (pre-IPO) | RTB/auction ML | **P2** |
+| 8 | Moloco | Senior MLE, Pricing/Auction | Senior | ~$250K–$380K (pre-IPO) | RTB/auction ML | **P2** |
 
-> **$500K+ liquid TC:** Netflix (clearly), Meta (at Staff), OpenAI (at Staff), Google (L6 clearly exceeds $500K). Reddit IC4, Microsoft L64, and Uber are marginal. Whatnot, Disney, and Moloco are below threshold (pre-IPO or below-FAANG pay).
+> **$500K+ liquid TC:** Netflix (clearly), Meta (at Staff), OpenAI (at Staff). Reddit IC4, Microsoft L64, and Uber are marginal. Whatnot and Moloco are below threshold (pre-IPO equity).
 
 ---
 
 ## 0. Verified Job Listings + Interview Intel (Updated July 2026)
 
-> All JDs verified live. Active target list: Uber, Meta, OpenAI, Netflix, Reddit, Whatnot, Microsoft, Google, Disney (Hulu), Moloco. Stripe, Shopify, Roblox, Pinterest removed from active pipeline.
+> All JDs verified live. Active target list: Uber, Meta, OpenAI, Netflix, Reddit, Whatnot, Microsoft, Moloco. Stripe, Shopify, Roblox, Pinterest, Google (no Seattle openings), Disney/Hulu (TC below threshold) removed from active pipeline.
 
 ---
 
@@ -317,84 +315,6 @@
 
 ---
 
-### Google
-
-**Titles:** SWE, AI/ML; SWE, Google Ads (Auction Mechanisms) *(added July 2026)*
-
-| Role | Level | URL |
-|---|---|---|
-| SWE, Google Ads Auction Mechanisms | L5–L6 | *(search google.com/about/careers — "Ads Auction" + filter Kirkland, WA)* |
-| Senior SWE, AI/ML, Ads Bidding | L5–L6 | *(search google.com/about/careers — "AI ML Ads Bidding" + filter Kirkland, WA)* |
-
-**Best fit for you:** Both roles are direct domain matches — auction mechanism innovation, DL/RL for bidding, and RTB optimization. Google Kirkland (~5,000 person office) lists many Ads roles with Seattle/Kirkland as a location option. Verify location on each role before applying.
-
-**JD Key Requirements (Ads Auction Mechanisms, from google.com/about/careers):**
-- Strong fundamentals in algorithms, data structures, software design
-- Experience in ML, specifically DL/RL applied to recommendation or bidding systems
-- Familiarity with auction theory, mechanism design, or marketplace optimization
-- Collaborates with auction research, bidding, targeting, and measurement teams
-- Ability to prototype and deploy ML models at Google-scale
-
-**Interview Process (from Glassdoor + IGotAnOffer + Google official prep guide, 2024–2026):**
-1. Recruiter screen (30 min) — background, location/TC alignment, timeline
-2. Coding screen (45 min) — LeetCode medium/hard via Google Meet + doc; 1–2 problems
-3. Onsite loop (5–6 rounds, same day or 2 days):
-   - **Coding × 2** — LeetCode hard bar; graphs, DP, string manipulation; must narrate complexity analysis
-   - **ML system design** — design an ads auction serving pipeline, autobidding system, or recommendation system; scale to Google infra
-   - **Googleyness / leadership** — behavioral + culture fit; "Why Google?" required; document specific Google Ads work that interests you
-   - **ML depth / domain** — auction theory, RL for bidding, optimization; expect mechanism design questions (GSP, VCG, first-price equilibrium)
-4. Hiring committee + approval (~4–8 weeks post-onsite)
-- **Total timeline: 2–6 months** — Google has the longest process of all companies on this list; parallel-process other companies
-
-**Key insider notes:**
-- "Googleyness" is scored — have a specific answer for "Why Google Ads vs. Meta Ads?" (hint: auction research depth, Kirkland proximity to family/Seattle community, Google's mechanism design research lineage)
-- Coding bar is LeetCode hard level — hardest coding bar alongside Meta; practice Google-style problems (BST manipulation, advanced graph traversal, greedy + DP combos)
-- ML system design: expect Google-scale framing (billions of queries/day, multi-datacenter, Spanner/Bigtable vs. BigQuery trade-offs)
-- L5 (Senior SWE) vs L6 (Staff SWE): negotiate level carefully — L6 at Google exceeds $500K+ TC; L5 may not
-- Google Ads' first-price auction transition (from second-price) is a documented design question — know bid shading, equilibrium implications, and the advertiser learning period challenge
-- Comp (Kirkland/Seattle): L5 ~$380K–$500K TC; L6 ~$500K–$750K+ TC (salary + RSU + bonus)
-
----
-
-### Disney (Hulu)
-
-**Titles:** Senior Machine Learning Engineer, Ad Platforms / Ads Research *(added July 2026)*
-
-| Role | Level | URL |
-|---|---|---|
-| Senior MLE, Ad Platforms | Senior | *(search disneycareers.com — "Machine Learning" + filter Seattle; job 10142078 posted Feb 2026)* |
-| Senior MLE, Ads Research | Senior | *(search disneycareers.com — "Machine Learning" + filter Seattle; job 10140854 posted Jan 2026)* |
-
-**Best fit for you:** Ad Platforms role owns ad serving, delivery, and AI/ML solutions for Hulu and ESPN+ — programmatic/CTV focus. Ads Research role advances AI/ML across the Ad Platform. Domain is streaming/CTV (connected TV) rather than search/social auction; your background transfers but requires narrative pivot to streaming inventory, AVOD/SVOD monetization tension.
-
-**TC note:** Disney pays below FAANG — Senior MLE est. ~$200K–$330K TC. **Does NOT meet $500K+ liquid TC threshold.** Include as good interview practice and strong Seattle backup, not primary target.
-
-**JD Key Requirements (Senior MLE Ad Platforms, verified July 2026):**
-- 5+ years building ML systems in production
-- ML for ad serving, ad delivery optimization, or programmatic advertising
-- Python, Spark/Flink, real-time inference systems
-- Experience with CTV/streaming ad tech: ad break prediction, viewer targeting, frequency capping
-- Translating business goals (advertiser ROI, viewer experience) into ML objectives
-
-**Interview Process (from Glassdoor, LinkedIn, 2024–2026):**
-1. Recruiter screen (30 min) — background, interest in Disney/Hulu platform
-2. Technical screen (45–60 min) — coding (LeetCode medium) + ML fundamentals
-3. Virtual onsite (3–4 rounds):
-   - **Coding** — LeetCode medium; clean code + complexity analysis
-   - **ML system design** — design an ad serving pipeline, viewer targeting system, or ad break predictor
-   - **Domain / behavioral** — streaming ads business context, cross-team collaboration
-   - **Hiring manager** — past work, impact framing
-- Total timeline: 2–3 weeks (faster than FAANG)
-
-**Key insider notes:**
-- Pivot narrative: reframe auction/bidding background as "ad delivery optimization under inventory constraints" — the math is the same (pacing, targeting, yield management), the framing is CTV/streaming not search
-- AVOD/SVOD tension is unique: Disney must balance ad revenue with subscriber retention — design decisions involve non-standard objectives (viewer satisfaction is not purely optimizable via CTR)
-- Ad break prediction is a documented design area: predict optimal ad insertion points in live sports/content streams — relevance, pacing, and UX signals all interact
-- Interview bar is lighter than FAANG; treat as good practice + data point, not primary offer target
-- Stack: Flink/Spark data pipelines, Python-based ML, real-time ad decisioning infrastructure
-
----
-
 ### Moloco
 
 **Titles:** Senior SWE/MLE, Pricing Algorithms — Auction Mechanisms *(added July 2026)*
@@ -469,7 +389,7 @@
 
 **Core system designs to master (used by 6+ companies):**
 - Two-tower retrieval + re-ranking pipeline (Meta, Netflix, Uber)
-- Ads auction + bidding system end-to-end (Meta, Uber, Reddit, Microsoft, Google, Moloco)
+- Ads auction + bidding system end-to-end (Meta, Uber, Reddit, Microsoft, Moloco)
 - Real-time feature serving with low-latency SLA (all companies)
 - A/B testing + experimentation platform design (all companies)
 
@@ -516,22 +436,11 @@ Your background is a genuine moat for most companies on this list. Here's how to
 - Mechanism design hook: bid shading in first-price auction environments, convergence properties of autobidding when multiple advertisers simultaneously run learning algorithms, advertiser learning period tradeoffs (short exploration hurts ROI, long exploration wastes budget)
 - Stack angle: Reddit uses control theory + RL for pacing (different framing from pure Lagrangian) — bridge this: "Lagrangian relaxation and PID control are solving the same budget constraint problem — they differ in whether you update the dual variable in closed form or via gradient; Reddit's RL framing naturally handles non-stationarity."
 
-**Google — Ads Auction Research at Search Scale**
-- Google's Ads team invented many of the auction mechanisms you've studied (GSP, bid shading, quality scores) — position yourself as a practitioner of their academic work.
-- Your angle: "My PhD and Amazon SP work operationalized the mechanisms Google Ads research team published — I'm the person who takes mechanism design theory and makes it work in production at scale."
-- Mechanism design hook: GSP → first-price transition (Google switched in 2021), bid shading equilibrium, advertiser learning dynamics in first-price environments, quality score as a generalized VCG approximation.
-- Differentiation: most ML candidates talk about model architecture; you should talk about the game-theoretic implications of the auction format choice and how it affects ML system design (feedback loops, autobidder convergence).
-
 **Moloco — RTB Pricing & Bid Optimization**
 - Moloco competes against Google/Meta by winning on ML precision for smaller ad networks — their differentiation is algorithmic, not scale.
 - Your angle: "The core problem is win rate prediction under incomplete bid landscape information, combined with budget pacing under first-price auction dynamics where shading amount directly determines both win rate and cost. This is exactly the intersection of mechanism design and RL I studied in my PhD."
 - Mechanism design hook: bid shading in first-price auctions (optimal shade = function of estimated bid distribution), floor price optimization, supply path optimization.
 - Bring: concrete numbers on model accuracy, pacing error rates, and auction win rates from prior work — Moloco's bar for domain depth is the highest of any company here.
-
-**Disney (Hulu) — CTV Programmatic & Streaming Ad Delivery**
-- Disney's problem is yield management under streaming inventory constraints — maximally monetize ad breaks without degrading subscriber experience.
-- Your angle: "The pacing and delivery optimization problems are structurally identical to what I solved at DoorDash — budget pacing under uncertain inventory, multi-objective optimization balancing revenue and user experience. The vocabulary shifts from 'auction' to 'ad break' but the math is the same."
-- Domain pivot: AVOD/SVOD tension — every ad must serve revenue while protecting subscriber retention; this is a non-standard constraint vs. pure-play ad platforms; address it proactively.
 
 **Whatnot — Livestream Auction Mechanics & Seller Marketplace**
 - Whatnot's core ML challenge: real-time ranking and price discovery in livestream auctions where bidder intent, item rarity, and seller reputation are all noisy, fast-moving signals.
@@ -546,7 +455,7 @@ Your background is a genuine moat for most companies on this list. Here's how to
 
 ## 3. Company-Specific Deep Dives (The Deltas)
 
-> **Your delta is minimal for Ads/Marketplace companies (Meta, Uber, Reddit, Whatnot, Microsoft, Google, Moloco) — this is your core domain. Your delta is moderate for streaming-adjacent (Disney), and larger for Research-Adjacent companies (Netflix, OpenAI).**
+> **Your delta is minimal for Ads/Marketplace companies (Meta, Uber, Reddit, Whatnot, Microsoft, Moloco) — this is your core domain. Your delta is larger for Research-Adjacent companies (Netflix, OpenAI).**
 
 ### Meta
 - DLRM architecture, FAISS/ScaNN for embedding retrieval, Flink feature pipelines
@@ -584,20 +493,6 @@ Your background is a genuine moat for most companies on this list. Here's how to
 - Research deep-dive: select one project to present end-to-end (problem → methodology → tradeoffs → deployed impact → what you'd do differently)
 - Metaflow-style DAG orchestration; real-time inference SLA requirements
 - Tie every design decision to subscriber retention — this tension is unique to Netflix vs. pure-play ad platforms
-
-### Google
-**Your delta:** Moderate — auction/bidding domain is identical; coding bar is higher than most (LeetCode hard).
-- Google's first-price auction transition: know bid shading, advertiser learning period, and equilibrium implications — this is a documented design question
-- "Why Google Ads?" must be specific: Kirkland WA office, research depth (Google has the best auction research team), access to Google-scale infrastructure
-- Coding prep: LeetCode hard, not medium — Google's bar is closest to Meta's
-- Googleyness round: genuine story about learning from failure + specific alignment with Google's mission; don't be generic
-
-### Disney (Hulu)
-**Your delta:** Medium — pivot narrative from search/social auction → CTV/streaming programmatic.
-- Reframe: "budget pacing under inventory constraints" is the same math whether the inventory is search queries or TV ad breaks
-- Ad break prediction design: prepare as a time-series + content-aware ML system; signals = show type, viewer engagement, break history
-- AVOD/SVOD tension: subscriber retention vs. ad revenue is the unique Disney design constraint — address it proactively in any system design
-- Treat as good practice run: lighter interview bar, faster process, useful for calibration
 
 ### Moloco
 **Your delta:** Minimal — this is the closest domain match on the list to your actual work.
@@ -643,8 +538,8 @@ Your background is a genuine moat for most companies on this list. Here's how to
 
 | Week | Focus | Coding Theme | System Design | Behavioral Focus |
 |---|---|---|---|---|
-| 4 | Ads/Marketplace (Meta, Uber, Reddit, Whatnot, Microsoft, Google, Moloco) | Rate limiters, task schedulers, online algorithms; LeetCode hard for Google | Auto-bidding system + budget pacing + RTB bidding pipeline (Moloco) + Whatnot seller trust scoring | Impact story from DoorDash Ads |
-| 5 | Auction depth (Reddit IC4, Microsoft L64, Google Ads) | DP, graphs, constrained optimization; advanced graph traversal for Google | Auction serving pipeline + causal inference experiment design + first-price bid shading | Technical judgment / hard trade-off story |
+| 4 | Ads/Marketplace (Meta, Uber, Reddit, Whatnot, Microsoft, Moloco) | Rate limiters, task schedulers, online algorithms | Auto-bidding system + budget pacing + RTB bidding pipeline (Moloco) + Whatnot seller trust scoring | Impact story from DoorDash Ads |
+| 5 | Auction depth (Reddit IC4, Microsoft L64) | DP, graphs, constrained optimization | Auction serving pipeline + causal inference experiment design | Technical judgment / hard trade-off story |
 | 6 | Research-adjacent (Netflix RS5, OpenAI) | Graph problems, attention implementation | Ad inventory forecasting + LLM serving infrastructure (KV cache, batching) | Cross-functional influence + research deep-dive |
 | 7 | Mock + gap close | Mixed drills on weak spots | Full mock system design (ad auction or two-tower) | Full STAR polish |
 
@@ -700,7 +595,6 @@ Your background is a genuine moat for most companies on this list. Here's how to
 | Google Research (on auctions) | First-price auction transition, bid shading, "Autobidding with Constraints" (2021) |
 | Whatnot Engineering (medium.com/whatnot-engineering) | "Evolving Feed Ranking at Whatnot", "6x Faster ML Inference: Why Online > Batch", "Feeds with Real-time Signals", "How Whatnot Utilizes Generative AI for Trust & Safety", "Whatamix: Blendable Feed Construction" |
 | Moloco Engineering / Research | RTB bid optimization, win rate prediction, budget pacing under first-price auction dynamics |
-| Disney Streaming Tech (medium.com/disney-streaming) | Ad delivery optimization, CTV programmatic, viewer experience vs. ad revenue trade-offs |
 
 ### Frameworks & Tools to Know by Name (not deep expertise required)
 
