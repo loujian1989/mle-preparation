@@ -164,13 +164,30 @@
 | Role | Level | URL |
 |---|---|---|
 | Applied Machine Learning Engineers | Mid-Senior | shopify.com/careers/applied-machine-learning-engineers_19b9dea6 |
-| **MLE - Ads** | Senior | shopify.com/careers/machine-learning-engineer-ads_5485d8c3 |
+| **MLE - Ads** | Senior | [shopify.com/careers/machine-learning-engineer-ads](https://www.shopify.com/careers/machine-learning-engineer-ads_4d2e09db-2f4b-4217-974d-7dcfffd26af6) *(refreshed listing, verified July 2026)* |
 | MLE - HSTU | Senior | shopify.com/careers/machine-learning-engineer-hstu_04b84b82 |
 | Applied ML Engineering - GenAI, AI Agent | Senior | shopify.com/careers/applied-ml-engineering-genai-ai-agent_dae1b282 |
 | MLE - Search | Senior | shopify.com/careers/machine-learning-engineer-search_c15b011d |
 | MLE Infrastructure | Senior | shopify.com/careers/machine-learning-infrastructure-engineers_896a7d5f |
 
-**Best fit for you:** MLE - Ads (direct match to your domain)
+**Best fit for you:** MLE - Ads (direct domain match — ad targeting + personalization for merchants = auction/bidding/attribution you've built at DoorDash + Amazon)
+
+**Compensation (verified July 2026, levels.fyi + Glassdoor):**
+
+| Level | US TC (est.) | Canada TC | Note |
+|---|---|---|---|
+| Senior (L6) | ~$250K–$350K | CA$255K | Most MLE - Ads hires land here |
+| Staff (L7) | ~$315K–$480K | CA$337K | Top of band with strong negotiation |
+
+> **TC Reality Check vs. $500K target:** Shopify does NOT reliably hit $500K+ at Senior/Staff MLE. Only exceptional Staff+ negotiations with high stock grants approach that range. Netflix RS5 ($466K–$750K) and Microsoft L64 ($280K–$420K) are stronger bets for $500K+. Apply to Shopify for interview practice + domain fit signal — not as your comp anchor.
+
+**JD Key Requirements — MLE Ads (verified July 2026):**
+- Extensive experience building and deploying ML models for advertising at scale
+- Expert Python + TensorFlow or PyTorch
+- Experience with ad platforms, A/B testing, and data-driven decision-making
+- Statistical methods and ML performance optimization
+- Analytical skills for processing large-scale datasets
+- Live pair programming session required (Shopify-specific format)
 
 **Interview Process (from InterviewQuery + Glassdoor + Taro, 2024–2025):**
 1. Recruiter screen
@@ -184,8 +201,11 @@
 - The Life Story round comes BEFORE technical — it's a real gate, not a formality; align your narrative to merchant-first impact
 - They use Pano (Feast-based feature store) + Ray + Kafka — name these explicitly in system design
 - "Move fast, communicate clearly, own decisions" — every design decision needs a stated trade-off
-- MLE - Ads is a direct domain match: bring your DoorDash Ads experience and connect it to merchant GMV impact (advertisers on Shopify = merchants)
+- MLE - Ads is a direct domain match: bring your DoorDash Ads experience and connect it to merchant GMV impact (advertisers on Shopify = merchants; same auction/bidding/targeting problem, different product surface)
 - Black Friday resilience is a real interview topic — design for 10x traffic spikes, failover, degraded-mode serving
+- **Ads MLE prep priorities:** (1) ad targeting system design end-to-end (candidate generation → ranking → auction → serving → feedback loop); (2) personalization at scale (two-tower retrieval, GBDT ranker, real-time feature serving <100ms); (3) A/B testing design for GMV/ROAS — go beyond p-value to variance reduction, novelty effects, network effects; (4) live pair programming — practice real-time collaborative coding in CoderPad, not solo LeetCode
+- Shopify completed full loop in 30 days (stated on JD) — faster than most FAANG loops
+- **TC negotiation lever:** Shopify has a "choose your own compensation" mix (salary vs. RSU weighting) — maximize RSU allocation to push TC higher; even so, $500K+ requires L8+ which is not a typical MLE landing level
 
 ---
 
