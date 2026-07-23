@@ -370,14 +370,25 @@
 
 ### Whatnot
 
-**Titles:** Machine Learning Scientist, Software Engineer ML
+**Titles:** Machine Learning Scientist, MLE Growth, Software Engineer ML
 
 | Role | Level | URL |
 |---|---|---|
 | Machine Learning Scientist | Senior (4–5+ yrs) | jobs.whatnot.com (Ashby) — search "Machine Learning" |
 | Software Engineer, Machine Learning | Senior | jobs.whatnot.com — search "Machine Learning" |
+| **MLE, Growth** | Senior (5+ yrs) | [jobs.ashbyhq.com/whatnot/e3e7c019](https://jobs.ashbyhq.com/whatnot/e3e7c019-4657-47a9-a9f3-123d2cd1a75e) *(verified July 2026)* |
 
-**Best fit for you:** Machine Learning Scientist — real-time ranking, auction discoverability, seller trust signals. Your auction/pricing background maps directly onto Whatnot's core ML problems.
+**Compensation note (private company):** Base $190K–$280K (MLE Growth, verified July 2026). Whatnot is **private** ($11.5B valuation, Series F late 2025; IPO expected late 2026–2027). Stock options are illiquid until IPO — do not count toward liquid TC. If IPO happens at $15B+, equity could be meaningful, but this is speculative. **Does not meet $500K+ liquid TC threshold at current stage.**
+
+**Best fit for you:** ML Scientist (auction/ranking fit) or MLE Growth (greenfield buyer acquisition — less direct domain match but high-ownership, first-ML-engineer opportunity). Ads/auction experience does NOT directly transfer to growth ML; be prepared to reframe past work around user acquisition and retention funnels.
+
+**JD Key Requirements (MLE Growth, verified July 2026):**
+- 5+ years building and deploying ML systems at scale
+- Lead end-to-end ML lifecycle: data pipelines → feature engineering → training → deployment → experimentation
+- Deep expertise in personalization, ranking, or user modeling; strong consumer product intuition
+- Python, SQL, PyTorch/TensorFlow/XGBoost
+- Preferred: growth domains (user segmentation, retention modeling, recommendation, notification ranking), e-commerce or social product background
+- Locations: SF, NYC, LA, Seattle (NOT remote)
 
 **JD Key Requirements (ML Scientist, from YC/Built In postings, 2025):**
 - 4–5+ years ML in production; end-to-end model ownership (data → training → serving → monitoring)
@@ -405,6 +416,8 @@
 - Values are evaluated across all rounds, not just the principles round — frame every design decision in terms of seller/buyer community impact
 - Stack: Kafka (Confluent Cloud), KSQL, Snowflake, Rockset, Redis, PyTorch, LightGBM, gRPC, FastAPI
 - Read before interviews: "Evolving Feed Ranking at Whatnot", "6x Faster ML Inference: Why Online > Batch", "Feeds with Real-time Signals", "How Whatnot Utilizes Generative AI for Trust & Safety" — all on medium.com/whatnot-engineering
+- **MLE Growth prep priorities:** (1) uplift modeling — treatment effect estimation for targeting (S-learner, T-learner, X-learner); this is the core "first ML engineer on growth" problem; (2) notification ranking — multi-objective ranking (open rate vs. conversion vs. unsubscribe); (3) user segmentation + LTV modeling; (4) A/B testing for growth metrics — activation rate, D7/D30 retention, conversion; (5) reframe auction/bidding experience as "budget optimization for growth spend" — same math, different framing
+- **Equity reality:** Pre-IPO options; Whatnot valued $11.5B (July 2026), IPO expected late 2026–2027. Strike price matters more than grant size at this stage — negotiate strike price and cliff carefully
 
 ### Microsoft
 
