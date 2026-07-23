@@ -1,48 +1,29 @@
-# MLE Interview Prep: 10-Week Strategy for Staff/Senior Roles
-**Target Companies:** Stripe, Uber, Meta, OpenAI, Shopify, Netflix, Roblox, Reddit, Pinterest, Whatnot, Microsoft
-**Background:** PhD CS (game theory/mechanism design), DoorDash Ads (auction/pricing/autobidding), Amazon (Sponsored Products)
+# MLE Interview Prep: 8-Week Strategy for Staff/Senior Ads ML Roles
+
+**Target Companies:** Uber, Meta, OpenAI, Netflix, Reddit, Whatnot, Microsoft
+**Background:** PhD CS (game theory/mechanism design), DoorDash Ads (auction/pricing/autobidding/causal inference), Amazon (Sponsored Products)
 
 ---
 
-## 0. Verified Job Listings + Interview Intel (Research as of March 2026)
+## Quick Reference: Target Roles by Priority
 
-> All JDs verified live. Netflix target role updated July 2026: Research Scientist 5, Marketplace - Ads DSE (previous listing filled — new listing active). Microsoft Principal Applied Scientist (Auction & Bidding) added July 2026 — active listing. All other listings confirmed active or flagged where status is uncertain.
+| # | Company | Role | Level | TC Est. | Domain Fit | Priority |
+|---|---|---|---|---|---|---|
+| 1 | Netflix | RS5, Marketplace Ads DSE | RS5 ≈ Staff | $466K–$750K | Research + Ads ML | **P0** |
+| 2 | Reddit | MLE, Ads Optimization | IC4 (Senior) | ~$350K–$480K | Auction/bidding/pacing | **P0** |
+| 3 | Meta | MLE, Ads | Senior/Staff | ~$400K–$600K | Ads at scale | **P0** |
+| 4 | Microsoft | Principal Applied Scientist, Auction & Bidding | L64 | ~$280K–$420K | Auction/auto-bidding | **P1** |
+| 5 | Uber | Senior MLE, Marketplace Pricing | Senior/Staff | ~$300K–$450K | Marketplace ML | **P1** |
+| 6 | OpenAI | Research Scientist / MLE | Senior/Staff | ~$400K–$700K | Foundation models | **P2** |
+| 7 | Whatnot | MLE, Growth | Senior | ~$190K–$280K base (pre-IPO equity) | Growth ML | **P2** |
+
+> **$500K+ liquid TC:** Netflix (clearly), Meta (at Staff), OpenAI (at Staff). Reddit IC4, Microsoft L64, and Uber are marginal. Whatnot is pre-IPO — equity is illiquid until ~late 2026–2027.
 
 ---
 
-### Stripe
+## 0. Verified Job Listings + Interview Intel (Updated July 2026)
 
-**Titles:** MLE (multiple tracks), SWE ML Infrastructure
-
-| Role | Level | URL |
-|---|---|---|
-| MLE, Payments ML Accelerator | Senior (7+ yrs) | stripe.com/jobs/listing/…/7079044 |
-| MLE, Foundation Model | Senior | stripe.com/jobs/listing/…/7275014 |
-| MLE, Stripe Assistant | Mid-Senior | stripe.com/jobs/listing/…/7629052 |
-| Senior MLE, Stripe Assistant | Senior | stripe.com/jobs/listing/…/6894964 |
-| SWE, ML Infrastructure | Senior | stripe.com/jobs/listing/…/7528260 |
-| PhD MLE, New Grad | New Grad | stripe.com/jobs/listing/…/7216668 |
-
-**Best fit for you:** MLE Payments ML Accelerator — fraud detection, authorization optimization, deep learning + LLMs, 7+ years required, $212K–$318K.
-
-**JD Key Requirements (Payments ML Accelerator, verified):**
-- 7+ years end-to-end ML development + production deployment
-- Python, Scala, Spark
-- Deep learning + LLM/foundation model expertise
-- Focus: fraud detection → authorization optimization, across merchants/issuers/customers
-
-**Interview Process (from Glassdoor + LeetCode discuss + Taro, 2024–2025):**
-1. Recruiter call (30 min)
-2. OA — CoderPad, ~45 min, semi-real-life data manipulation with conditional logic (not LeetCode)
-3. ML coding round — given a dataset in Jupyter, build + evaluate a model in 1 hour; construct target variable, feature selection, beat a random baseline
-4. Onsite (4 rounds): coding, debugging (clone a repo + fix bugs), ML system design, hiring manager
-- Total ~17 days average to hire
-
-**Key insider notes:**
-- The debug round is unique to Stripe — practice reading production Python code and diagnosing failures systematically
-- "No LeetCode" — they provide real data and expect working, evaluated models
-- 27% positive experience on Glassdoor — process is demanding and somewhat opaque; recruiter communication can be slow
-- ML system design at Stripe: expect fraud detection architecture, recommendation for merchants, authorization optimization
+> All JDs verified live. Active target list: Uber, Meta, OpenAI, Netflix, Reddit, Whatnot, Microsoft. Stripe, Shopify, Roblox, Pinterest removed from active pipeline.
 
 ---
 
@@ -157,58 +138,6 @@
 
 ---
 
-### Shopify
-
-**Titles:** Applied MLE, MLE (various tracks)
-
-| Role | Level | URL |
-|---|---|---|
-| Applied Machine Learning Engineers | Mid-Senior | shopify.com/careers/applied-machine-learning-engineers_19b9dea6 |
-| **MLE - Ads** | Senior | [shopify.com/careers/machine-learning-engineer-ads](https://www.shopify.com/careers/machine-learning-engineer-ads_4d2e09db-2f4b-4217-974d-7dcfffd26af6) *(refreshed listing, verified July 2026)* |
-| MLE - HSTU | Senior | shopify.com/careers/machine-learning-engineer-hstu_04b84b82 |
-| Applied ML Engineering - GenAI, AI Agent | Senior | shopify.com/careers/applied-ml-engineering-genai-ai-agent_dae1b282 |
-| MLE - Search | Senior | shopify.com/careers/machine-learning-engineer-search_c15b011d |
-| MLE Infrastructure | Senior | shopify.com/careers/machine-learning-infrastructure-engineers_896a7d5f |
-
-**Best fit for you:** MLE - Ads (direct domain match — ad targeting + personalization for merchants = auction/bidding/attribution you've built at DoorDash + Amazon)
-
-**Compensation (verified July 2026, levels.fyi + Glassdoor):**
-
-| Level | US TC (est.) | Canada TC | Note |
-|---|---|---|---|
-| Senior (L6) | ~$250K–$350K | CA$255K | Most MLE - Ads hires land here |
-| Staff (L7) | ~$315K–$480K | CA$337K | Top of band with strong negotiation |
-
-> **TC Reality Check vs. $500K target:** Shopify does NOT reliably hit $500K+ at Senior/Staff MLE. Only exceptional Staff+ negotiations with high stock grants approach that range. Netflix RS5 ($466K–$750K) and Microsoft L64 ($280K–$420K) are stronger bets for $500K+. Apply to Shopify for interview practice + domain fit signal — not as your comp anchor.
-
-**JD Key Requirements — MLE Ads (verified July 2026):**
-- Extensive experience building and deploying ML models for advertising at scale
-- Expert Python + TensorFlow or PyTorch
-- Experience with ad platforms, A/B testing, and data-driven decision-making
-- Statistical methods and ML performance optimization
-- Analytical skills for processing large-scale datasets
-- Live pair programming session required (Shopify-specific format)
-
-**Interview Process (from InterviewQuery + Glassdoor + Taro, 2024–2025):**
-1. Recruiter screen
-2. Life Story interview (30–60 min) — cultural values alignment, resilience, growth mindset; assessed BEFORE technical rounds
-3. ML Technical Screen — CoderPad, real-world commerce data (merchant transactions, product metadata); collaborative filtering, GBDTs, inference optimization; passing threshold 7.5+
-4. Take-home (4–6 hrs) — containerized FastAPI service or documented notebook; SHAP interpretability, time-series validation splits, anonymized merchant data
-5. Onsite loop — real-time ML system design (<100ms inference), feature pipeline via Pano (Shopify's Feast-based feature store), Kafka, Black Friday resilience, multi-region deployment, A/B test design for GMV/conversion
-- Acceptance rate: ~0.3% (extremely competitive)
-
-**Key insider notes:**
-- The Life Story round comes BEFORE technical — it's a real gate, not a formality; align your narrative to merchant-first impact
-- They use Pano (Feast-based feature store) + Ray + Kafka — name these explicitly in system design
-- "Move fast, communicate clearly, own decisions" — every design decision needs a stated trade-off
-- MLE - Ads is a direct domain match: bring your DoorDash Ads experience and connect it to merchant GMV impact (advertisers on Shopify = merchants; same auction/bidding/targeting problem, different product surface)
-- Black Friday resilience is a real interview topic — design for 10x traffic spikes, failover, degraded-mode serving
-- **Ads MLE prep priorities:** (1) ad targeting system design end-to-end (candidate generation → ranking → auction → serving → feedback loop); (2) personalization at scale (two-tower retrieval, GBDT ranker, real-time feature serving <100ms); (3) A/B testing design for GMV/ROAS — go beyond p-value to variance reduction, novelty effects, network effects; (4) live pair programming — practice real-time collaborative coding in CoderPad, not solo LeetCode
-- Shopify completed full loop in 30 days (stated on JD) — faster than most FAANG loops
-- **TC negotiation lever:** Shopify has a "choose your own compensation" mix (salary vs. RSU weighting) — maximize RSU allocation to push TC higher; even so, $500K+ requires L8+ which is not a typical MLE landing level
-
----
-
 ### Netflix
 
 **Target role:** Research Scientist 5 (RS5), Marketplace - Ads DSE *(updated July 2026)*
@@ -236,41 +165,6 @@
 - Netflix ghosting after friendly interviews is a documented complaint — don't assume silence = good news
 - Freedom & Responsibility culture: expect to be asked how you operate autonomously without process guardrails
 - Monitoring is not an afterthought — proactively say "here's how I'd know it's working in prod: shadow scoring for 48h, holdout group sized at X%, alert on P(drift) > threshold"
-
----
-
-### Roblox
-
-**Titles:** Senior MLE, Principal MLE
-
-| Role | Level | URL |
-|---|---|---|
-| [2026] Senior MLE, AI Platform | Senior (PhD early career) | careers.roblox.com/jobs/7403998 |
-| [2026] Senior MLE, Recommendation Systems | Senior (PhD early career) | careers.roblox.com/jobs/7350081 |
-| [2026] Senior MLE, NLP | Senior (PhD early career) | careers.roblox.com/jobs/7324377 |
-| [2026] Senior MLE, Multimodal AI / CV | Senior (PhD early career) | careers.roblox.com/jobs/7323437 |
-| Principal MLE, User Connections | Principal | careers.roblox.com/jobs/6268817 |
-
-**Best fit for you:** Senior MLE Recommendation Systems + Principal MLE User Connections
-
-**JD Key Requirements (from search, verified):**
-- PhD in CS or related field with expertise in recommender systems, search, information retrieval, or generative models
-- End-to-end ML systems including data analysis and model deployment
-- ML algorithms, data pipelines
-
-**Interview Process (from InterviewQuery + Glassdoor + Taro, 2024–2025):**
-1. Online assessment (HackerRank/CodeSignal) — 2 standard technical rounds
-2. ML system design round — designing a recommendation system is a documented question
-3. Project deep-dive + behavioral
-4. Additional round: team/culture fit
-- Total: 4–6 weeks; 5 rounds for Senior MLE
-- Process is decentralized — hiring managers customize by team
-
-**Key insider notes:**
-- Interviewers described as friendly; process is more structured than OpenAI/Netflix
-- Recommendation system design is the anchor ML system design question — prepare this cold
-- Platform economics / ads framing is an emerging angle (see Cluster C notes) but not yet the primary interview focus — recommendation + safety is still the dominant lens
-- Principal MLE User Connections is a strong target given your multi-agent/network modeling background
 
 ---
 
@@ -323,48 +217,6 @@
 - 33% positive experience on Glassdoor (below average) — process quality is inconsistent; follow up proactively
 - Stack: Kafka (65B+ daily events), Flink (real-time stream processing), Spark (batch), TF/PyTorch; control theory + RL for autobidding/pacing; products: Lowest Cost, Cost Caps, Campaign Budget Optimization, TCPA, TROAS
 - **IC4 Ads Optimization prep priorities:** (1) budget pacing algorithms — throttle-based vs. bid-modification; simulate overspend/underspend failure modes; (2) multi-objective bidding — derive CPA/ROAS targets as constrained optimization (Lagrangian dual); (3) auction design — balancing advertiser performance, user experience, and marketplace efficiency is explicitly in the JD; (4) system design for a real-time bidding pipeline: feature freshness, serving latency, feedback loop latency; (5) ML model building in 45 min from a dataset — practice in a notebook, narrate feature engineering + model selection trade-offs out loud
-
----
-
-### Pinterest
-
-**Titles:** MLE / Economist (Ads Marketplace), Staff MLE (Monetization), Principal MLE (Ads Delivery)
-
-| Role | Level | URL |
-|---|---|---|
-| Sr. MLE / Economist, Ads Marketplace | IC15 (Senior) | pinterestcareers.com/jobs/7195341 |
-| Staff MLE, Ads Marketplace | IC16 (Staff) | pinterestcareers.com/en/jobs/4981431 |
-| Principal MLE, Ads Delivery | Principal | pinterestcareers.com/jobs/6963868 |
-| Staff MLE, Monetization | IC16 (Staff) | pinterestcareers.com/jobs/6133257 |
-
-**Best fit for you:** Sr. MLE / Economist, Ads Marketplace — role title explicitly requires auction theory + market design + econometrics; PhD is the stated qualification. Seattle-commutable (SF/Palo Alto/Seattle, 1–2x/month in-office). Comp: IC15 $462K total ($240K base); IC16 $704K total ($271K base).
-
-**JD Key Requirements (Sr. MLE/Economist, Ads Marketplace, verified):**
-- MS or PhD in CS, Economics, Statistics, or related field (required at Senior level)
-- "Knowledge in auction theory, market design, and econometrics"
-- "Industry experience applying economics or ML to ads auctions, pricing, marketplaces"
-- A/B testing, causal inference, online experimentation at large scale
-- "Implement auctions, tune marketplace parameters (utility function), model long-term effects to reduce ad fatigue"
-- Focus areas: ranking/pricing/mechanism design, bidding/budgeting innovation, advertiser churn/retention modeling, second-order effects for new ad offerings
-
-**Interview Process (from Glassdoor/Blind/Exponent/InterviewQuery, 2024–2025):**
-1. Recruiter screen (30 min)
-2. Phone screen (45–70 min) — 3–5 ML conceptual questions + 1–2 LeetCode medium/hard coding problems (Python)
-3. Onsite (4–6 rounds, 1–4 weeks total):
-   - 2 coding rounds (LeetCode medium with hard follow-ups; topics: graphs, trees, sliding window, backtracking, matrix operations; framed in Pinterest context)
-   - 1 ML concepts round
-   - 1–2 ML system design rounds (documented topics: ads ranking algorithm, product recommendation, spam detection, visual search, advertiser recommendation)
-   - 1 behavioral round (evaluated against 5 core values — see insider notes)
-- Total timeline: 1–4 weeks typical; staff-level processes can extend to 2 months with 7 rounds
-- Interviewers explain scoring rubric upfront
-
-**Key insider notes:**
-- Five core values evaluated across ALL rounds (not just behavioral): **Put Pinners First** (user-centric decisions), **Aim for Extraordinary** (high execution bar), **Create Belonging** (collaborative, inclusive AI), **Act as One** (team goals > individual), **Win or Learn** (calculated risk-taking)
-- Inclusive AI / algorithmic fairness in ranking is explicitly evaluated — expect to be asked how you'd handle fairness trade-offs in ads ranking
-- Staff-level bar (IC16) significantly higher than Senior (IC15) — scope-of-impact stories must be at org level, not team level
-- Recruiter communication issues at staff level: documented cases of >1 week silence after positive screens — follow up proactively at 5–7 business days
-- Read these blog posts before interviews: "Beyond Two Towers: Re-architecting the Serving Stack" (Feb 2026), "Evolution of Ads Conversion Optimization Models", "Handling Online-Offline Discrepancy in Pinterest Ads Ranking"
-- Stack: PyTorch/TF, MLFlow, Spark, Flink, Kafka, Kubernetes, Ray; **Galaxy** (homegrown online feature store), **Scorpion** (feature fetching + model inference platform), **MLEnv** (full-stack ML developer framework); ads ranking architecture evolved: GBDT+LR (2018) → DNN+MTL (2020) → AutoML multi-tower (2021) → MMOE-DCN (2024) → GPU serving (2025)
 
 ---
 
@@ -464,7 +316,7 @@
 
 ## 1. The Overlap Strategy
 
-### Coding — Universal Core (applies to all 10)
+### Coding — Universal Core (applies to all 7)
 
 | Topic | Depth Required | Priority |
 |---|---|---|
@@ -495,8 +347,8 @@
 | Failure modes | Fallbacks, circuit breakers, degraded-mode behavior |
 
 **Core system designs to master (used by 6+ of 10 companies):**
-- Two-tower retrieval + re-ranking pipeline (Meta, Netflix, Roblox, Uber, Pinterest)
-- Ads auction + bidding system end-to-end (Meta, Uber, Reddit, Pinterest)
+- Two-tower retrieval + re-ranking pipeline (Meta, Netflix, Uber)
+- Ads auction + bidding system end-to-end (Meta, Uber, Reddit, Microsoft)
 - Real-time feature serving with low-latency SLA (all 10)
 - A/B testing + experimentation platform design (all 10)
 
@@ -533,11 +385,6 @@ Your background is a genuine moat for ~8 of the 10 companies. Here's how to depl
 - Mechanism design hook: matching markets, stable matching, VCG-based incentive mechanisms for drivers, surge as a price-discovery mechanism not just demand suppression.
 - Concrete: design a surge pricing system from scratch and narrate the mechanism design choice (posted price vs. auction vs. ML-predicted price) as a first-principles decision.
 
-**Stripe — Payments, Fraud, Risk Pricing**
-- Not a classic auction company, but mechanism design applies to: risk-based pricing (setting interchange-equivalent fees), fraud detection (adversarial ML as a game between fraudster and detector).
-- Your angle: "Fraud detection is a Stackelberg game — the defender commits to a policy, the attacker best-responds. My mechanism design background gives me a formal framework for thinking about equilibria in adversarial settings."
-- Concrete: design a fraud scoring system and explicitly discuss the adversarial feedback loop, how publishing model scores enables gaming, and why some features must be withheld.
-
 **OpenAI — Alignment, RLHF, Multi-agent**
 - Your game theory background has direct application: multi-agent RL, Nash equilibria in RLHF reward model training, mechanism design for alignment.
 - Angle: "Mechanism design asks: given strategic agents with private preferences, can you design an incentive structure that elicits truthful behavior? RLHF is doing the same thing — designing a reward signal so that the model 'reports' aligned behavior."
@@ -547,12 +394,6 @@ Your background is a genuine moat for ~8 of the 10 companies. Here's how to depl
 - Your angle: "Reddit's autobidding system is at the stage where you have to rearchitect pacing from impression-based to outcome-based signals. The hard part is handling the cold-start exploration/exploitation trade-off during the learning period, and ensuring the feedback loop doesn't destabilize when campaign sizes are small — I've shipped exactly this at DoorDash."
 - Mechanism design hook: bid shading in first-price auction environments, convergence properties of autobidding when multiple advertisers simultaneously run learning algorithms, advertiser learning period tradeoffs (short exploration hurts ROI, long exploration wastes budget)
 - Stack angle: Reddit uses control theory + RL for pacing (different framing from pure Lagrangian) — bridge this: "Lagrangian relaxation and PID control are solving the same budget constraint problem — they differ in whether you update the dual variable in closed form or via gradient; Reddit's RL framing naturally handles non-stationarity."
-
-**Pinterest — Constrained Organic/Paid Auction Design**
-- Pinterest's structural challenge: auction over visual discovery content where promoted pins must not degrade the organic discovery experience users come for.
-- Your angle: "This is a mechanism design problem with a quality constraint — maximize advertiser value subject to a user experience floor. The same multi-objective structure appears in every ads marketplace, but Pinterest's visual/discovery context makes the quality signal non-trivial: a promoted pin that 'looks organic' may convert better short-term but creates trust erosion over time. I'd design the auction with an explicit quality multiplier that incorporates long-horizon engagement signals, not just immediate CTR."
-- Mechanism design hook: constrained revenue maximization (Lagrangian dual of quality floor constraint), long-term advertiser retention vs. short-term revenue, second-order effects of ad load on organic engagement, ad fatigue modeling
-- Stack angle: Pinterest's MMOE-DCN architecture separates user tower from item tower — in a mechanism design context, the user tower is estimating the user's utility function, and the item tower is the advertiser's bid; the auction mechanism combines them. Understanding this framing will differentiate your system design answer.
 
 **Whatnot — Livestream Auction Mechanics & Seller Marketplace**
 - Whatnot's core ML challenge: real-time ranking and price discovery in livestream auctions where bidder intent, item rarity, and seller reputation are all noisy, fast-moving signals.
@@ -567,71 +408,59 @@ Your background is a genuine moat for ~8 of the 10 companies. Here's how to depl
 
 ## 3. Company-Specific Deep Dives (The Deltas)
 
-### Cluster A: Ads/Marketplace ML — Meta, Uber, Reddit, Pinterest, Whatnot, Microsoft
-**Common thread:** Real-time bidding, two-sided marketplace, high-throughput feature serving, auction mechanism design
-**Your delta:** Minimal — this is your core domain
-**What to add:**
-- Meta: DLRM architecture, FAISS/ScaNN for embedding retrieval, Flink feature pipelines
-- Uber: H3 geospatial indexing, Michelangelo feature store, prediction intervals for ETA (not just point estimates)
-- Reddit: Control theory + RL framing for budget pacing (vs. Lagrangian); Kafka/Flink stack for 65B+ daily events; phone screen is practical ML not LeetCode — practice building a working model in 45 min
-- Pinterest: Galaxy (homegrown feature store) + Scorpion (inference platform) + MLEnv (ML framework) — name these in system design; MMOE-DCN two-tower ads ranking architecture; read "Beyond Two Towers" (Feb 2026) before interviews; fairness/inclusive AI is explicitly evaluated
-- Whatnot: GBDT-based feed ranking + online inference (<200ms p99 via Rockset + Redis); seller trust scoring (fulfillment %, cancellation %, review signals); **product sense round requires app usage** — prepare 3 ML-improvement pitches tied to GMV/engagement metrics; read Whatnot Engineering Medium blog before interviews
+> **Your delta is minimal for Ads/Marketplace companies (Meta, Uber, Reddit, Whatnot, Microsoft) — this is your core domain. Your delta is larger for Research-Adjacent companies (Netflix, OpenAI).**
 
-### Cluster B: Practical Engineering — Stripe, Shopify
-**Common thread:** Production code quality, system design from first principles, debugging, API design
-**Your delta:** Significant — less about ML, more about software craft
+### Meta
+- DLRM architecture, FAISS/ScaNN for embedding retrieval, Flink feature pipelines
+- Scale framing: 1B+ users; address sharding, hot partitions, geographic distribution
+- Coding: working solution first → optimize; call out edge cases before asked
+
+### Uber
+- H3 geospatial indexing, Michelangelo feature store, prediction intervals for ETA (not just point estimates)
+- Marketplace thinking is explicitly scored: narrate how prediction errors cascade through pricing, supply, driver incentives
+- Graph algorithms appear in coding (word transformation, traversal)
+
+### Reddit
+- Control theory + RL framing for budget pacing (vs. Lagrangian); bridge the two: "same budget constraint problem, different update rule"
+- Kafka/Flink stack for 65B+ daily events
+- Phone screen is practical ML not LeetCode — practice building a working model in 45 min end-to-end
+
+### Whatnot
+- GBDT-based feed ranking + online inference (<200ms p99 via Rockset + Redis); seller trust scoring (fulfillment %, cancellation %, review signals)
+- **Product sense round requires app usage** — prepare 3 ML-improvement pitches tied to GMV/engagement metrics; read Whatnot Engineering Medium blog before interviews
+
+### Microsoft
+- Derive auto-bidding math (target CPA/ROAS via Lagrangian) from first principles — do not just name-drop
+- GSP vs VCG equilibrium derivation expected; PID budget pacing vocabulary required
+- Research talk for L64: prepare one project end-to-end (problem → methodology → production impact → what you'd change)
+
+### Netflix
+**Ads context (verified July 2026):** RS5, Marketplace Ads DSE — owns ML and optimization for ad quality, targeting, ranking, and bidding. Production-accountability research role — deployed impact required.
+
+**Your angle:** "Netflix Ads is building the optimization layer on top of an already-scaled delivery platform. My work at Amazon and DoorDash maps directly, and I can speak to the subscriber-retention tension (ads must not degrade watch experience) from the marketplace health angle." Lead with research depth (mechanism design PhD), close with production credibility.
+
 **Preparation:**
-- Stripe: Expect a take-home or live coding exercise on real-world data (not LeetCode). Practice building a complete ML pipeline (ingest → features → model → API) in clean Python. Know Pydantic, gRPC schemas, and idempotency.
-- Shopify: SOLID principles enforced at class level. Every design decision requires a decision log. Prepare ≥2 alternatives for any system design. Rails/Ruby is less relevant for MLE roles; focus on clean Python service architecture.
-- Both: Expect debugging exercises. Practice reading broken code, identifying the failure mode, and explaining it systematically.
-
-**Must-practice for this cluster:**
-- Design a webhook delivery system (idempotency, retries, ordering guarantees)
-- Implement a rate limiter (token bucket vs. sliding window — know the trade-off)
-- Build an ML inference API (request validation, batching, timeout handling, circuit breaker)
-
-### Cluster C: Personalization + Emerging Ads ML — Netflix, Roblox
-**Common thread:** Recommendation systems, user modeling, A/B experimentation
-**Your delta:** Lower than originally estimated — both companies are actively building ads ML stacks (validated March 2026)
-
-#### Netflix
-**Ads context (verified July 2026):** Target role is now **Research Scientist 5, Marketplace - Ads DSE** — owns ML and optimization algorithms for ad quality, targeting, ranking, and bidding on the Ad Marketplace team. RS5 ≈ Staff bar. This is a production-accountability research role, not pure research — deployed impact is required.
-
-**Your angle:** "Netflix Ads is building the optimization layer on top of an already-scaled delivery platform — the gap is the ML rigor on targeting, pacing, and auction design. My work designing those systems from first principles at Amazon and DoorDash maps directly, and I can speak to the same subscriber-retention tension (ads must not degrade watch experience) from the marketplace health angle." Lead with the research depth (mechanism design PhD), close with production credibility.
-
-**Preparation:**
-- Ad inventory forecasting: predicting available impression supply by targeting segment — time-series + uncertainty quantification (prepare this as a system design)
+- Ad inventory forecasting: time-series + uncertainty quantification (prepare as a system design)
 - Ad pacing under inventory constraints: Lagrangian relaxation framing (same as budget pacing at DoorDash)
-- Ad quality optimization: multi-objective ranking (relevance, pacing, revenue) — this is the core RS5 problem
-- Research deep-dive prep: select one project to present end-to-end (problem → methodology → tradeoffs → deployed impact → what you'd do differently)
-- Know their ML stack: Metaflow-style DAG orchestration, real-time inference SLA requirements
-- Product-mindedness required: tie every design decision to subscriber retention — this tension is unique to Netflix vs. pure-play ad platforms
+- Ad quality optimization: multi-objective ranking (relevance, pacing, revenue) — core RS5 problem
+- Research deep-dive: select one project to present end-to-end (problem → methodology → tradeoffs → deployed impact → what you'd do differently)
+- Metaflow-style DAG orchestration; real-time inference SLA requirements
+- Tie every design decision to subscriber retention — this tension is unique to Netflix vs. pure-play ad platforms
 
-#### Roblox
-**Ads/platform economics context (verified):** Roblox launched rewarded video ads (6–30s, opt-in for 13+ users) in 2025, integrated with Google Ad Manager, and is under investor pressure to prove ad revenue can scale without degrading engagement. Their Q3 2025 earnings explicitly discussed advertising/monetization strategy as a key growth lever. Users 13+ grew from 40M (Q3 2023) to 101M (Q3 2025) — the addressable ad audience is now majority adult.
+### OpenAI
+**Your delta:** Largest — requires modern DL breadth that ads background may not fully cover.
 
-**Your angle:** "Roblox's ads challenge is a marketplace design problem — how do you price ad inventory in a platform where the supply (developer attention) and demand (advertiser budgets) are both price-sensitive? My mechanism design background applies directly to the opt-in rewarded format: you're designing an exchange where users, developers, and advertisers all have strategic incentives."
-
-**Preparation:**
-- Rewarded ad format ML: user-side value model (will this user opt in?), advertiser-side ROI model, developer-side revenue optimization — a three-sided marketplace
-- Safety/content moderation ML: Roblox processes 6.1B chat messages/day with ML classifiers (PII detection, 98% recall) — expect content safety system design questions
-- Platform economics framing: ads must not cannibalize the creator economy (developer earnings) — discuss the mechanism design tension explicitly
-- User age distribution still matters: targeting, consent, and content restrictions for under-13 users require a separate serving path
-
-### Cluster D: Foundation Model / Research-Adjacent — OpenAI
-**Common thread:** Deep learning fundamentals, training infrastructure, alignment, safety
-**Your delta:** Largest — requires breadth in modern DL that your ads background may not cover
-**Preparation (focused, not exhaustive):**
-- Know transformer architecture cold: attention is all you need, positional encoding, KV cache, flash attention
-- RLHF pipeline: SFT → reward model training → PPO/DPO fine-tuning. Know why DPO is simpler than PPO.
+**Preparation (focused):**
+- Transformer architecture cold: attention, positional encoding, KV cache, flash attention
+- RLHF pipeline: SFT → reward model → PPO/DPO. Know why DPO is simpler than PPO.
 - Scaling laws: Chinchilla (compute-optimal training), inference-time compute (test-time scaling)
-- Evals: how you measure model capability, benchmark saturation problem, red-teaming
-- Your advantage: multi-agent systems (multi-agent RL, emergent behavior, coordination games) is a genuine research direction at OpenAI
-- Behavioral bar: OpenAI values intellectual honesty and deep thinking over polish. Bring specific opinions on hard problems (e.g., "I think reward hacking in RLHF is fundamentally a distributional shift problem, not just a specification problem, because...")
+- Evals: measuring capability, benchmark saturation, red-teaming
+- Your advantage: multi-agent systems (multi-agent RL, emergent behavior, coordination games) is a live research direction at OpenAI
+- Bring specific opinions: "I think reward hacking in RLHF is fundamentally a distributional shift problem, not just a specification problem, because..."
 
 ---
 
-## 4. Weekly Execution Plan (10 Weeks)
+## 4. Weekly Execution Plan (8 Weeks)
 
 ### Phase 1: Foundation (Weeks 1–3)
 **Goal:** Lock in coding fundamentals + polish core ML system designs
@@ -650,19 +479,19 @@ Your background is a genuine moat for ~8 of the 10 companies. Here's how to depl
 
 ---
 
-### Phase 2: Company Clusters (Weeks 4–7)
-**Goal:** Domain-specific depth for each cluster
+### Phase 2: Company-Specific Depth (Weeks 4–7)
+**Goal:** Domain-specific depth for each company cluster
 
-| Week | Focus Cluster | Coding Theme | System Design | Behavioral Focus |
+| Week | Focus | Coding Theme | System Design | Behavioral Focus |
 |---|---|---|---|---|
-| 4 | Ads/Marketplace (Meta, Uber, Reddit, Pinterest, Whatnot) | Rate limiters, task schedulers, online algorithms | Autobidding system + budget pacing + Pinterest ads ranking + Whatnot seller trust scoring | Impact story from DoorDash Ads |
-| 5 | Practical Engineering (Stripe, Shopify) | API design, debugging exercises, LRU/rate limiter implementations | ML inference pipeline with SLAs | Technical judgment / hard trade-off story |
-| 6 | Personalization + Ads (Netflix, Roblox) | Graph problems (social network, recommendation graph) | Recommendation system + Ad inventory forecasting + A/B test platform | Cross-functional influence story |
-| 7 | Foundation Models (OpenAI) | Python implementations (attention, tokenizer, BPE) | LLM serving infrastructure (KV cache, batching) | Intellectual honesty / research opinion |
+| 4 | Ads/Marketplace (Meta, Uber, Reddit, Whatnot, Microsoft) | Rate limiters, task schedulers, online algorithms | Auto-bidding system + budget pacing + Whatnot seller trust scoring | Impact story from DoorDash Ads |
+| 5 | Auction depth (Reddit IC4, Microsoft L64) | DP, graphs, constrained optimization | Auction serving pipeline + causal inference experiment design | Technical judgment / hard trade-off story |
+| 6 | Research-adjacent (Netflix RS5, OpenAI) | Graph problems, attention implementation | Ad inventory forecasting + LLM serving infrastructure (KV cache, batching) | Cross-functional influence + research deep-dive |
+| 7 | Mock + gap close | Mixed drills on weak spots | Full mock system design (ad auction or two-tower) | Full STAR polish |
 
 ---
 
-### Phase 3: Mock Interviews + Gap Close (Weeks 8–9)
+### Phase 3: Mock Interviews (Week 7–8)
 **Goal:** Simulate real interview conditions; identify and fix weaknesses
 
 - 2 mock coding interviews per week (use Pramp, interviewing.io, or a trusted peer)
@@ -672,7 +501,7 @@ Your background is a genuine moat for ~8 of the 10 companies. Here's how to depl
 
 ---
 
-### Phase 4: Company-Specific Sprints (Week 10)
+### Phase 4: Company-Specific Sprints (Week 8)
 **Goal:** Tailor final prep to confirmed interview pipeline
 
 - Research the company's recent engineering blog posts (last 12 months)
@@ -694,11 +523,11 @@ Your background is a genuine moat for ~8 of the 10 companies. Here's how to depl
 | "Attention Is All You Need" (Google, 2017) | OpenAI | Transformer baseline |
 | "Training language models to follow instructions with human feedback" (OpenAI, 2022) | OpenAI | RLHF pipeline |
 | "Direct Preference Optimization" (Stanford, 2023) | OpenAI | DPO as simpler RLHF |
-| "Real-time Personalization using Embeddings for Search Ranking at Airbnb" (KDD 2018) | Netflix, Uber, Roblox | Embedding-based retrieval |
+| "Real-time Personalization using Embeddings for Search Ranking at Airbnb" (KDD 2018) | Netflix, Uber | Embedding-based retrieval |
 | "Michelangelo: Uber's Machine Learning Platform" (Uber, 2017) | Uber | Feature store, training, serving |
 | "Chinchilla" / "Scaling Laws for Neural Language Models" (DeepMind/OpenAI) | OpenAI | Compute-optimal training intuition |
 | "Budget Pacing for Targeted Online Advertisements at LinkedIn" (KDD 2014) | Meta, Reddit | Your domain — know this deeply |
-| "Autobidding with Constraints" (Google, 2021) | Meta, Reddit, Pinterest | Direct relevance to your work |
+| "Autobidding with Constraints" (Google, 2021) | Meta, Reddit, Microsoft | Direct relevance to your work |
 
 ### Engineering Blogs (Bookmark and Read Last 12 Months)
 
@@ -707,10 +536,7 @@ Your background is a genuine moat for ~8 of the 10 companies. Here's how to depl
 | Meta AI / Meta Engineering | Ads ranking, DLRM, recommendation systems |
 | Uber Engineering (eng.uber.com) | ETA improvements, Michelangelo, surge pricing |
 | Netflix Tech Blog (netflixtechblog.com) | Recommendation, Metaflow, A/B testing |
-| Stripe Engineering (stripe.com/blog/engineering) | Fraud detection, ML at Stripe, reliability |
-| Shopify Engineering (shopify.engineering) | ML for e-commerce, infrastructure |
 | OpenAI Research (openai.com/research) | GPT-4 system card, alignment updates |
-| Pinterest Engineering (medium.com/pinterest-engineering) | "Beyond Two Towers" (Feb 2026), "Evolution of Ads Conversion Models", "Handling Online-Offline Discrepancy in Ads Ranking", "MMOE-DCN Architecture", MLEnv platform |
 | Reddit Engineering (redditinc.com/blog / reddit.com/r/RedditEng) | Ads delivery, ranking systems, safety ML, Kafka/Flink data infra |
 | Google Research (on auctions) | First-price auction transition, bid shading |
 | Whatnot Engineering (medium.com/whatnot-engineering) | "Evolving Feed Ranking at Whatnot", "6x Faster ML Inference: Why Online > Batch", "Feeds with Real-time Signals", "How Whatnot Utilizes Generative AI for Trust & Safety", "Whatamix: Blendable Feed Construction" |
@@ -724,9 +550,6 @@ Your background is a genuine moat for ~8 of the 10 companies. Here's how to depl
 | Ray / Metaflow | ML workflow orchestration (Netflix, Uber) |
 | Triton Inference Server | GPU-optimized model serving (OpenAI adjacent) |
 | Feature stores: Feast, Tecton, Hopsworks | Know the online/offline consistency problem |
-| Galaxy + Scorpion (Pinterest) | Pinterest's homegrown online feature store + inference platform — name these in Pinterest system design |
-| MLEnv (Pinterest) | Pinterest's full-stack ML developer framework — abstracts dataset loading, model arch, training loop |
-| Pydantic v2 | Request/response schema definition (Stripe, Shopify) |
 | H3 (Uber) | Hexagonal geospatial indexing for location features |
 
 ### LeetCode Problem Sets (Curated for This Target List)
