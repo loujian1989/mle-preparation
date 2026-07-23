@@ -109,3 +109,145 @@ P0: Reddit (Staff), Pinterest, Meta. Critical for any ads-adjacent MLE role.
 **Company context:** Reddit, Pinterest, Meta.
 
 **Common wrong answer:** "I'd filter frequency-capped ads before the auction." — Correct at inference time, but misses the training data implication: frequency affects CTR, so the training distribution is capped-aware. Must address the feature.
+
+---
+
+## Auction Mechanics (Deep Dive)
+
+### GSP Payment Formula — Concrete Example
+
+Three advertisers bidding for two ad slots. Slots have click-through rates (CTR) of 0.10 (slot 1) and 0.06 (slot 2):
+
+```
+Advertiser A: bid=$5, quality_score=0.8 → effective_bid = 5×0.8 = 4.0
+Advertiser B: bid=$4, quality_score=1.0 → effective_bid = 4×1.0 = 4.0
+Advertiser C: bid=$3, quality_score=0.9 → effective_bid = 3×0.9 = 2.7
+
+Rank by effective_bid: A=4.0, B=4.0 (tie, A wins by timestamp), C=2.7
+Slot 1 → A, Slot 2 → B
+
+Payment for A (slot 1):
+  Must pay enough that A's effective_bid just beats B's:
+  payment_A = (B's effective_bid / A's quality_score) + ε
+             = (4.0 / 0.8) + ε = $5.00 + ε
+
+Payment for B (slot 2):
+  Must beat C's effective_bid:
+  payment_B = (C's effective_bid / B's quality_score) + ε
+             = (2.7 / 1.0) + ε = $2.70 + ε
+```
+
+High quality score → lower payment (same effective bid, but divided by larger quality score).
+
+### Why Quality Score Benefits Both Platform and Users
+
+Without quality score: A ($5 bid, low quality) beats B ($4 bid, high quality). Users see a low-quality ad → lower click rate → platform earns `5 × low_CTR`. With quality score: B (effective 4.0) can beat A (effective 4.0 if A's quality is 0.8 and bid is 5). Platform earns `4.0 × high_CTR` per click from B — potentially more revenue AND better user experience.
+
+### VCG vs GSP Revenue — Revenue Equivalence Theorem
+
+In theory, under risk-neutral bidders with independent private values, both VCG and GSP yield the same expected revenue (Revenue Equivalence Theorem). In practice, GSP generates non-truthful bidding → bid shading → platform uncertainty about true values. VCG generates truthful bids but is computationally harder. Both converge empirically.
+
+---
+
+## pCTR and Quality Score (Deep Dive)
+
+### Why Historical CTR Alone Fails
+
+A new ad with zero history has no historical CTR → it can't compete. But a new, highly relevant ad should be shown.
+
+An ad that was shown 1,000 times in high-traffic, high-CTR positions will have inflated historical CTR vs. the same ad shown in low-traffic positions.
+
+Position confounding: an ad shown 90% at position 1 will have 3–5× higher CTR than the same ad shown at position 5, purely due to position bias.
+
+**pCTR model input hierarchy:**
+```
+Level 1 (ad-specific):    creative embedding, landing page quality, format
+Level 2 (advertiser):     category CTR, account history, industry benchmarks
+Level 3 (user):           browsing history, demographics, intent signals
+Level 4 (context):        query, placement, device, time of day
+Level 5 (interaction):    user × ad affinity, user × category history
+```
+
+The model combines all these to produce a calibrated probability. New ad with no history → falls back to advertiser and category priors.
+
+### Calibration Requirement — Why ±2% ECE Matters
+
+In organic ranking: a miscalibrated model just reorders items (sub-optimal but not catastrophic).
+
+In auction: `expected_revenue = bid × pCTR`. If pCTR is 2× too high:
+
+```
+True pCTR = 0.03, advertiser bid = $10
+Correct auction payment = $10 × 0.03 = $0.30 expected revenue per impression
+Miscalibrated pCTR = 0.06: effective bid = $10 × 0.06 = $0.60
+→ this ad beats out a competitor with true effective bid $0.45
+→ wrong ad wins, both revenue AND relevance are wrong
+→ advertiser with pCTR=0.06 (inflated) systematically over-delivers → overspends → churns
+```
+
+---
+
+## Bid Shading in First-Price Auctions (Deep Dive)
+
+### Why First-Price Forces Bid Shading
+
+In second-price: bid your true value V. You pay second-highest bid (< V). No reason to shade.
+
+In first-price: bid your true value V. You win but pay V → zero surplus. Shade to V − ε to capture some surplus. But every advertiser does this → equilibrium bid = `V × (N-1)/N` for N symmetric bidders (Vickrey shading formula).
+
+```
+2 advertisers: equilibrium bid = V × 1/2 = 0.5V
+5 advertisers: equilibrium bid = V × 4/5 = 0.8V
+100 advertisers: equilibrium bid = V × 99/100 ≈ 0.99V
+```
+
+As competition increases, shading decreases (more competition → less margin to shade). In a competitive market with many advertisers, first-price and second-price equilibria converge.
+
+### ML for Win Probability Estimation
+
+In first-price, advertisers must model `P(win | bid, context)` to compute the optimal shade:
+
+```
+optimal_bid = argmax_b [P(win | b) × (V - b)]
+
+P(win | b) ≈ logistic regression or GBT on:
+  - Historical win rate at various bid levels in similar contexts
+  - Competitor bid density (estimated from win/loss data)
+  - Time of day, audience competition level
+
+Optimal shade factor = b* / V = solve for argmax
+```
+
+This is the ML problem that autobidding systems solve: estimating the value-adjusted optimal bid under first-price dynamics.
+
+---
+
+## Frequency Capping (Deep Dive)
+
+### The CTR Saturation Curve
+
+Empirically, CTR decays after repeated exposures to the same ad:
+
+```
+Exposure 1:   CTR = 0.045  (novel, high attention)
+Exposure 2:   CTR = 0.038  (still fresh)
+Exposure 3:   CTR = 0.030  (familiarity declining)
+Exposure 5:   CTR = 0.018  (saturation beginning)
+Exposure 10:  CTR = 0.009  (strong ad fatigue)
+Exposure 15+: CTR = 0.004  (near-zero marginal value)
+```
+
+The frequency cap is set where the marginal value of one more impression approaches zero. For most ad formats: cap = 3–7 per day, 10–20 per week.
+
+### Impact on pCTR Training
+
+Training data contains users who have seen the same ad 0, 1, 2, 3... times. The pCTR model learns this decay:
+
+```
+pCTR(user, ad, frequency=1) = 0.045
+pCTR(user, ad, frequency=5) = 0.018
+```
+
+At serving time: new users (frequency=0) will be shown this ad for the first time. The model must generalize from observed frequencies to zero — which it can if `frequency` is explicitly included as a feature.
+
+If frequency is NOT included as a feature: the model averages over all exposure counts in training data → underestimates CTR for new exposures, overestimates for high-frequency exposures → wrong auction allocation.

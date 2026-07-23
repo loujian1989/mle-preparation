@@ -222,6 +222,158 @@ the RL/bandit formulation of surge optimization).
 
 ---
 
+## Supply Fishing Detection (Deep Dive)
+
+### Why Detection Requires Both Rules AND ML
+
+Rules alone fail because fishers learn the specific thresholds and operate just below them:
+
+```
+Rule: flag if offline_online_cycles > 8/hour
+Fisher adaptation: operate at exactly 7 cycles/hour
+→ rule misses them entirely
+
+ML model (LightGBM on behavioral features):
+  Learns: "7 cycles/hour + boundary crossing + surge timing correlation"
+  This combination is unusual even if each individual signal is sub-threshold
+  → catches adapted behavior rules miss
+```
+
+But ML alone fails for enforcement because it's a black box — drivers will appeal and the platform needs to explain why they were penalized. Rules provide the auditable, interpretable layer.
+
+**Right architecture:** rules set the minimum floor (high precision, lower recall) → ML catches what rules miss (higher recall at acceptable precision) → human review for borderline cases.
+
+### The False Positive Cost Is Asymmetric
+
+Falsely flagging a legitimate driver = wrongly penalizing their livelihood. The reputational, legal, and churn cost of false positives is much higher than the revenue cost of missing a supply fisher.
+
+This asymmetry determines the classifier threshold:
+
+```
+Standard fraud: FP_cost ≈ FN_cost → optimize for F1
+Supply fishing: FP_cost >> FN_cost → optimize for precision at acceptable recall
+
+Operating point: precision ≥ 0.95 (only flag when very confident)
+                 recall ≈ 0.40 (catch 40% of fishers)
+
+Missed fishers: lose some supply efficiency
+Wrongly flagged driver: churn, appeals, legal risk, driver trust damage
+```
+
+---
+
+## Surge Oscillation (Deep Dive)
+
+### The Delayed Feedback Control System
+
+Oscillation arises because the surge control system has a time delay in its feedback loop:
+
+```
+System:
+  Input (control signal): surge multiplier s(t)
+  Plant: driver supply S(t) [responds to surge with delay τ ≈ 5-10 min]
+  Feedback: observed supply/demand ratio r(t)
+
+Without delay: stable feedback loop possible
+With delay τ: loop gain must be reduced to prevent oscillation
+
+Nyquist stability criterion:
+  System is stable if loop gain < 1 at the frequency where phase lag = 180°
+  At delay τ, phase lag = 180° at frequency f = 1/(2τ)
+  → loop gain at f = 1/(2τ) must be < 1
+
+Practical implication:
+  τ = 5 minutes → oscillation frequency = 1/10 min = 6 cycles/hour
+  To stabilize: EMA smoothing with α < 0.5
+  (lower α = more dampening, slower response to genuine shocks)
+```
+
+### Tuning the Damping Coefficient — Zone-Specific
+
+```
+Dense urban zone (e.g., Manhattan at rush hour):
+  Driver elasticity: high (many drivers, quick to respond)
+  Transportation lag: low (drivers already nearby)
+  Optimal α: 0.2 (heavy dampening to prevent oscillation)
+
+Suburban zone (e.g., residential area at 11pm):
+  Driver elasticity: low (few drivers, slow to respond)
+  Transportation lag: high (drivers far away)
+  Optimal α: 0.5 (less dampening needed, slower natural oscillation)
+
+Airport zone:
+  Highly predictable demand (flight arrivals)
+  Drivers queue at airport, instant response
+  Optimal α: 0.1 (very heavy dampening, demand is predictable anyway)
+```
+
+**Empirical tuning with switchback:**
+
+Run switchback experiments in each zone varying α: monitor two metrics:
+- `std(surge)` over 30 minutes (oscillation level)
+- `E[unfulfilled_trips]` (market clearing efficiency)
+
+Plot the Pareto frontier: lower α → less oscillation but slower response to genuine shocks. Choose zone-specific α at the knee of the Pareto curve.
+
+---
+
+## Multi-Agent Simulation (Deep Dive)
+
+### Why Simulation Is Better Than A/B for Policy Validation
+
+A/B test for a new surge policy:
+- Takes weeks to accumulate enough data on rare events (concerts, weather)
+- Can't test extreme multipliers safely (drivers would be upset)
+- Can't test many policy variants simultaneously
+
+Simulation:
+- Run 1,000 policy variants in 2 hours overnight
+- Test what-if scenarios impossible in live traffic
+- No risk to drivers or riders
+
+**But simulation has a fundamental limitation:** driver behavior in the simulation is calibrated to historical data under the OLD policy. When you deploy a new policy, drivers may adapt in ways the simulation didn't predict.
+
+```
+Simulation validation protocol:
+  1. Calibrate driver model on last 30 days of historical data
+  2. Run simulation on LAST MONTH's traffic with the OLD policy
+  3. Compare simulated outcomes vs. actual outcomes
+  4. If RMSE on zone-level supply < 10% → simulation is valid
+  5. Now run simulation with new policy as a counterfactual
+  6. Accept new policy if simulation shows ≥ 5% improvement in primary metric
+  7. Deploy with small live holdout (5% of zones) to catch adaptation effects
+```
+
+The live holdout is essential — the simulation gives the directional estimate, but drivers adapt to new policies in ways historical calibration can't predict.
+
+---
+
+## Fairness in Surge Pricing (Deep Dive)
+
+### Gini Coefficient — What It Measures and Why < 0.35
+
+```
+Gini coefficient on driver hourly earnings:
+
+All drivers earn exactly $25/hr: Gini = 0.0 (perfect equality)
+Top 10% earn $100/hr, bottom 90% earn $10/hr: Gini ≈ 0.65 (high inequality)
+
+In surge pricing:
+  Supply fishers earn $40/hr (gaming surge timing)
+  Full-time experienced drivers earn $32/hr (good positioning knowledge)
+  New part-time drivers earn $20/hr (don't know when/where to be)
+
+  Gini ≈ 0.28 in healthy systems
+  Gini > 0.35 → surge mechanism is creating systematic earnings advantages
+                for certain driver cohorts → fairness intervention needed
+```
+
+Earnings inequality above Gini=0.35 is typically driven by information asymmetry: experienced drivers know when surge will hit and pre-position; new drivers don't. This is mechanism design unfairness — the pricing system rewards knowledge of the algorithm over genuine service.
+
+**Fix:** surge notification timing standardization — ensure all eligible drivers receive surge zone notifications with the same latency (±100ms). Prevents early-notification advantages for drivers with better hardware or network.
+
+---
+
 ## Interview Quick Reference
 
 **3 things to say in the first 2 minutes of a supply pricing ML design:**

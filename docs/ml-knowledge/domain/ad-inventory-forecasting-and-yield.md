@@ -183,3 +183,184 @@ Contrasts with the demand-side topics in `autobidding-and-pacing.md`.
 **Company context:** Netflix MLE5 Inventory — "experience working in the CTV space and knowledge of its unique constraints" is listed as a nice-to-have.
 
 **Common wrong answer:** "CTV is just video advertising." — Missing the co-viewing problem, the attribution challenge (no click), and the panel reconciliation requirement. Staff answer knows CTV-specific constraints and their ML implications.
+
+---
+
+## Ad Inventory (Deep Dive)
+
+### The Contention Problem — With Numbers
+
+```
+Netflix has 3 ad campaigns all targeting "drama viewers in the US":
+  Campaign A: wants 1M impressions of drama viewers
+  Campaign B: wants 1M impressions of drama viewers
+  Campaign C: wants 1M impressions of drama viewers
+
+Total requested: 3M impressions
+
+Actual unique drama viewers in the US: 2M per week
+Each viewer sees ~3 drama episodes per week → 6M total impressions
+But: each viewer can only see ONE ad per episode slot (frequency cap=1/ep)
+
+Independent forecast per campaign: "2M drama viewers × 3 eps = 6M available, you can have 1M" → sell 3M
+Reality: all three campaigns are targeting the SAME 2M viewers
+  If Campaign A gets 1M impressions from 1M unique viewers
+  Campaign B can only reach the OTHER 1M viewers (not Campaign A's viewers again)
+  Campaign B gets only 1M non-overlapping viewers → OK so far
+
+But if targeting is broad and overlapping:
+  Campaign A "drama viewers" = Users 1-2M
+  Campaign B "drama viewers, 25-54" = Users 0.8-1.9M (80% overlap with A)
+  Campaign C "drama viewers, premium tier" = Users 0.5-1.5M (70% overlap with A)
+
+Serving these simultaneously: impossible to deliver 3M total
+  → oversell → make-goods required → revenue loss
+```
+
+The contention problem means you CANNOT simply forecast each campaign's inventory independently and sum.
+
+### Reach Curve — Why Impressions and Reach Diverge
+
+```
+Targeting segment: "drama viewers, US, 25-54" = 500,000 unique users
+
+Reach as function of impressions:
+  100K impressions: reach ~90K users (most impressions hit new users)
+  200K impressions: reach ~150K users (some repeat)
+  500K impressions: reach ~270K users (increasing repeats)
+  1M impressions:   reach ~350K users (diminishing returns, same users again)
+  2M impressions:   reach ~420K users (diminishing returns, same users again)
+
+Formula: reach(n) ≈ audience × (1 - (1 - 1/audience)^n)
+  ≈ audience × (1 - e^(-n/audience)) for large audience
+
+At 1M impressions into 500K user audience:
+  reach = 500K × (1 - e^(-1M/500K)) = 500K × (1 - e^(-2)) = 500K × 0.86 = 430K
+  Average frequency = 1M / 430K = 2.3 impressions per reached user
+```
+
+Advertiser buying "reach 400K users" needs ~900K impressions. Advertiser buying "reach 400K users at 3+ frequency" needs ~1.5M impressions. Same 400K users, very different inventory requirements.
+
+---
+
+## Yield Optimization (Deep Dive)
+
+### Shadow Price — The Dynamic Reserve Price
+
+Shadow price answers: "at what CPM should I divert this guaranteed impression to programmatic instead?"
+
+```
+Campaign G (guaranteed):
+  Contracted: 1M impressions over 7 days
+  eCPM: $8
+  Day 1 status: delivered 100K of 1M (on pace: 143K needed by end of day 1)
+
+At any given impression opportunity:
+  Programmatic bid: $15 CPM
+
+  Should we take the $15 programmatic bid or fulfill guaranteed?
+
+  Shadow price formula:
+    remaining_impressions_needed = 900K (1M - 100K delivered)
+    remaining_available_inventory = 6.3M (estimated remaining for campaign targeting)
+
+    shadow_price = guaranteed_CPM × (remaining_needed / remaining_available)
+                 = $8 × (900K / 6.3M) = $8 × 0.143 = $1.14
+
+  Programmatic $15 >> shadow price $1.14
+  → take the programmatic bid; bank the credit against guaranteed delivery
+
+  The guaranteed campaign has PLENTY of remaining inventory (6.3M available for 900K needed)
+  → low urgency → shadow price is low → take programmatic whenever it bids high
+```
+
+As delivery deadline approaches and inventory is consumed:
+```
+Day 6 status: delivered 800K of 1M (behind pace, need 200K in 1 day)
+  remaining_available = 400K (tight!)
+  shadow_price = $8 × (200K / 400K) = $8 × 0.5 = $4.00
+
+  Programmatic $15 >> $4.00 → still take it
+
+Day 7 morning, 3 hours left, behind:
+  remaining_needed = 150K, remaining_available = 160K (very tight)
+  shadow_price = $8 × (150K / 160K) = $7.50
+
+  Programmatic $15 >> $7.50 → still take some, but be selective
+  If programmatic only bids $9: $9 > $7.50 → take it
+  If programmatic bids $7: $7 < $7.50 → protect guaranteed delivery, DON'T divert
+```
+
+Shadow price rises as delivery deadline tightens → impressions are increasingly reserved for the guaranteed campaign → delivery rate improves.
+
+---
+
+## CTV-Specific Constraints (Deep Dive)
+
+### Household vs. Individual — The Co-Viewing Problem
+
+Netflix account has profiles: Mom (40F), Dad (42M), Teen (16F), Kid (8M).
+
+Saturday evening: Teen and Mom are watching a drama together on the living room TV.
+
+```
+Ad targeting: "Women 25-44 interested in drama"
+Should this impression be served?
+  Mom: yes (matches perfectly)
+  Teen: no (16F, not in target)
+  Combined viewing: who gets billed?
+
+Netflix signals for "who is watching":
+  Active profile: "Teen" profile selected (Teen started watching)
+  Time of day: 8pm Saturday → co-viewing likely
+  Content: drama series → cross-demographic appeal
+  Device: living room TV → household device, not individual
+
+Probabilistic viewer model:
+  P(Mom watching | Teen profile, 8pm, drama, TV) = 0.65
+  P(Teen watching | Teen profile, 8pm, drama, TV) = 0.85
+  P(both watching) = 0.55
+
+For the targeting "Women 25-44":
+  Expected value of this impression = P(Mom watching) × ad_relevance_Mom
+                                    + P(Teen watching) × ad_relevance_Teen
+                                    = 0.65 × 1.0 + 0.85 × 0.3 = 0.905
+
+Charge at the fractional relevance level, not binary
+```
+
+This probabilistic co-viewing model determines impression valuation, frequency cap (which profile to decrement), and attribution (which profile contributed to the downstream conversion).
+
+### View-Through Attribution — Why It's Harder Than Click-Through
+
+```
+Standard digital display:
+  User sees ad → clicks → lands on website → purchases
+  Attribution: click happened → last-click attribution → ad gets credit
+  Measurable and deterministic
+
+CTV (Netflix):
+  User sees ad → no click possible (TV remote) → days later → visits brand website → purchases
+
+  How do you know the TV ad caused the visit?
+
+  Options:
+  1. Probabilistic matching: user's IP on TV session matches IP on web session
+     IP → household → probably same person
+     Accuracy: ~70% (VPNs, dynamic IPs reduce this)
+
+  2. Deterministic matching: Netflix knows the user's email → brand's CRM has email
+     Brand shares hashed email list → Netflix matches → exact attribution
+     Requires data sharing agreement and privacy compliance
+
+  3. Geo holdout: Netflix serves ads in DMA A, no ads in DMA B
+     If brand website traffic from DMA A > DMA B after campaign: incrementality confirmed
+     No individual-level tracking required: aggregate causal inference
+
+  Challenge: attribution window for TV is 7-30 days (purchase consideration is longer)
+  vs. display: typically 1-7 days
+```
+
+The longer view-through window for CTV means attribution windows overlap across campaigns, making it hard to attribute a conversion to the right campaign.
+
+---

@@ -202,3 +202,164 @@ strategic driver responses."
 **Company context:** Uber Supply Pricing — Chris described "1M+ decisions per second" explicitly. This is the system design answer for his team.
 
 **Common wrong answer:** Calling the ML model on every rider request. At 1M req/sec that's 1M model inferences/sec — impossible without massive GPU infrastructure. The correct answer is precomputed zone-level surge cached in Redis. This is a fundamental architecture insight separating Staff from Senior.
+
+---
+
+## Surge Pricing (Deep Dive)
+
+### Market Clearing — The Economic Intuition
+
+At a fixed price, if demand > supply, you get a queue:
+
+```
+Fixed price: $12
+Supply: 10 drivers available
+Demand: 30 riders requesting
+
+Result: 20 riders wait indefinitely. No market clearing.
+        Drivers earn $12. Some riders don't get rides.
+
+Surge: $24
+Supply response: 8 more drivers come online → 18 total
+Demand response: 10 price-sensitive riders cancel → 20 remain
+Result: 18 drivers serve 20 riders (small queue, clearing faster)
+        Drivers earn $24. Willing riders get rides.
+```
+
+Surge is not profit extraction — it's a price signal that recruits supply and filters demand until the market clears. Without surge, some riders get rides by luck (queue position), not by value (willingness to pay).
+
+### The Supply Feedback — Why Naive Surge Overshoots
+
+```
+t=0:  demand=30, supply=10  →  surge=2.5× computed
+t=5m: 20 new drivers see 2.5× surge → drive to zone
+t=10m: supply=30, demand=22 (some riders cancelled at 2.5×)
+      →  demand < supply  →  surge drops to 1.0×
+t=12m: 15 drivers leave (no trips at 1.0×)
+      → supply=15, demand=25  →  surge spikes again
+```
+
+This 5–15 minute oscillation is the primary operational problem. The fix is not to set surge based on current imbalance, but to predict the supply response and set surge to the level where the EVENTUAL supply equals demand.
+
+### H3 Hexagonal Zones — Why Not Squares
+
+Squares have 8 neighbors but at two different distances (4 edge-adjacent at distance 1, 4 corner-adjacent at distance √2). A driver at the corner of a square zone is equidistant from 3 zones.
+
+Hexagons have 6 neighbors, all at exactly the same distance. A driver at any point on the hexagon boundary has exactly 2 adjacent zones, not 3. This eliminates the corner clustering problem.
+
+```
+Square zone: driver at corner equidistant from 4 zones
+             → supply assignment is ambiguous
+             → drivers hover at 4-way intersections, gaming zone assignment
+
+Hexagon zone: driver at any edge point equidistant from 2 zones
+              → exactly 2 choices, not 4
+              → less strategic clustering at corners
+              → supply estimation is more accurate
+```
+
+---
+
+## Strategic Driver Response (Deep Dive)
+
+### Supply Fishing — The Information Game
+
+Supply fishing exploits an information asymmetry: the driver knows demand is about to spike (concert is ending) but the surge algorithm doesn't yet see the supply shortage.
+
+```
+t=0:   Concert ends. 5,000 people want rides.
+t=1m:  Drivers see 5,000 requests arrive → know surge is coming
+       8 supply fishers go offline simultaneously
+t=2m:  Surge algorithm sees supply drop: 30 → 22 drivers
+       Computes surge = 2.0×
+t=3m:  Fishers come back online at 2.0×
+       8 drivers × 2 trips each = 16 trips at 2.0×
+       vs. 16 trips at 1.0× (what they'd earn without fishing)
+       Extra earnings: 16 × (2.0 - 1.0) × avg_fare = 16 × $8 = $128 split among fishers
+```
+
+Even a small group of coordinated fishers can reliably trigger and harvest surge in a zone they know well.
+
+**Why earnings smoothing fixes this:**
+```
+Without smoothing: driver earns per-trip fare × surge_at_pickup_time
+  → incentive to time pickups during surge peak
+
+With shift-level earnings smoothing:
+  driver earns total_fare / shift_hours × guaranteed_hourly_rate
+  → no incremental benefit to going offline and coming back
+  → fishing stops because the reward is eliminated
+```
+
+### Nash Equilibrium in Driver Strategy
+
+Each driver's optimal strategy depends on what other drivers do. The pricing system reaches a stable state (Nash equilibrium) when no driver has incentive to deviate.
+
+```
+If all drivers behave legitimately:
+  surge = fair clearing price
+  each driver earns W per hour
+  no driver benefits by fishing (fishing adds cost: waiting time offline)
+
+If one driver starts fishing:
+  surge temporarily increases
+  this driver earns W + Δ per shift
+  Δ > fishing cost → incentive to fish
+
+If all drivers fish:
+  every driver earns W + Δ on average (surge is permanently elevated)
+  but ALL riders pay more, platform reputation degrades, demand falls
+  eventually W + Δ at lower total trips → same or less than honest W
+
+Stable equilibrium: some fishing rate where marginal fisher is indifferent
+```
+
+The mechanism design goal: make the Nash equilibrium coincide with the socially optimal behavior (no fishing). Earnings smoothing does this by eliminating Δ.
+
+---
+
+## Counterfactual Estimation (Deep Dive)
+
+### The Endogeneity Problem — Why OLS Fails
+
+You want to estimate: how does surge price affect rider demand?
+
+```
+OLS regression: trips = β₀ + β₁ × surge + ε
+
+Data:
+  Low surge zones: few trips (low demand → low surge)
+  High surge zones: many trips (high demand → high surge)
+
+OLS estimate: β₁ > 0  (higher surge → more trips?!)
+
+This is backwards! The causal direction is:
+  High demand → high surge (demand causes surge)
+  High demand → more trips (demand causes trips)
+
+OLS sees the correlation between surge and trips (both caused by demand)
+and incorrectly estimates that surge CAUSES trips.
+```
+
+The true causal effect of surge on trips is negative (higher price → fewer riders). OLS gives the wrong sign because price is endogenous (set based on demand).
+
+### Instrumental Variables — Concretely
+
+Good instrument: heavy rain in a zone.
+
+```
+Rain → fewer drivers online (they don't want to drive in rain) → higher surge
+Rain does NOT directly affect how many people want rides (same demand, fewer drivers)
+Rain is exogenous (not chosen by the platform based on demand)
+
+2SLS:
+  Stage 1: surge_predicted = α₀ + α₁ × rain + α₂ × time_of_day + ...
+  Stage 2: trips = β₀ + β₁ × surge_predicted + ...
+
+β₁ from Stage 2 is the CAUSAL effect of surge on trips
+because surge_predicted varies only due to rain (exogenous), not demand
+```
+
+The IV estimate correctly captures: when surge goes up BECAUSE of supply shortage (not demand spike), fewer riders request rides — the true demand elasticity.
+
+---

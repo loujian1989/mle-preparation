@@ -132,3 +132,185 @@ P0: Stripe, OpenAI. Also Pinterest (spam), Reddit (content moderation).
 **Company context:** Stripe, OpenAI (explainability in safety-critical systems), Shopify (take-home template includes SHAP).
 
 **Common wrong answer:** "I'd use feature importance from the tree." — Split-gain feature importance is a global average and doesn't explain individual predictions. SHAP gives per-prediction, additive attributions.
+
+---
+
+## Velocity Features (Deep Dive)
+
+### Why Behavioral Patterns Beat Individual Signals
+
+A single transaction with amount=$500, international merchant, at 3am looks suspicious. But it could be a legitimate business trip. Fraud models that rely on individual transaction features have high false positive rates.
+
+The real signal is the behavioral pattern:
+
+```
+Transaction 1: $12 at McDonald's (legitimate-looking)
+Transaction 2: $8 at Starbucks (legitimate-looking)
+Transaction 3: $15 at gas station (legitimate-looking)
+Transaction 4: $500 electronics store (triggers rule)
+Transaction 5: $500 electronics store (triggers rule)
+
+But together:
+  5 transactions in 2 hours ← velocity_1h = 5 (normal = 1-2)
+  4 different merchants ← distinct_merchants_1h = 4
+  Escalating amounts ← amount_trend = +4000%
+  All card-not-present ← channel pattern unusual
+
+This is card testing + cash-out pattern
+```
+
+No single transaction is definitive. The velocity pattern across transactions is the fraud signature.
+
+### Count-Min Sketch — How Real-Time Counters Work at Scale
+
+Exact counting for every (card_id, merchant_category, 1h_window) triplet requires enormous memory. Count-Min Sketch (CMS) approximates:
+
+```
+CMS structure: d hash functions × w counters (d=4, w=2048 typical)
+
+To increment count for key k:
+  For each hash function hᵢ: increment counter[i][hᵢ(k)]
+
+To query count for key k:
+  return min over i: counter[i][hᵢ(k)]
+
+Memory: d × w × 4 bytes = 4 × 2048 × 4 = 32KB per feature
+Error bound: with prob 1 - δ, estimate ≤ true_count + ε × total_count
+  where ε = e/w, δ = (1/e)^d
+```
+
+For fraud velocity features: 32KB CMS gives <0.5% error rate on counts, allowing sub-millisecond lookups at any scale.
+
+---
+
+## Class Imbalance (Deep Dive)
+
+### What scale_pos_weight Actually Does
+
+XGBoost's `scale_pos_weight = n_neg / n_pos` multiplies the gradient contributions from positive (fraud) samples:
+
+```
+Without scale_pos_weight:
+  Batch: 199 legitimate + 1 fraud
+  Loss gradient: 199 × gradient_legit + 1 × gradient_fraud
+  Model optimizes mostly for legit → ignores fraud
+
+With scale_pos_weight = 199:
+  Loss gradient: 199 × gradient_legit + 199 × gradient_fraud
+  Model sees equal gradient mass from each class
+  → learns decision boundary that serves both classes
+```
+
+Effect on the model: the decision threshold shifts. A model trained with `scale_pos_weight=199` is roughly equivalent to training on a balanced dataset — but without the memory and compute cost of resampling.
+
+### Focal Loss — What γ Does
+
+Standard cross-entropy: `L = -y·log(p) - (1-y)·log(1-p)`
+
+Focal loss: `L = -(1-p)^γ × y·log(p) - p^γ × (1-y)·log(1-p)`
+
+The `(1-p)^γ` factor downweights easy examples:
+
+```
+γ=0:  standard cross-entropy (no reweighting)
+γ=2:  example where model is confident (p=0.95 for a legit sample):
+      weight = (1-0.95)^2 = 0.0025  ← near-zero contribution
+      easy legit samples barely contribute to training
+
+      example where model is uncertain (p=0.6 for a fraud sample):
+      weight = (1-0.6)^2 = 0.16  ← contributes significantly
+
+      hard fraud sample (p=0.3 predicted as fraud):
+      weight = (1-0.3)^2 = 0.49  ← high contribution
+```
+
+Focal loss concentrates training on the hard examples — ambiguous cases near the decision boundary — rather than the easy legit transactions that make up 99.5% of the data.
+
+---
+
+## Adversarial Drift (Deep Dive)
+
+### The Adversary's Optimization Loop
+
+The fraud model and the fraudster are playing a game:
+
+```
+t=0: Model trained on fraud patterns {P₀}. Deployed.
+t=1: Fraudsters probe the model. Discover that transactions < $200 from domestic merchants are not flagged.
+     → shift to sub-$200 transactions
+t=2: Model retrained on new data. Learns the sub-$200 pattern.
+     → starts flagging sub-$200 transactions from high-velocity cards
+t=3: Fraudsters add delays between transactions (30min gaps) to avoid velocity features.
+t=4: Model retrained with longer time windows.
+...
+```
+
+This is arms-race dynamics. The model's feature set directly informs the adversary's evasion strategy. Unlike natural distribution shift (weather changes slowly), adversarial shift can happen in days.
+
+### Measuring Adversarial Drift
+
+```
+Standard drift metric: KL(P_training || P_current)
+  → detects distribution change but not direction
+
+Adversarial drift signal:
+  fraud_recall_by_week:   week 1: 0.94, week 2: 0.91, week 3: 0.87, week 4: 0.82
+  fraud_precision_by_week: stable at 0.88
+
+  → Recall dropping but precision stable = adversarial evasion
+     (fraudsters are evading detection without creating more false alarms)
+
+  Versus natural drift: both precision and recall degrade together
+```
+
+Alert rule: if fraud recall drops >3% week-over-week with stable precision → adversarial drift → trigger model refresh.
+
+---
+
+## Content Moderation at Scale (Deep Dive)
+
+### The Two-Stage Funnel Math
+
+At 1B posts/day, you cannot run an expensive ML model on every post:
+
+```
+Stage 1 — Heuristic filter (sub-millisecond):
+  Regex, keyword blocklist, account reputation
+  Recall: 0.90 on obvious violations
+  Precision: 0.40 (many false positives — aggressive to ensure high recall)
+  Throughput: 1B posts → 100M candidates (90% filtered, 10% pass)
+
+Stage 2 — ML classifier (10ms per post):
+  Multimodal transformer on text + image
+  Runs on 100M candidates from Stage 1
+  At 10ms each: 100M × 10ms = 1M seconds  ← need parallelism
+  At 10,000 workers: 100M posts / 10,000 = 10,000 posts per worker × 10ms = 100s
+  → runs in <2 minutes on 10K workers
+
+vs. running ML on all 1B:
+  1B × 10ms / 10,000 workers = 1000 seconds = 17 minutes  ← too slow
+```
+
+Stage 1 must have very high recall (near zero missed violations pass Stage 1) because Stage 2 never sees them. Precision at Stage 1 doesn't matter — false positives are just more work for Stage 2.
+
+### Confidence-Based Routing — The Operational Impact
+
+```
+Model output p = P(policy_violation)
+
+p > 0.95:  auto-remove
+           Volume: ~2% of flagged content
+           FP rate must be <1%: reviewers can't audit these
+
+0.3-0.95:  human review queue
+           Volume: ~8% of flagged content
+           Human makes final call with model explanation
+           Queue must drain within 24h (viral content within 1h)
+
+p < 0.3:   allow
+           Volume: ~90% of flagged content
+           FN rate: some violations slip through
+           Audited via random sampling
+```
+
+The auto-remove threshold (0.95) is set extremely high to protect against wrongly silencing legitimate speech. The review queue absorbs the hard cases. Human reviewers are the quality floor for the ambiguous middle.

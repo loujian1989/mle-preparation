@@ -287,3 +287,135 @@ P0: Reddit (Staff ads), Pinterest, Meta. Core ML problem in any ads system with 
 **Company context:** Reddit (advertiser health is a core product metric for the Staff ads MLE role), Pinterest, Meta.
 
 **Common wrong answer:** "Just raise the bid." — Without diagnosing the root cause, raising the bid may overshoot CPA target or not help at all (if the problem is audience size). Staff answer starts with systematic diagnosis.
+
+---
+
+## Constrained Optimization (Deep Dive)
+
+### Why Lagrangian Relaxation Separates Strategy from Constraint
+
+The primal problem is a combinatorial optimization (win/lose each auction). The Lagrangian relaxation converts it to a per-auction decision:
+
+```
+Primal: maximize Σ xᵢvᵢ  subject to Σ xᵢcᵢ ≤ B
+
+Lagrangian: L = Σ xᵢvᵢ - λΣxᵢcᵢ + λB
+           = Σ xᵢ(vᵢ - λcᵢ) + λB
+
+Per-auction decision: bid on impression i if and only if vᵢ - λcᵢ > 0
+                      i.e., bid = vᵢ/λ
+
+λ interpretation: the "price" of one unit of budget
+  λ = 0.5: willing to pay $0.5 in cost per $1 of value
+  λ = 2.0: very budget-constrained, only bid when value >> cost
+```
+
+The beauty: a hard combinatorial problem (which N auctions to win out of T total?) becomes a sequence of independent greedy decisions (bid vᵢ/λ at each auction). The global constraint (budget B) is enforced through the single parameter λ.
+
+### λ Dynamics Over the Day
+
+λ should be dynamic — it starts at a baseline and is adjusted in response to observed CPA:
+
+```
+Morning (budget full, many auctions ahead):
+  λ is low → bids are high → win many auctions
+  This is correct: time value of budget is low when there's plenty of day left
+
+Midday (on pace):
+  λ at target value → bids match CPA goal
+
+Evening (budget nearly gone, high-value auctions arriving):
+  λ should fall (bid more aggressively for the remaining high-value auctions)
+  → this is value-aware pacing: "save budget for the best opportunities"
+
+If λ stays constant throughout: equal probability of winning morning (low quality)
+and evening (high quality) auctions → suboptimal value per dollar
+```
+
+Model-based pacing computes λ(t) dynamically by forecasting remaining value density.
+
+---
+
+## Budget Pacing (Deep Dive)
+
+### Throttling vs. Bid Shading — The Key Difference
+
+**Throttling**: randomly skip auctions regardless of their value.
+```
+Throttle rate = 0.5 → participate in 50% of auctions at random
+  → wins high-value and low-value auctions equally
+  → 50% of budget used, but not optimally
+```
+
+**Bid shading**: reduce bids uniformly by pacing factor ρ.
+```
+Pacing factor ρ = 0.5 → bids = 0.5 × target_bid
+  → win rate drops, but preferentially lose low-margin auctions
+    (ρ=0.5 bids cut more into low-value auctions where margin is thin)
+  → 50% of budget used, concentrated on higher-value impressions
+```
+
+Bid shading is strictly better than throttling: it allocates the limited budget to the highest-value auctions within the budget constraint. Throttling wastes budget on random low-value auctions.
+
+**When throttling is acceptable**: when bid shading is not possible (e.g., sealed-bid auctions where the bid is committed before value is known) or when auctions are homogeneous (all impressions have similar value → shading and throttling are equivalent).
+
+### PID Integral Windup — The Production Failure Mode
+
+```
+Scenario: advertiser's audience is too narrow → only 100 eligible auctions/day
+Target spend: $500/day
+By 10am: spent $50 (only 20% of daily pace)
+Error: e(t) = actual_spend - target_spend = 50 - 200 = -150
+
+PID integral term: I(t) = ∫e(t)dt → accumulates -150, -300, -500, -800...
+Result: bid multiplier ρ = ρ_base + Ki × (-800) → ρ goes VERY high
+
+If somehow at 4pm the audience targeting unlocks (more users arrive home):
+  ρ is now 3.0× overbid (accumulated integral error)
+  → massively overspend in the last few hours
+  → daily budget blown in 2 hours
+  → advertiser pays 3× target CPA for evening auctions
+```
+
+Anti-windup fix: clamp the integral accumulation:
+```python
+integral = max(-max_integral, min(max_integral, integral + e(t) * dt))
+```
+When budget is genuinely unavailable (not enough auctions), the integral stays bounded. When auctions become available, the controller responds proportionally.
+
+---
+
+## pCVR Modeling (Deep Dive)
+
+### Attribution Lag — The Truncated Label Problem
+
+At any point during the day, your observed conversion rate is systematically underestimated:
+
+```
+Day 1, 2pm: sent 10,000 clicks
+Day 1, 11pm: observed 50 conversions → CVR = 0.5%
+
+Reality at Day 7: 200 conversions have now arrived → true CVR = 2.0%
+
+If you train on Day 1 2pm labels: model sees CVR = 0.5%
+Model will severely underbid (CVR appears 4× lower than reality)
+→ under-delivery: advertiser spends too little, misses CPA goal
+```
+
+**Lag correction:**
+
+Estimate `P(conversion observed by time t | eventual conversion)` from historical data:
+```
+attribution_completion_rate(t=2h)  = 0.25  (25% of conversions seen by hour 2)
+attribution_completion_rate(t=12h) = 0.65
+attribution_completion_rate(t=24h) = 0.85
+attribution_completion_rate(t=7d)  = 0.99
+
+corrected_CVR(t) = observed_CVR(t) / attribution_completion_rate(t)
+
+At t=2h: corrected_CVR = 0.5% / 0.25 = 2.0%  ← correct!
+```
+
+Apply this correction during both training (to correct labels) and inference (to correct CPA estimates in the PID loop).
+
+---

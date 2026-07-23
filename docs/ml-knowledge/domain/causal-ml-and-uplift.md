@@ -217,3 +217,254 @@ experiment design (all companies), promotion targeting (Meta, Netflix, Shopify).
 **Company context:** Uber Supply Pricing (driver quests), Whatnot (seller incentives), Netflix (member promotion targeting), Meta (advertiser incentive programs).
 
 **Common wrong answer:** "I'd give incentives to the most active drivers." — Those are sure things (high response, zero uplift). The correct answer targets persuadables — drivers who are on the margin and would respond incrementally to the incentive.
+
+---
+
+## Potential Outcomes (Deep Dive)
+
+### The Fundamental Problem — Made Concrete
+
+```
+User A receives a promotional email (T=1). They renew their subscription. Y(1)=1.
+Question: would user A have renewed without the email? Y(0) = ???
+
+User B does NOT receive the email (T=0). They don't renew. Y(0)=0.
+Question: would user B have renewed with the email? Y(1) = ???
+
+We observe:
+  User A: Y(1)=1, Y(0)=?  → only one potential outcome
+  User B: Y(0)=0, Y(1)=?  → only one potential outcome
+
+The causal effect for A: τ_A = Y_A(1) - Y_A(0) = 1 - ??? (unobservable)
+The causal effect for B: τ_B = Y_B(1) - Y_B(0) = ??? - 0 (unobservable)
+```
+
+This is why "causal inference" requires assumptions — you need a model for the unobserved counterfactual. The experiment (random assignment) makes the assumption valid by design.
+
+### ATE vs. ATT — When They Differ
+
+```
+Promotion targeting example:
+  200 users total: 100 high-intent (would convert anyway), 100 low-intent (need nudge)
+
+  Random assignment (ATE scenario):
+    50 high-intent → treatment: 50/50 convert = 100% response rate
+    50 high-intent → control:   48/50 convert = 96% response rate
+    50 low-intent  → treatment: 20/50 convert = 40% response rate
+    50 low-intent  → control:   5/50 convert  = 10% response rate
+
+    ATE = average over all:
+    Treatment mean: (50+20)/100 = 70%
+    Control mean:   (48+5)/100  = 53%
+    ATE = 17%
+
+  Targeted assignment (ATT scenario — only send to low-intent users):
+    100 low-intent → treatment: 40/100 convert = 40%
+    100 high-intent → control: 96/100 convert = 96%
+
+    ATT = effect ON THE TREATED (low-intent):
+    Treatment: 40%, Control for same group: 10%
+    ATT = 30%  ← much larger because we targeted persuadables
+
+ATE (17%) underestimates the effect on persuadables because it averages with sure-things.
+ATT on the right population (30%) is the actionable number for targeting decisions.
+```
+
+---
+
+## Uplift Modeling (Deep Dive)
+
+### The Persuasion Matrix — With Numbers
+
+```
+Promotion offer to 1,000 users. Historical conversion rates:
+
+                    Would convert WITHOUT offer   Would NOT convert without offer
+Converts WITH offer:  Sure Things (200 users)      Persuadables (150 users)
+                      Conversion: 100% always      Conversion: 100% if treated, 0% if not
+                                                   Uplift = +1.0 per user
+
+Does NOT convert:     Lost Causes (50 users)       Sleeping Dogs (600 users)
+WITH offer:           0% regardless               Baseline: 0%, treatment: LOWER (-0.05)
+                                                   Uplift = -0.05 per user
+```
+
+**What a response model does:** targets highest P(convert | treated). That's Sure Things + Persuadables. Budget wasted on 200 Sure Things who would have converted anyway.
+
+**What uplift model does:** targets highest τ = P(convert|T=1) - P(convert|T=0). That's Persuadables only. 150 users × $10 offer cost = $1,500. 150 incremental conversions.
+
+Response model: 350 users targeted (200 sure things + 150 persuadables) × $10 = $3,500. Still 150 incremental conversions.
+
+Uplift model: 2.3× more cost-efficient for the same incremental conversions.
+
+### T-Learner vs S-Learner — When Each Fails
+
+**T-Learner failure mode — insufficient data per arm:**
+```
+Treatment group: 100 samples
+Control group:   100 samples
+
+Two separate models, each trained on 100 samples
+High-cardinality features (user embeddings) → insufficient data per arm
+Both models are noisy → their difference (τ estimate) is doubly noisy
+
+S-Learner uses all 200 samples in one model
+  → better statistical power
+  → but may regularize away the treatment indicator if treatment effect is small
+```
+
+**X-Learner — why it works for imbalanced arms:**
+```
+Scenario: observational data, 90% control (9,000 users), 10% treatment (1,000 users)
+
+T-Learner:  μ₁ trained on 1,000 samples (weak)
+            μ₀ trained on 9,000 samples (strong)
+            τ = μ₁ - μ₀: dominated by noise from μ₁
+
+X-Learner step 2: impute counterfactuals using the strong model
+  For each treated user i: D_i = Y_i - μ₀(X_i)
+    → uses the strong 9,000-sample control model to estimate what treated user would earn in control
+    → converts 1,000 treated observations into 1,000 good uplift estimates
+
+  Now train τ_1 on 1,000 well-estimated uplift values
+  → much better than T-Learner which uses noisy μ₁ directly
+```
+
+---
+
+## Doubly Robust Estimator (Deep Dive)
+
+### Why "Doubly Robust" — The Insurance Property
+
+Standard IPW: if propensity model is wrong, estimate is biased. Direct estimator: if outcome model is wrong, estimate is biased.
+
+AIPW formula:
+```
+ATE_DR = E[μ₁(x) - μ₀(x)          ← direct model term
+          + T(Y - μ₁(x)) / e(x)    ← IPW correction for treated
+          - (1-T)(Y - μ₀(x)) / (1-e(x))]  ← IPW correction for control
+```
+
+**Case 1: outcome model is correct, propensity model is wrong:**
+```
+If μ₁(x) = true E[Y|T=1,X=x]:
+  Y - μ₁(x) ≈ 0 for treated units
+  The IPW correction term ≈ 0 / e(x) ≈ 0
+  ATE_DR ≈ E[μ₁(x) - μ₀(x)]  ← the direct estimator, which is correct
+```
+
+**Case 2: propensity model is correct, outcome model is wrong:**
+```
+If e(x) = true P(T=1|X=x):
+  The IPW correction exactly debiases the direct model
+  ATE_DR → IPW estimator which is consistent
+  (the correction term absorbs the direct model's bias)
+```
+
+One model correct → consistent estimate. Both wrong → biased, but less so than either alone.
+
+### Off-Policy Evaluation — Using DR for Policy Evaluation
+
+```
+Problem: evaluate new bidding policy π_new without running it live
+Data: historical logs under old policy π_old
+
+For each impression i with action a_i (bid level) and outcome y_i (click/conversion):
+
+AIPW OPE estimate:
+  V(π_new) = (1/n) Σᵢ [μ(x_i, π_new(x_i))           ← direct model
+              + (π_new(a_i|x_i)/π_old(a_i|x_i)) × (y_i - μ(x_i, a_i))]  ← IS correction
+
+Doubly robust: consistent if EITHER the direct model μ OR the propensity ratio is correct
+```
+
+This lets you evaluate a new bidding algorithm against historical data before running a live experiment — cheaper and faster, with theoretical guarantees.
+
+---
+
+## Incrementality Measurement (Deep Dive)
+
+### Why Attribution Overcounts Conversions
+
+```
+Without ads:
+  100 users would organically search for "running shoes"
+  30 would visit the website
+  10 would purchase
+
+With ads (retargeting):
+  Same 100 users see an ad → 15 click → 12 visit website → 8 purchase
+  + the 30 who would have visited organically anyway also still visit → 10 of those purchase
+  Total purchases: 8 (from ad click) + 10 (organic) = 18
+
+Attribution model (last-click):
+  8 ad-click conversions → attributed to ads
+  10 organic conversions → attributed to organic
+  Reports: "ads drove 8 conversions"
+
+But wait — how many of the 8 ad-click conversions would have purchased organically anyway?
+  Of the 15 ad clickers, maybe 4 would have organically purchased regardless
+  → incremental conversions from ads: 8 - 4 = 4 (not 8)
+
+iROAS with attribution: 8 conversions / ad_spend
+iROAS with incrementality: 4 incremental conversions / ad_spend
+→ attribution reports 2× the true ROAS
+```
+
+This is why geo holdout or ghost ad experiments are necessary for advertisers to know if ads are actually working.
+
+### Ghost Ads — The Cleanest Incrementality Test
+
+```
+Standard holdout:
+  Treatment group: sees brand's ad
+  Control group: sees no ad at all
+
+Problem: control group knows there's "empty space" where an ad would be
+  → different page layout → changes browsing behavior slightly
+  → confounds the measurement
+
+Ghost ad holdout:
+  Treatment group: sees brand's ad (e.g., Nike shoe ad)
+  Control group: sees a PUBLIC SERVICE ANNOUNCEMENT or competitor ad
+                 (same format, same slot, different brand)
+
+Both groups see an ad. The only difference is which brand.
+Comparison is cleaner: isolates the Nike ad's effect from the "any ad in this slot" effect.
+```
+
+Used by Google, Meta, and Netflix ads for high-fidelity incrementality measurement.
+
+---
+
+## Double ML (Deep Dive)
+
+### Why Standard Regression Fails in High Dimensions
+
+Imagine estimating the effect of pricing on conversion, controlling for 1,000 user features X:
+
+```
+Standard: Y = β₀ + β₁ × price + β₂X₁ + β₃X₂ + ... + β₁₀₀₁X₁₀₀₀ + ε
+
+With regularization (Lasso), β₁₁ is shrunk toward zero along with all other βᵢ.
+If price is correlated with some Xᵢ features, the regularization on Xᵢ
+leaks into regularization on price → price coefficient β₁ is biased.
+```
+
+**Double ML partialling out:**
+```
+Step 1: T̂ = GBT(X)  ← predict price from features
+        Ṽ = price - T̂  ← residual: "price variation unexplained by features"
+
+Step 2: Ŷ = GBT(X)  ← predict conversion from features
+        Ũ = conversion - Ŷ  ← residual: "conversion unexplained by features"
+
+Step 3: regress Ũ on Ṽ  ← no features, just two residuals
+        coefficient = causal effect of price on conversion
+```
+
+Both residuals have X "partialled out". Their covariation is the pure price → conversion effect, free from feature confounding.
+
+**Why this works despite using ML:** the key insight is that the nuisance models (T̂, Ŷ) can be as complex as needed without biasing the causal estimate. The residuals Ṽ and Ũ are approximately independent of X by construction (they're what's LEFT after X explains everything it can). The final regression of Ũ on Ṽ is just a simple univariate regression — no regularization bias.
+
+---
