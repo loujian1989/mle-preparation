@@ -58,14 +58,15 @@ def longest_palindrome_dp(s: str) -> str:
     """
     dp[i][j] = True if s[i:j+1] is a palindrome.
 
-    Base cases:
-      dp[i][i]   = True        (single character)
-      dp[i][i+1] = s[i]==s[i+1] (two characters)
+    Traversal: i from n-1 down to 0, j from i up to n-1.
+    This guarantees dp[i+1][j-1] is already filled when we compute dp[i][j]
+    (because i+1 > i was processed in an earlier outer iteration).
 
-    Transition (length >= 3):
-      dp[i][j] = s[i] == s[j] and dp[i+1][j-1]
-
-    Build bottom-up by increasing substring length.
+    Single condition covers all cases:
+      i == j             → length 1, always a palindrome
+      i+1 == j           → length 2, palindrome iff s[i]==s[j]
+                           (short-circuits before reading dp[i+1][j-1])
+      dp[i+1][j-1]       → length 3+, inner substring already computed
 
     Complexity:
         Time:  O(n²)
@@ -73,23 +74,14 @@ def longest_palindrome_dp(s: str) -> str:
     """
     n = len(s)
     dp = [[False] * n for _ in range(n)]
-    start, max_len = 0, 1
+    max_len, start = 0, -1
 
-    for i in range(n):
-        dp[i][i] = True
-
-    for i in range(n - 1):
-        if s[i] == s[i + 1]:
-            dp[i][i + 1] = True
-            start, max_len = i, 2
-
-    for length in range(3, n + 1):
-        for i in range(n - length + 1):
-            j = i + length - 1
-            if s[i] == s[j] and dp[i + 1][j - 1]:
+    for i in range(n - 1, -1, -1):
+        for j in range(i, n):
+            if i == j or (s[i] == s[j] and (i + 1 == j or dp[i + 1][j - 1])):
                 dp[i][j] = True
-                if length > max_len:
-                    start, max_len = i, length
+                if j - i + 1 > max_len:
+                    max_len, start = j - i + 1, i
 
     return s[start:start + max_len]
 
