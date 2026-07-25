@@ -132,6 +132,80 @@ def longest_palindrome(s: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Step 3b: Expand — alternative using length return value (common mistake log)
+#
+# A natural variant returns the palindrome LENGTH from expand() instead of
+# (l, r) bounds, then reconstructs start_index from i and cur_max_len.
+# This is correct in principle but has two subtle pitfalls:
+#
+# MISTAKE 1 — Using i as start_index directly:
+#
+#   cur_max_len = max(expand(s,i,i), expand(s,i,i+1))
+#   start_index = i   ← WRONG: i is the CENTER, not the start
+#
+#   Fails on "ccc" at i=1, cur_max_len=3:
+#     s[1 : 1+3] = s[1:4] = "cc"   (only 2 chars, expected "ccc")
+#   Correct start for odd palindrome of length L centered at i: i - L//2 = 0
+#
+# MISTAKE 2 — Swapping odd/even start formulas:
+#
+#   if cur_max_len % 2 == 0:           # even length → even expansion
+#       start_index = i - cur_max_len // 2       ← this is the ODD formula
+#   else:                              # odd length → odd expansion
+#       start_index = i - cur_max_len // 2 + 1  ← this is the EVEN formula
+#
+#   Note: the parity check IS correct — odd expansion always yields odd length,
+#   even expansion always yields even length — but the formulas are swapped.
+#
+# Why the formulas work (correctly assigned):
+#
+#   Odd  palindrome, length L, center at i:
+#     spans [i - L//2,  i + L//2]
+#     start = i - L//2
+#     e.g. "ccc", L=3, i=1 → start = 1-1 = 0 → s[0:3] = "ccc"  ✓
+#
+#   Even palindrome, length L, left-center at i (right-center at i+1):
+#     spans [i - L//2 + 1,  i + L//2]
+#     start = i - L//2 + 1
+#     e.g. "cbbd", L=2, i=1 → start = 1-1+1 = 1 → s[1:3] = "bb"  ✓
+#
+# Correct version using length return:
+# ---------------------------------------------------------------------------
+
+def _expand_len(s: str, l: int, r: int) -> int:
+    """Expand from center (l,r); return palindrome length."""
+    while l >= 0 and r < len(s) and s[l] == s[r]:
+        l -= 1
+        r += 1
+    return r - l - 1
+
+
+def longest_palindrome_expand_len(s: str) -> str:
+    """
+    Same O(n²) / O(1) as longest_palindrome, but expand returns length.
+    Requires careful start_index reconstruction — see mistake log above.
+
+    Complexity:
+        Time:  O(n²)
+        Space: O(1)
+    """
+    if not s:
+        return ''
+    max_len, start_index = 0, 0
+    for i in range(len(s)):
+        odd_len  = _expand_len(s, i, i)
+        even_len = _expand_len(s, i, i + 1)
+        cur_max_len = max(odd_len, even_len)
+        if cur_max_len > max_len:
+            max_len = cur_max_len
+            if cur_max_len % 2 == 1:          # odd length → odd expansion, center = i
+                start_index = i - cur_max_len // 2
+            else:                              # even length → even expansion
+                start_index = i - cur_max_len // 2 + 1
+    return s[start_index: start_index + max_len]
+
+
+# ---------------------------------------------------------------------------
 # Step 4: Manacher's Algorithm — O(n) (for awareness)
 #
 # Idea: preprocess string with separators → "#b#a#b#a#d#"
@@ -174,9 +248,11 @@ def test_all() -> None:
         ("racecar", {"racecar"}),
         ("abcba", {"abcba"}),
         ("aacabdkacaa", {"aca"}),
+        ("ccc",  {"ccc"}),   # regression: caught mistake 1 (start_index=i) and mistake 2 (swapped formulas)
     ]
     for s, valid_set in cases:
-        for fn in (longest_palindrome_brute, longest_palindrome_dp, longest_palindrome):
+        for fn in (longest_palindrome_brute, longest_palindrome_dp,
+                   longest_palindrome, longest_palindrome_expand_len):
             result = fn(s)
             assert result in valid_set or _is_valid_palindrome(result, s), \
                 f"{fn.__name__}({s!r}) = {result!r}, not in {valid_set}"
