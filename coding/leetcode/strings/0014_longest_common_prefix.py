@@ -162,6 +162,55 @@ def lcp_binary_search(strs: list[str]) -> str:
 # ---------------------------------------------------------------------------
 # Step 4: Trie — for multiple queries
 # ---------------------------------------------------------------------------
+#
+# What is a Trie?
+#
+#   A Trie (prefix tree) is a tree where each NODE represents one character,
+#   and each PATH from root to a leaf spells out one complete string.
+#   All strings that share a prefix share the same path from the root.
+#
+#   Example: insert ["flower", "flow", "flight"]
+#
+#       root
+#        └─ f
+#            └─ l
+#                ├─ o                 ← "fl" is the common trunk
+#                │   └─ w            ← "flow" ends here (is_end=True)
+#                │       └─ e
+#                │           └─ r*   ← "flower" ends here
+#                └─ i
+#                    └─ g
+#                        └─ h
+#                            └─ t*   ← "flight" ends here
+#
+#   The root → f → l path is the ONLY single-child trunk before branching.
+#   That trunk = "fl" = the longest common prefix.
+#
+# What is it for?
+#
+#   Tries are the go-to structure for PREFIX-based operations:
+#     - "Does any word start with 'fl'?"         → walk root→f→l, check exists
+#     - "Find all words with prefix 'fl'"        → walk to 'l', DFS subtree
+#     - "Longest common prefix of all words"     → walk until branching point
+#     - Autocomplete, spell-check, IP routing, DNS lookup
+#
+# Why do we need it here (vs the simpler approaches)?
+#
+#   Horizontal/vertical scan: O(S) per call. Fine for a single query.
+#   If you have Q queries, total cost is O(Q * S). Expensive.
+#
+#   Trie: O(S) to build ONCE, then O(m) per query.
+#   Total cost: O(S + Q*m) — build cost amortized over all queries.
+#
+#   When Q is large (autocomplete service, search engine), this is a
+#   significant win. This is the signal that distinguishes one-shot
+#   thinking from system-level thinking in an interview.
+#
+# LCP-of-all rule from the trie structure:
+#   Walk from root. Keep going while:
+#     (a) the current node has exactly ONE child   (all strings agree on char)
+#     (b) the current node is NOT end-of-word      (no string terminates early)
+#   Stop when either condition breaks — that's where the common prefix ends.
 
 class TrieNode:
     def __init__(self):
