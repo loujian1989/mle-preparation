@@ -19,6 +19,49 @@ Approach — Min-heap:
 
 Alternative: Divide and conquer (merge pairs repeatedly) — O(N log k) same complexity.
 
+    Divide and conquer pattern:
+        step = 1
+        while step < n:
+            for i in range(0, n - step, step * 2):
+                lists[i] = mergeTwoLists(lists[i], lists[i + step])  # ← assignment critical
+            step *= 2
+        return lists[0] if n else None
+
+    --------------------------------------------------------------------------
+    Common mistake — discarding the return value of mergeTwoLists:
+
+        # WRONG
+        self.mergeTwoLists(lists[i], lists[i+step])   # return value thrown away
+
+        # CORRECT
+        lists[i] = self.mergeTwoLists(lists[i], lists[i+step])
+
+        mergeTwoLists returns the HEAD of the merged list, which is NOT always
+        lists[i]. When l2.val < l1.val, the function returns l2 — a different
+        node. Without the assignment, lists[i] still points to the old head,
+        which is now somewhere in the middle of the merged result. The next
+        round of merging starts from the wrong node and loses the prefix.
+
+        Concrete example: merge [3,4,5] and [1,2].
+          l1.val=3 > l2.val=1 → returns l2 (head of [1,2,3,4,5])
+          Without assignment: lists[i] still points to Node(3) → lost [1,2].
+
+    --------------------------------------------------------------------------
+    Empty list guard — two correct styles:
+
+        # Style A: early return at top
+        if not lists:
+            return None
+        ...
+        return lists[0]
+
+        # Style B: guard at return (preferred — one exit point)
+        return lists[0] if sz else None
+
+        Both are correct. lists=[[]] (one empty list) is NOT caught by
+        `if not lists` because lists has one element; the while loop skips
+        (step=1, step<1 is False) and lists[0]=None is returned correctly.
+
 --------------------------------------------------------------------------
 Python 2 vs Python 3 — why naive (val, node) tuples break in Python 3:
 
