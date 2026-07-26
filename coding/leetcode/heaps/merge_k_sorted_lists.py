@@ -1,150 +1,191 @@
-"""
-Merge K Sorted Lists (LeetCode 23) — Hard
-==========================================
+# 23. Merge K Sorted Lists (Hard)
+#
+# Given an array of k sorted linked lists, merge them into one sorted list.
+#
+# Two approaches — both O(N log k):
+#   Method 1: Min-heap   — O(N log k) T / O(k) S
+#   Method 2: Divide & conquer — O(N log k) T / O(log k) S  (recursion stack)
+#
+# N = total nodes across all lists, k = number of lists
+#
+# --------------------------------------------------------------------------
+# Method 1: Min-Heap
+#
+#   Push the head of each non-empty list into a min-heap.
+#   Repeatedly pop the minimum node, append to result, push its successor.
+#   Heap size stays ≤ k at all times.
+#
+#   Why O(N log k):
+#     Each of the N nodes is pushed and popped exactly once.
+#     Each push/pop on a heap of size k costs O(log k).
+#     Total: O(N log k).
+#
+# --------------------------------------------------------------------------
+# Method 2: Divide & Conquer
+#
+#   Merge lists in pairs, halving the problem each round.
+#   Round 1: k lists → k/2 merged lists
+#   Round 2: k/2    → k/4
+#   ...
+#   log k rounds total; each round processes all N nodes once → O(N log k).
+#
+#   Implemented iteratively with a step pointer:
+#     step=1: merge (0,1), (2,3), (4,5), ...
+#     step=2: merge (0,2), (4,6), ...
+#     step=4: merge (0,4), ...
+#
+# --------------------------------------------------------------------------
+# Comparison:
+#
+#   Method        Time        Space       Notes
+#   ──────────    ──────────  ─────────   ──────────────────────────────────
+#   Min-heap      O(N log k)  O(k)        Heap holds one node per list
+#   D&C           O(N log k)  O(log k)    Recursion stack for mergeTwoLists
+#
+#   Both are O(N log k). D&C has slightly better space in theory.
+#   Min-heap is more intuitive and easier to derive in an interview.
+#
+# --------------------------------------------------------------------------
+# Bugs encountered
+#
+#   Bug 1 (D&C) — discarding the return value of mergeTwoLists:
+#
+#     WRONG:   self.mergeTwoLists(lists[i], lists[i+step])
+#     CORRECT: lists[i] = self.mergeTwoLists(lists[i], lists[i+step])
+#
+#     mergeTwoLists returns the HEAD of the merged list, which is NOT always
+#     lists[i]. When l2.val < l1.val the function returns l2 — a different
+#     node. Without the assignment, lists[i] still points to the old head
+#     (now somewhere in the middle of the merged result). The next round
+#     starts from the wrong node and loses the prefix.
+#
+#     Concrete trace: merge [3,4,5] and [1,2]
+#       l1.val=3 > l2.val=1 → returns Node(1) as new head
+#       Without lists[i]=...: lists[i] still points to Node(3) → [1,2] lost
+#
+#   Bug 2 (D&C) — wrong empty list guard placement:
+#
+#     WRONG:
+#       if not lists: return None   # early return at top
+#       ...
+#       return lists[0]             # unguarded — fine here but fragile
+#
+#     CORRECT (preferred):
+#       return lists[0] if sz else None   # single exit point, always safe
+#
+#     Note: lists=[[]] (one empty list) is NOT caught by `if not lists`
+#     because lists has one element. The while loop is skipped (step=1,
+#     step<1 is False) and lists[0]=None is returned correctly either way.
+#
+#   Bug 3 (Min-heap) — naive (val, node) tuple breaks in Python 3:
+#
+#     WRONG:   heapq.heappush(heap, (l.val, l))
+#     CORRECT: heapq.heappush(heap, (l.val, counter, l))
+#
+#     When two nodes have equal val, Python 3 tries ListNode < ListNode
+#     via __lt__. ListNode has no __lt__ → TypeError.
+#     Python 2 fell back to comparing by memory address (id) — no error.
+#     Fix: add a unique counter as tiebreaker so comparison never reaches
+#     the node object.
+#
+#   Bug 4 (Min-heap) — dead statement in initialization loop:
+#
+#     for l in lists:
+#         if l:
+#             heapq.heappush(heap, (l.val, counter, l))
+#             l = l.next   # BUG: dead — reassigns local var after push;
+#                          # the next for-iteration overwrites l anyway.
+#                          # Remove this line.
+# --------------------------------------------------------------------------
 
-Problem:
-    Merge k sorted linked lists and return one sorted list.
-
-Edge cases:
-    - k == 0 or all lists empty → return None
-    - k == 1 → return that list unchanged
-    - Lists of different lengths
-
-Approach — Min-heap:
-    Push the head of each non-empty list into a min-heap.
-    Pop the minimum node; advance its list and push next node.
-    Result: globally sorted merged list.
-
-    Tie-breaking: heap compares (val, tie_index, node) to avoid comparing Node objects.
-
-Alternative: Divide and conquer (merge pairs repeatedly) — O(N log k) same complexity.
-
-    Divide and conquer pattern:
-        step = 1
-        while step < n:
-            for i in range(0, n - step, step * 2):
-                lists[i] = mergeTwoLists(lists[i], lists[i + step])  # ← assignment critical
-            step *= 2
-        return lists[0] if n else None
-
-    --------------------------------------------------------------------------
-    Common mistake — discarding the return value of mergeTwoLists:
-
-        # WRONG
-        self.mergeTwoLists(lists[i], lists[i+step])   # return value thrown away
-
-        # CORRECT
-        lists[i] = self.mergeTwoLists(lists[i], lists[i+step])
-
-        mergeTwoLists returns the HEAD of the merged list, which is NOT always
-        lists[i]. When l2.val < l1.val, the function returns l2 — a different
-        node. Without the assignment, lists[i] still points to the old head,
-        which is now somewhere in the middle of the merged result. The next
-        round of merging starts from the wrong node and loses the prefix.
-
-        Concrete example: merge [3,4,5] and [1,2].
-          l1.val=3 > l2.val=1 → returns l2 (head of [1,2,3,4,5])
-          Without assignment: lists[i] still points to Node(3) → lost [1,2].
-
-    --------------------------------------------------------------------------
-    Empty list guard — two correct styles:
-
-        # Style A: early return at top
-        if not lists:
-            return None
-        ...
-        return lists[0]
-
-        # Style B: guard at return (preferred — one exit point)
-        return lists[0] if sz else None
-
-        Both are correct. lists=[[]] (one empty list) is NOT caught by
-        `if not lists` because lists has one element; the while loop skips
-        (step=1, step<1 is False) and lists[0]=None is returned correctly.
-
---------------------------------------------------------------------------
-Python 2 vs Python 3 — why naive (val, node) tuples break in Python 3:
-
-    The heap stores tuples (val, node). When two nodes have equal val,
-    the heap must break the tie by comparing the second element — the
-    ListNode object.
-
-    Python 2: falls back to comparing objects by memory address (id).
-              Always works, arbitrary but stable order. No error.
-    Python 3: tries ListNode < ListNode via __lt__. ListNode has no
-              __lt__ defined → TypeError: '<' not supported between
-              instances of 'ListNode' and 'ListNode'.
-
-    Fix: add a counter as a tiebreaker: (val, counter, node).
-    The counter is always unique, so comparison is resolved before
-    reaching the node — the node is never compared directly.
-
---------------------------------------------------------------------------
-Common mistake — dead statement in initialization loop:
-
-    for l in lists:
-        if l:
-            heapq.heappush(heap, (l.val, l))
-            l = l.next   # BUG: dead statement
-                         # reassigns local var AFTER the push;
-                         # the next for-iteration overwrites l anyway.
-                         # The heap already holds the correct head node.
-                         # Remove this line.
-
-Complexity:
-    Time:  O(N log k) where N = total nodes, k = number of lists
-    Space: O(k) for the heap
-"""
 
 import heapq
 from typing import List, Optional
 
 
 class ListNode:
-    """Singly-linked list node."""
-
     def __init__(self, val: int = 0, next: Optional["ListNode"] = None) -> None:
         self.val = val
         self.next = next
 
 
-def merge_k_lists(lists: List[Optional[ListNode]]) -> Optional[ListNode]:
-    """Merge k sorted linked lists using a min-heap.
+# ---------------------------------------------------------------------------
+# Method 1: Min-Heap
+# ---------------------------------------------------------------------------
 
-    Args:
-        lists: List of heads of sorted linked lists.
-
-    Returns:
-        Head of merged sorted linked list.
+def merge_k_lists_heap(lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+    """
+    Min-heap: always pop the globally smallest node.
 
     Complexity:
         Time:  O(N log k)
-        Space: O(k)
+        Space: O(k)  — heap holds at most one node per list
     """
-    dummy = ListNode(0)
-    current = dummy
     heap: list = []
-    tie = 0  # tie-breaker index to avoid comparing ListNode objects
+    counter = 0
 
-    # Initialize heap with heads
     for node in lists:
         if node:
-            heapq.heappush(heap, (node.val, tie, node))
-            tie += 1
+            heapq.heappush(heap, (node.val, counter, node))
+            counter += 1
 
+    dummy = ListNode(0)
+    cur = dummy
     while heap:
-        val, _, node = heapq.heappop(heap)
-        current.next = node
-        current = current.next
+        _, _, node = heapq.heappop(heap)
+        cur.next = node
+        cur = cur.next
         if node.next:
-            heapq.heappush(heap, (node.next.val, tie, node.next))
-            tie += 1
+            heapq.heappush(heap, (node.next.val, counter, node.next))
+            counter += 1
 
     return dummy.next
 
 
 # ---------------------------------------------------------------------------
-# Helper: build list from array, convert back
+# Method 2: Divide & Conquer
+# ---------------------------------------------------------------------------
+
+def _merge_two(l1: Optional[ListNode], l2: Optional[ListNode]) -> Optional[ListNode]:
+    """Merge two sorted lists recursively. Returns the new head."""
+    if not l1:
+        return l2
+    if not l2:
+        return l1
+    if l1.val <= l2.val:
+        l1.next = _merge_two(l1.next, l2)
+        return l1
+    else:
+        l2.next = _merge_two(l1, l2.next)
+        return l2
+
+
+def merge_k_lists(lists: List[Optional[ListNode]]) -> Optional[ListNode]:
+    """
+    Divide & conquer: merge lists in pairs, halving each round.
+
+    step=1: merge (0,1),(2,3),(4,5),...
+    step=2: merge (0,2),(4,6),...
+    step=4: merge (0,4),...
+
+    CRITICAL: lists[i] = _merge_two(...) — must store the returned head.
+    _merge_two may return a different node than lists[i] when l2 < l1.
+
+    Complexity:
+        Time:  O(N log k)  — log k rounds, each touching all N nodes once
+        Space: O(log k)    — recursion stack of _merge_two
+    """
+    sz = len(lists)
+    step = 1
+    while step < sz:
+        for i in range(0, sz - step, step * 2):
+            lists[i] = _merge_two(lists[i], lists[i + step])  # assignment required
+        step *= 2
+    return lists[0] if sz else None
+
+
+# ---------------------------------------------------------------------------
+# Helpers
 # ---------------------------------------------------------------------------
 
 def _make_list(vals: List[int]) -> Optional[ListNode]:
@@ -156,7 +197,7 @@ def _make_list(vals: List[int]) -> Optional[ListNode]:
     return dummy.next
 
 
-def _list_to_array(head: Optional[ListNode]) -> List[int]:
+def _to_array(head: Optional[ListNode]) -> List[int]:
     result = []
     while head:
         result.append(head.val)
@@ -168,25 +209,23 @@ def _list_to_array(head: Optional[ListNode]) -> List[int]:
 # Tests
 # ---------------------------------------------------------------------------
 
-def _test() -> None:
-    lists = [
-        _make_list([1, 4, 5]),
-        _make_list([1, 3, 4]),
-        _make_list([2, 6]),
+def test_all() -> None:
+    cases = [
+        ([[1, 4, 5], [1, 3, 4], [2, 6]], [1, 1, 2, 3, 4, 4, 5, 6]),
+        ([],                              []),
+        ([[]],                            []),
+        ([[1, 2, 3]],                     [1, 2, 3]),
+        ([[], [1]],                       [1]),
+        ([[1], [0]],                      [0, 1]),   # l2 head < l1 head — tests bug 1
     ]
-    result = _list_to_array(merge_k_lists(lists))
-    assert result == [1, 1, 2, 3, 4, 4, 5, 6]
-
-    # Empty lists
-    assert merge_k_lists([]) is None
-    assert merge_k_lists([None, None]) is None
-
-    # Single list
-    result2 = _list_to_array(merge_k_lists([_make_list([1, 2, 3])]))
-    assert result2 == [1, 2, 3]
-
-    print("  merge_k_lists: all tests passed")
+    for raw, expected in cases:
+        for fn in (merge_k_lists_heap, merge_k_lists):
+            inp = [_make_list(l) for l in raw]
+            result = _to_array(fn(inp))
+            assert result == expected, \
+                f"{fn.__name__}({raw}) = {result}, expected {expected}"
 
 
 if __name__ == "__main__":
-    _test()
+    test_all()
+    print("All tests passed")
