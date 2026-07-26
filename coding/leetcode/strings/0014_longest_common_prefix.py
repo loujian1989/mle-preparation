@@ -10,9 +10,21 @@
 #   Step 4: Trie             — for multiple queries               O(S) build + O(m)/query
 #   Step 5: Divide & conquer — parallelizable, distributeable     O(S) T / O(m log n) S
 #
-# S = total characters across all strings
-# m = length of shortest string
+# S = total characters across all strings  (sum(len(s) for s in strs))
+# m = length of shortest string            (max possible prefix length)
 # n = number of strings
+#
+# Why O(S) time for horizontal scan:
+#   Worst case: every string is nearly identical, e.g. ["aaaa", "aaab"].
+#   You read all of "aaaa" while checking it is a prefix of "aaab", then
+#   shrink once. Total character comparisons ≈ S.
+#
+# Why O(m) space for horizontal scan (not O(1)):
+#   The `prefix` variable is a Python string rebuilt each time we shrink
+#   (prefix = prefix[:-1] allocates a new object). It is at most m chars
+#   long (prefix can never grow beyond the shortest string).
+#   Compare to vertical scan — Space O(1): no prefix string is stored;
+#   it returns strs[0][:col] as a single slice at the very end.
 #
 # --------------------------------------------------------------------------
 # Interview Extensions (Staff bar — these are the real questions)
