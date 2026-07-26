@@ -19,6 +19,35 @@ Approach — Min-heap:
 
 Alternative: Divide and conquer (merge pairs repeatedly) — O(N log k) same complexity.
 
+--------------------------------------------------------------------------
+Python 2 vs Python 3 — why naive (val, node) tuples break in Python 3:
+
+    The heap stores tuples (val, node). When two nodes have equal val,
+    the heap must break the tie by comparing the second element — the
+    ListNode object.
+
+    Python 2: falls back to comparing objects by memory address (id).
+              Always works, arbitrary but stable order. No error.
+    Python 3: tries ListNode < ListNode via __lt__. ListNode has no
+              __lt__ defined → TypeError: '<' not supported between
+              instances of 'ListNode' and 'ListNode'.
+
+    Fix: add a counter as a tiebreaker: (val, counter, node).
+    The counter is always unique, so comparison is resolved before
+    reaching the node — the node is never compared directly.
+
+--------------------------------------------------------------------------
+Common mistake — dead statement in initialization loop:
+
+    for l in lists:
+        if l:
+            heapq.heappush(heap, (l.val, l))
+            l = l.next   # BUG: dead statement
+                         # reassigns local var AFTER the push;
+                         # the next for-iteration overwrites l anyway.
+                         # The heap already holds the correct head node.
+                         # Remove this line.
+
 Complexity:
     Time:  O(N log k) where N = total nodes, k = number of lists
     Space: O(k) for the heap
