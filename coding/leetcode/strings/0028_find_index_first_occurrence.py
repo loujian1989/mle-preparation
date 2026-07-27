@@ -96,6 +96,70 @@
 #   MOD prevents integer overflow and keeps arithmetic fast.
 #
 # --------------------------------------------------------------------------
+# Why KMP is correct — full proof intuition
+#
+#   The problem with brute force:
+#     haystack: a  a  a  a  a  b
+#     needle:   a  a  a  a  b
+#                           ^ mismatch at j=4, i=4
+#     Brute force restarts at i=1, j=0 — but we JUST learned haystack[0..3]="aaaa".
+#     Starting at i=1 will immediately re-match "aaa" — wasted work.
+#
+#   The core question KMP answers on every mismatch:
+#     After matching needle[0..j-1] against haystack[i-j..i-1], and mismatching
+#     at haystack[i] vs needle[j] — what is the next possible start?
+#
+#     Any valid match starting at position s (where i-j < s < i) requires:
+#       needle[0..i-1-s] == haystack[s..i-1]
+#     We know haystack[i-j..i-1] == needle[0..j-1], so substituting:
+#       needle[0..i-1-s] == needle[s-(i-j)..j-1]
+#     This means: a PREFIX of needle must equal a SUFFIX of needle[0..j-1].
+#     The longest such prefix-suffix is lps[j-1].
+#
+#     Jumping to j = lps[j-1] tries the longest possible restart.
+#     Every shorter restart is subsumed — no valid start is skipped.
+#
+#   Why i never moves backward:
+#     lps[j-1] < j always (PROPER prefix — can't equal full length).
+#     So the new window start i - lps[j-1] always moves RIGHT.
+#     i stays put, j shrinks. Window shifts forward.
+#
+#   Concrete trace:
+#     haystack: a  a  a  a  a  b
+#     needle:   a  a  a  a  b        lps = [0, 1, 2, 3, 0]
+#
+#     i=0,j=0: 'a'=='a' → i=1, j=1
+#     i=1,j=1: 'a'=='a' → i=2, j=2
+#     i=2,j=2: 'a'=='a' → i=3, j=3
+#     i=3,j=3: 'a'=='a' → i=4, j=4
+#     i=4,j=4: 'a'!='b' → j = lps[3] = 3    ← i stays at 4!
+#     i=4,j=3: 'a'=='a' → i=5, j=4
+#     i=5,j=4: 'b'=='b' → i=6, j=5=m → FOUND at 6-5=1 ✓
+#
+#     At the mismatch: we matched "aaaa". lps[3]=3 means "aaa" is already
+#     a suffix of what we matched — the new window at position 1 already has
+#     "aaa" in place. Continue from j=3. Haystack never rescanned.
+#
+#   Why the lps fallback chain is safe:
+#     When lps[j-1] still doesn't match, fall back again: j = lps[lps[j-1]-1].
+#     Each fallback tries a shorter valid prefix-suffix. The set of all borders
+#     of a string forms a chain (each is a border of the previous) — no valid
+#     restart is ever skipped.
+#
+#   Why lps construction mirrors the search:
+#     The build loop uses the same fallback logic:
+#       if needle[i] == needle[length]: extend match
+#       elif length: length = lps[length-1]   ← same chain fallback
+#     Correct by induction on the border chain structure.
+#
+#   30-second interview summary:
+#     "KMP precomputes for each pattern position the longest prefix that is
+#      also a suffix of the matched portion. On mismatch at j, jump to lps[j-1]
+#      — that many characters are already implicitly matched at the new window
+#      start. Any skipped starting position would require a shorter prefix-suffix,
+#      which is subsumed. Haystack pointer never goes backward → O(n) scan."
+#
+# --------------------------------------------------------------------------
 # Interview extensions
 #
 #   Extension                         Algorithm            Complexity
