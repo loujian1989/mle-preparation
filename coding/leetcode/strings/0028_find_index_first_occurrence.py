@@ -267,10 +267,35 @@ def _build_lps(needle: str) -> list[int]:
       needle[i]                  = current character (the suffix candidate).
       If they match → overlap of length 1 exists for needle[0..i].
 
-      Example: needle="aabaa", i=1, length=0
-        needle[0]='a', needle[1]='a' → match
-        The single char at position 1 matches the single char at position 0.
-        Prefix "a" == Suffix "a" within "aa" → lps[1]=1. ✓
+      IMPORTANT: lps[i] is NOT about the full needle — it is about the
+      SUBSTRING needle[0..i]. At i=1, the substring is just "aa", not "aabaa".
+
+        full needle:  a  a  b  a  a
+                         ^
+                         i=1, substring = needle[0..1] = "aa"
+
+      For substring "aa":
+        needle[0] = 'a'  → first char of "aa"  (prefix side)
+        needle[1] = 'a'  → last  char of "aa"  (suffix side)
+      Both ends ARE checked. They happen to be needle[0] and needle[i]
+      because i always points to the last character of the current substring.
+
+      The last char of the full needle (needle[4]) is only checked when i=4,
+      which is exactly when we compute lps for the full string "aabaa".
+
+      General rule — for any substring needle[0..i]:
+        first character = always needle[0]
+        last  character = always needle[i]    ← i IS the last index
+
+      So needle[length] == needle[i] asks: "does the prefix end match the
+      suffix end of the current substring?" Both ends, one comparison.
+
+      Table:
+        i   substring   checking              question
+        1   "aa"        needle[0] vs [1]      first == last of "aa"?
+        2   "aab"       needle[0] vs [2]      first == last of "aab"?
+        3   "aaba"      needle[0] vs [3]      first == last of "aaba"?
+        4   "aabaa"     needle[1] vs [4]      second == last of "aabaa"? (length=1)
 
     Why length += 1 BEFORE lps[i] = length (not after):
       The two lines are equivalent to writing lps[i] = length + 1 then length += 1.
