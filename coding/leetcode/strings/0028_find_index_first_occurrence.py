@@ -31,14 +31,50 @@
 #            that is also a suffix.
 #
 #   "Proper" means not the full string itself.
+#   One-line intuition: for each prefix of needle, how much does the
+#   START overlap with the END?
 #
-#   Example: needle = "aabaa"
-#     j=0: "a"     → no proper prefix = suffix → lps[0]=0
-#     j=1: "aa"    → "a" is both prefix and suffix → lps[1]=1
-#     j=2: "aab"   → no match → lps[2]=0
-#     j=3: "aaba"  → "a" matches → lps[3]=1
-#     j=4: "aabaa" → "aa" matches → lps[4]=2
-#     lps = [0, 1, 0, 1, 2]
+#   needle = "aabaa" — position by position:
+#
+#   j=0 → substring "a"
+#     No proper prefix exists for a single character.
+#     lps[0] = 0
+#
+#   j=1 → substring "aa"
+#     a  a
+#     ↑  ↑
+#     │  └── suffix "a" (last 1 char)
+#     └───── prefix "a" (first 1 char)
+#     "a" appears at both start AND end → length 1
+#     lps[1] = 1
+#
+#   j=2 → substring "aab"
+#     Prefix candidates: "a", "aa"
+#     End chars: "b" (len 1), "ab" (len 2) — no match with any prefix
+#     lps[2] = 0
+#
+#   j=3 → substring "aaba"
+#     a  a  b  a
+#     ↑           ← prefix "a"
+#                ↑ ← suffix "a" (last char)
+#     "a" matches at start and end (length 1).
+#     "aa" vs end "ba" → no.
+#     lps[3] = 1
+#
+#   j=4 → substring "aabaa"
+#     a  a  b  a  a
+#     ↑  ↑           ← prefix "aa"
+#              ↑  ↑  ← suffix "aa" (last 2 chars)
+#     "a"  matches (length 1)
+#     "aa" matches (length 2) ← longest
+#     "aab" vs "baa" → no
+#     lps[4] = 2
+#
+#   Summary table:
+#     needle:     a    a    b    a    a
+#     substring:  a    aa   aab  aaba aabaa
+#     overlap:    –    a    –    a    aa
+#     lps:        0    1    0    1    2
 #
 #   On mismatch at pattern position j, jump to lps[j-1].
 #   Meaning: you've already matched lps[j-1] characters from the start
