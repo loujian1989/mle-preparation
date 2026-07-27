@@ -255,18 +255,39 @@ def _build_lps(needle: str) -> list[int]:
     """
     Build the failure function (lps = longest proper prefix that is suffix).
 
-    Algorithm:
-      Two pointers: length (end of current matching prefix) and i (current pos).
-      If needle[i] == needle[length]: extend match, lps[i]=length+1, advance both.
-      Else if length > 0: fall back via lps[length-1] (don't advance i).
-      Else: lps[i]=0, advance i.
+    Key invariant:
+      At the start of each iteration, needle[0..length-1] already matches
+      needle[i-length..i-1]. So `length` simultaneously marks:
+        - where the prefix currently ends  (needle[length] = next prefix char)
+        - how long the current overlap is  (length chars already matched)
+
+      Checking needle[i] == needle[length] tests BOTH sides in one comparison:
+        needle[length] = next char of the prefix
+        needle[i]      = next char of the suffix candidate
+      If they match, the overlap extends by 1. This is how a single comparison
+      confirms both prefix and suffix alignment.
+
+    Why fallback length = lps[length-1] (not 0):
+      When needle[i] != needle[length], the prefix of length `length` can't
+      extend. But needle[0..length-1] has its own internal overlap: lps[length-1].
+      That shorter prefix is still aligned on the suffix side (a suffix of a suffix
+      is still a suffix). So we try to extend from there instead of restarting.
+
+    Visual — needle = "aabaa", step i=4, length=1:
+      We know needle[0]=='a' matches needle[3]=='a' (that's why length=1).
+      Now extend by one:
+        prefix: a  a          needle[length=1] = 'a'  (next prefix char)
+                0  1
+        suffix: a  a          needle[i=4]      = 'a'  (next suffix char)
+                3  4
+      'a'=='a' → prefix "aa" matches suffix "aa". lps[4]=2. ✓
 
     Trace: needle = "aabaa"
-      i=1, length=0: 'a'=='a' → lps[1]=1, length=1, i=2
-      i=2, length=1: 'b'!='a' → length=lps[0]=0
-      i=2, length=0: 'b'!='a' → lps[2]=0, i=3
-      i=3, length=0: 'a'=='a' → lps[3]=1, length=1, i=4
-      i=4, length=1: 'a'=='a' → lps[4]=2, length=2, i=5
+      i=1, length=0: needle[1]='a'==needle[0]='a' → lps[1]=1, length=1, i=2
+      i=2, length=1: needle[2]='b'!=needle[1]='a' → length=lps[0]=0
+      i=2, length=0: needle[2]='b'!=needle[0]='a' → lps[2]=0, i=3
+      i=3, length=0: needle[3]='a'==needle[0]='a' → lps[3]=1, length=1, i=4
+      i=4, length=1: needle[4]='a'==needle[1]='a' → lps[4]=2, length=2, i=5
       lps = [0, 1, 0, 1, 2]
     """
     m = len(needle)
