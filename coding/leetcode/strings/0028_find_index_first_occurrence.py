@@ -255,6 +255,30 @@ def _build_lps(needle: str) -> list[int]:
     """
     Build the failure function (lps = longest proper prefix that is suffix).
 
+    What `length` means:
+      length = how many characters of the prefix we've already matched
+               against the current suffix position.
+      At start: length=0 means "no overlap yet."
+      i starts at 1 (not 0) because lps[0]=0 always — a single character
+      has no proper prefix, nothing to overlap.
+
+    What needle[i] == needle[length] means at length=0:
+      needle[length] = needle[0] = first character of needle (the prefix).
+      needle[i]                  = current character (the suffix candidate).
+      If they match → overlap of length 1 exists for needle[0..i].
+
+      Example: needle="aabaa", i=1, length=0
+        needle[0]='a', needle[1]='a' → match
+        The single char at position 1 matches the single char at position 0.
+        Prefix "a" == Suffix "a" within "aa" → lps[1]=1. ✓
+
+    Why length += 1 BEFORE lps[i] = length (not after):
+      The two lines are equivalent to writing lps[i] = length + 1 then length += 1.
+      Increment first is just a code style — the assignment captures the NEW value.
+        length += 1       # extend overlap by 1
+        lps[i] = length   # record the extended length  (= old_length + 1)
+      Same result, different order.
+
     Key invariant:
       At the start of each iteration, needle[0..length-1] already matches
       needle[i-length..i-1]. So `length` simultaneously marks:
