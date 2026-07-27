@@ -1,0 +1,254 @@
+# 28. Find the Index of the First Occurrence in a String (Easy)
+#
+# Given strings haystack and needle, return the index of the first
+# occurrence of needle in haystack, or -1 if not found.
+#
+# Approaches:
+#   Step 1: Brute force      O(n·m) T / O(1) S   — slide and compare
+#   Step 2: Rabin-Karp       O(n+m) avg T / O(1) S — rolling hash
+#   Step 3: KMP              O(n+m) T / O(m) S   — failure function, never re-scan
+#
+# n = len(haystack), m = len(needle)
+#
+# --------------------------------------------------------------------------
+# Algorithm comparison
+#
+#   Algorithm      Time          Space         Key idea
+#   ────────────   ──────────    ───────────   ──────────────────────────────
+#   Brute force    O(n·m)        O(1)          slide window, compare each char
+#   Rabin-Karp     O(n+m) avg    O(1)          rolling hash, full compare on hit
+#   KMP            O(n+m)        O(m)          failure fn, never re-scan haystack
+#   Boyer-Moore    O(n/m) best   O(alphabet)   right-to-left scan, large skips
+#
+# KMP is the standard interview answer for O(n+m).
+# Rabin-Karp is preferred when you need to find ANY of k patterns
+# (compute k hashes once, compare against rolling window).
+#
+# --------------------------------------------------------------------------
+# KMP — how the failure function (lps) works
+#
+#   lps[j] = length of longest proper prefix of needle[0:j+1]
+#            that is also a suffix.
+#
+#   "Proper" means not the full string itself.
+#
+#   Example: needle = "aabaa"
+#     j=0: "a"     → no proper prefix = suffix → lps[0]=0
+#     j=1: "aa"    → "a" is both prefix and suffix → lps[1]=1
+#     j=2: "aab"   → no match → lps[2]=0
+#     j=3: "aaba"  → "a" matches → lps[3]=1
+#     j=4: "aabaa" → "aa" matches → lps[4]=2
+#     lps = [0, 1, 0, 1, 2]
+#
+#   On mismatch at pattern position j, jump to lps[j-1].
+#   Meaning: you've already matched lps[j-1] characters from the start
+#   of the pattern — no need to recheck them.
+#   Haystack pointer i NEVER moves backward → O(n) haystack pass.
+#
+# --------------------------------------------------------------------------
+# Rabin-Karp — rolling hash
+#
+#   Hash the needle window once. Slide across haystack:
+#     - Drop leftmost character: subtract its contribution
+#     - Add rightmost character: append to hash
+#   O(1) per slide. Full string comparison ONLY on hash match (to handle
+#   collisions).
+#
+#   Rolling update:
+#     new_hash = (old_hash - char_leaving * BASE^(m-1)) * BASE + char_entering
+#
+#   MOD prevents integer overflow and keeps arithmetic fast.
+#
+# --------------------------------------------------------------------------
+# Interview extensions
+#
+#   Extension                         Algorithm            Complexity
+#   ──────────────────────────────    ─────────────────    ─────────────────────
+#   Find ALL occurrences              KMP (don't stop)     O(n+m)
+#   Find ANY of k patterns            Aho-Corasick         O(n + sum(|p_i|))
+#   k mismatches allowed              Bitap                O(n·m/word_size)
+#   Pattern is a regex                NFA simulation       O(n·m)
+#   2D pattern in 2D grid             KMP row+col          O(R·C·r·c)
+#   Distributed haystack              Rabin-Karp at seams  hash overlapping windows
+#
+#   Aho-Corasick (Staff-level signal):
+#     Build a trie of all k patterns. Add failure links (cross-pattern lps).
+#     Single O(n) pass finds ALL k patterns simultaneously.
+#     Used in: spam filters, antivirus, network intrusion detection.
+# --------------------------------------------------------------------------
+
+
+# ---------------------------------------------------------------------------
+# Step 1: Brute force
+# ---------------------------------------------------------------------------
+
+def str_str_brute(haystack: str, needle: str) -> int:
+    """
+    Slide a window of length m across haystack, compare character by character.
+
+    Trace: haystack="sadbutsad", needle="sad"
+      i=0: haystack[0:3]="sad" == "sad" → return 0 ✓
+
+    Complexity:
+        Time:  O(n·m)  — n windows, each comparison up to m chars
+        Space: O(1)
+    """
+    n, m = len(haystack), len(needle)
+    for i in range(n - m + 1):
+        if haystack[i:i + m] == needle:
+            return i
+    return -1
+
+
+# ---------------------------------------------------------------------------
+# Step 2: Rabin-Karp — rolling hash
+# ---------------------------------------------------------------------------
+
+def str_str_rabin_karp(haystack: str, needle: str) -> int:
+    """
+    Hash needle and the first window. Slide: drop leftmost, add rightmost.
+    Full comparison only on hash match (handles collisions).
+
+    Hash formula: sum(ord(c) * BASE^(m-1-i) for i,c in needle) mod MOD
+    Rolling update:
+      new = (old - ord(leaving) * power) * BASE + ord(entering)  (mod MOD)
+
+    Complexity:
+        Time:  O(n+m) average  — O(n·m) worst case on hash collisions
+        Space: O(1)
+    """
+    n, m = len(haystack), len(needle)
+    if m > n:
+        return -1
+
+    BASE, MOD = 26, 10 ** 9 + 7
+
+    # Compute BASE^(m-1) — the weight of the leftmost character
+    power = 1
+    for _ in range(m - 1):
+        power = power * BASE % MOD
+
+    # Initial hashes for needle and first window
+    needle_hash = window_hash = 0
+    for i in range(m):
+        needle_hash = (needle_hash * BASE + ord(needle[i])) % MOD
+        window_hash = (window_hash * BASE + ord(haystack[i])) % MOD
+
+    if needle_hash == window_hash and haystack[:m] == needle:
+        return 0
+
+    # Slide the window
+    for i in range(1, n - m + 1):
+        window_hash = (window_hash - ord(haystack[i - 1]) * power) % MOD
+        window_hash = (window_hash * BASE + ord(haystack[i + m - 1])) % MOD
+        if window_hash == needle_hash and haystack[i:i + m] == needle:
+            return i
+
+    return -1
+
+
+# ---------------------------------------------------------------------------
+# Step 3: KMP — O(n+m) guaranteed
+# ---------------------------------------------------------------------------
+
+def _build_lps(needle: str) -> list[int]:
+    """
+    Build the failure function (lps = longest proper prefix that is suffix).
+
+    Algorithm:
+      Two pointers: length (end of current matching prefix) and i (current pos).
+      If needle[i] == needle[length]: extend match, lps[i]=length+1, advance both.
+      Else if length > 0: fall back via lps[length-1] (don't advance i).
+      Else: lps[i]=0, advance i.
+
+    Trace: needle = "aabaa"
+      i=1, length=0: 'a'=='a' → lps[1]=1, length=1, i=2
+      i=2, length=1: 'b'!='a' → length=lps[0]=0
+      i=2, length=0: 'b'!='a' → lps[2]=0, i=3
+      i=3, length=0: 'a'=='a' → lps[3]=1, length=1, i=4
+      i=4, length=1: 'a'=='a' → lps[4]=2, length=2, i=5
+      lps = [0, 1, 0, 1, 2]
+    """
+    m = len(needle)
+    lps = [0] * m
+    length, i = 0, 1
+    while i < m:
+        if needle[i] == needle[length]:
+            length += 1
+            lps[i] = length
+            i += 1
+        elif length:
+            length = lps[length - 1]   # fall back without advancing i
+        else:
+            lps[i] = 0
+            i += 1
+    return lps
+
+
+def str_str(haystack: str, needle: str) -> int:
+    """
+    KMP: build lps in O(m), then scan haystack in O(n) — i never goes backward.
+
+    On match: advance both i and j.
+    On full pattern match (j==m): found, return i-j.
+    On mismatch: if j>0 jump j to lps[j-1]; else advance i.
+
+    Trace: haystack="aabaabaab", needle="aab"
+      lps = [0,1,0]
+      i=0,j=0: 'a'=='a' → i=1,j=1
+      i=1,j=1: 'a'=='a' → i=2,j=2
+      i=2,j=2: 'b'=='b' → i=3,j=3 → j==m → return 3-3=0 ✓
+
+    Complexity:
+        Time:  O(n+m)  — lps build O(m) + haystack scan O(n)
+        Space: O(m)    — lps array
+    """
+    n, m = len(haystack), len(needle)
+    if not needle:
+        return 0
+    lps = _build_lps(needle)
+    i = j = 0
+    while i < n:
+        if haystack[i] == needle[j]:
+            i += 1
+            j += 1
+        if j == m:
+            return i - j
+        elif i < n and haystack[i] != needle[j]:
+            if j:
+                j = lps[j - 1]   # don't advance i — retry with shorter prefix
+            else:
+                i += 1
+    return -1
+
+
+# ---------------------------------------------------------------------------
+# Tests
+# ---------------------------------------------------------------------------
+
+def test_all() -> None:
+    cases = [
+        ("sadbutsad",  "sad",   0),
+        ("leetcode",   "leeto", -1),
+        ("",           "",      0),
+        ("a",          "",      0),
+        ("a",          "a",     0),
+        ("a",          "b",     -1),
+        ("aabaabaab",  "aab",   0),
+        ("mississippi","issip", 4),
+        ("hello",      "ll",    2),
+        ("aaaaaa",     "bba",   -1),
+        ("aabaa",      "aabaa", 0),   # needle equals haystack
+        ("abcabc",     "abc",   0),
+        ("abcabc",     "cab",   2),
+    ]
+    for haystack, needle, expected in cases:
+        for fn in (str_str_brute, str_str_rabin_karp, str_str):
+            result = fn(haystack, needle)
+            assert result == expected, \
+                f"{fn.__name__}({haystack!r}, {needle!r}) = {result}, expected {expected}"
+
+
+if __name__ == "__main__":
+    test_all()
+    print("All tests passed")
