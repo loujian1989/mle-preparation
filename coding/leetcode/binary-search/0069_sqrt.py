@@ -20,21 +20,43 @@
 #   as the production approach — it's how hardware floating-point sqrt works.
 #
 # --------------------------------------------------------------------------
-# Newton's method — why it converges so fast
+# Newton's method — intuition first, math second
 #
-#   We want to find t where t² = x, i.e. the zero of f(t) = t² - x.
-#   Newton's update rule: t_new = t - f(t)/f'(t)
-#     f(t)  = t² - x
-#     f'(t) = 2t
-#     t_new = t - (t²-x)/(2t) = (t + x/t) / 2
+#   Core idea — two complementary guesses:
+#     If t is your guess and t is TOO BIG   → x/t is TOO SMALL.
+#     If t is your guess and t is TOO SMALL → x/t is TOO BIG.
+#     The truth is always sandwiched between t and x/t.
+#     Best single estimate from two bracketing values → take their average:
 #
-#   This is the arithmetic mean of t and x/t. By AM-GM inequality,
-#   it always overshoots from above (if t > sqrt(x)), pulling t closer
-#   each time. Convergence is quadratic: correct digits DOUBLE each step.
+#       t_next = (t + x/t) / 2
+#
+#   One-line intuition:
+#     "If your guess is too high, x divided by your guess is too low —
+#      average them. Repeat."
+#
+#   Example: sqrt(16), starting from t=6
+#     t=6:    x/t=16/6≈2.67    →  avg=(6+2.67)/2≈4.33
+#     t=4.33: x/t=16/4.33≈3.70 →  avg=(4.33+3.70)/2≈4.01
+#     t=4.01: x/t=16/4.01≈3.99 →  avg=(4.01+3.99)/2=4.00 ✓
+#     3 steps from t=6 to answer.
+#
+#   Why it never undershoots (always approaches from above):
+#     AM-GM: (t + x/t)/2 ≥ sqrt(t · x/t) = sqrt(x)
+#     So t_next ≥ sqrt(x) always. Loop stops as soon as t²≤x.
+#
+#   Why convergence is quadratic (error SQUARES each step):
+#     step 1: error ≈ 10%
+#     step 2: error ≈ 1%      (100× smaller)
+#     step 3: error ≈ 0.01%   (100× smaller again)
+#     Binary search halves error. Newton's squares it.
+#
+#   Math derivation (for completeness):
+#     f(t) = t²-x,  f'(t) = 2t
+#     t_new = t - f(t)/f'(t) = t - (t²-x)/(2t) = (t+x/t)/2
 #
 #   For x=2³¹ (~2 billion), Newton's needs ~5 iterations.
 #   Binary search needs ~31 iterations.
-#   This is the approach used in hardware FPU sqrt implementations.
+#   Used in hardware FPU sqrt implementations.
 #
 # --------------------------------------------------------------------------
 # Bit manipulation — how it works
