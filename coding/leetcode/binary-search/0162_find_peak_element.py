@@ -146,15 +146,69 @@ def find_peak_element_boundary(nums: List[int]) -> int:
 
 
 # ---------------------------------------------------------------------------
+# Step 3: l < r-1 style — two-candidate exit
+# ---------------------------------------------------------------------------
+
+def find_peak_element_two_candidate(nums: List[int]) -> int:
+    """
+    Stop when l and r are adjacent. At exit, exactly two candidates remain.
+    Check which one is a peak (the higher side of the slope).
+
+    Same slope logic as Step 1, but the loop exits one step earlier.
+    Needs a final check instead of simply returning nums[l].
+
+    Why two candidates at exit:
+      l < r-1 stops when r - l == 1 (adjacent). Mid always equals l
+      in this state (mid = l + (r-l)//2 = l + 0 = l when r=l+1),
+      so the last step either moves l up or r down, leaving l and r adjacent.
+
+    At exit: nums[l] and nums[r] are the remaining candidates.
+      - nums[l] > nums[r]: the slope is falling right, l might be the peak.
+        But we also need nums[l] > its left neighbor. Since the binary search
+        drove us here following a rising slope, nums[l] > nums[l-1] is
+        guaranteed unless l==0 (always a valid peak with -∞ boundary).
+      - nums[l] < nums[r]: slope rising, r is the candidate.
+        Similarly, nums[r] > nums[r+1] is guaranteed unless r==n-1.
+      Simpler: just return the index of the larger value — it is the peak.
+
+    Trace: nums=[1,2,1,3,5,6,4]
+      l=0,r=6, mid=3: nums[3]=3 < nums[4]=5 → l=4
+      l=4,r=6, mid=5: nums[5]=6 > nums[6]=4 → r=5
+      l=4,r=5: r-l==1 → exit
+      nums[4]=5 vs nums[5]=6 → return 5 ✓
+
+    Trace: nums=[1,2,3,1]
+      l=0,r=3, mid=1: nums[1]=2 < nums[2]=3 → l=2
+      l=2,r=3: r-l==1 → exit
+      nums[2]=3 vs nums[3]=1 → return 2 ✓
+
+    Complexity:
+        Time:  O(log n)
+        Space: O(1)
+    """
+    if len(nums) == 1:
+        return 0
+    l, r = 0, len(nums) - 1
+    while l < r - 1:
+        mid = l + (r - l) // 2
+        if nums[mid] < nums[mid + 1]:
+            l = mid + 1
+        else:
+            r = mid
+    return l if nums[l] > nums[r] else r
+
+
+# ---------------------------------------------------------------------------
 # Comparison
 #
-#   Approach         Condition(s)   Boundary check   Exit        Return
-#   ─────────────    ────────────   ──────────────   ────────    ──────────
-#   Slope (Step 1)   1              No               l == r      nums[l]
-#   Boundary (Step 2) 3            Yes              explicit    mid
+#   Approach           Loop      Condition(s)   Boundary check   Return
+#   ─────────────      ──────    ────────────   ──────────────   ──────────
+#   Slope (Step 1)     l < r     1              No               nums[l]
+#   Boundary (Step 2)  l <= r    3              Yes              mid
+#   Two-candidate (3)  l < r-1   1              No               larger of l,r
 #
-#   For find-peak: prefer Step 1. The slope invariant makes boundary
-#   checks unnecessary and the code surface is minimal.
+#   For find-peak: prefer Step 1. Step 3 is equivalent but needs a final
+#   comparison at exit instead of a direct return.
 # ---------------------------------------------------------------------------
 
 
@@ -176,7 +230,7 @@ def test_all() -> None:
         ([1, 2, 1, 2, 1],       {1, 3}),
     ]
     for nums, valid in cases:
-        for fn in (find_peak_element, find_peak_element_boundary):
+        for fn in (find_peak_element, find_peak_element_boundary, find_peak_element_two_candidate):
             result = fn(nums[:])
             assert result in valid, \
                 f"{fn.__name__}({nums}) = {result}, expected one of {valid}"
