@@ -40,6 +40,55 @@
 #     With [None]: produces 2 trees.  With []: produces 0 trees — bug.
 #
 # --------------------------------------------------------------------------
+# Common mistake: redundant `if l == r` branch
+#
+#   When l == r, the main loop runs once with i = l:
+#     generate(l, l-1) → l > r → [None]
+#     generate(l+1, l) → l > r → [None]
+#     → TreeNode(l, None, None) appended ✓
+#
+#   The general case already handles the single-node leaf correctly.
+#   Adding an explicit `if l == r: return [TreeNode(l)]` is dead code.
+#   Same pattern: the `if not nums` guard in LC 162 was also dead code
+#   under the given constraints.
+#
+# --------------------------------------------------------------------------
+# Return value vs accumulator parameter — when to use each
+#
+#   Pattern A — Return (this problem):
+#     def generate(l, r):
+#         ...
+#         for left in generate(l, i-1):    # result used inline
+#             for right in generate(i+1, r):
+#                 res.append(TreeNode(i, left, right))
+#         return res
+#
+#   Pattern B — Accumulator (backtracking, e.g. LC 22):
+#     def backtrack(path, res):            # res shared, mutated in place
+#         if done: res.append(path[:]); return
+#         for choice in choices:
+#             path.append(choice)
+#             backtrack(path, res)
+#             path.pop()
+#
+#   Decisive question: do you need to USE the result of one recursive call
+#   INSIDE another recursive call?
+#
+#     YES → return. LC 95 needs left_trees and right_trees as separate
+#       lists to cross-combine. An accumulator dumps everything into one
+#       pool — you lose the ability to pair left with right correctly.
+#
+#     NO, all branches just add to one pool → accumulator. LC 22 branches
+#       don't combine with each other; every path independently appends
+#       a completed string to res.
+#
+#   Summary table:
+#     Pattern       Each call produces       Typical shape
+#     ──────────    ─────────────────────    ───────────────────────────
+#     Return        Its own independent list  D&C, cross-combine results
+#     Accumulator   Writes to shared list     DFS / backtracking / traversal
+#
+# --------------------------------------------------------------------------
 # Complexity:
 #   Time:  O(n · Cₙ)   — Cₙ trees, each node takes O(n) work to build
 #   Space: O(n · Cₙ)   — total nodes across all Cₙ trees, each with n nodes
