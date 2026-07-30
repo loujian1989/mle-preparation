@@ -11,6 +11,39 @@
 # h = tree height. O(log n) balanced, O(n) worst case (skewed).
 #
 # --------------------------------------------------------------------------
+# Why the standard iterative works — two mental models
+#
+#   curr  = "the node I'm about to descend into" (None if nothing to descend)
+#   stack = "nodes passed through going left that still need visiting"
+#
+#   Inner while: exhausts the full left chain from curr, pushing every node.
+#     After it exits: curr=None, stack holds the left-chain nodes.
+#
+#   Pop: top of stack is always the leftmost unvisited node — in inorder,
+#     the next node to record.
+#
+#   curr = curr.right (no push): the right child is handled on the NEXT
+#     outer iteration. If it's not None, inner while descends and pushes it
+#     and its own left chain. If None, curr=None → outer condition checks
+#     stack for remaining nodes.
+#
+#   Why `while curr or stack` (not just `while stack`):
+#     After recording a node and setting curr=curr.right, the stack may be
+#     empty but curr is not None (e.g. last-popped node had a right child).
+#     Checking only `while stack` would exit early and miss that right subtree.
+#
+#   Trace: root=[2,1,3] → inorder [1,2,3]
+#     curr=2, stack=[]
+#     Outer 1: inner pushes 2,1 → stack=[2,1], curr=None
+#       pop=1, res=[1], curr=1.right=None
+#     Outer 2: curr=None, stack=[2]
+#       inner skips; pop=2, res=[1,2], curr=2.right=3
+#     Outer 3: curr=3, stack=[]
+#       inner pushes 3 → stack=[3], curr=None
+#       pop=3, res=[1,2,3], curr=3.right=None
+#     curr=None, stack=[] → exit ✓
+#
+# --------------------------------------------------------------------------
 # User's solution vs standard iterative — what's different
 #
 #   User's version:
